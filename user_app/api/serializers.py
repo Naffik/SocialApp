@@ -1,3 +1,5 @@
+from django.core import exceptions
+import django.contrib.auth.password_validation as validators
 from django.contrib.sites.shortcuts import get_current_site
 from user_app.models import User
 from rest_framework import serializers
@@ -16,6 +18,19 @@ class RegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
+
+    def validate_password(self, value):
+        errors = dict()
+        try:
+            validators.validate_password(password=value)
+
+        except exceptions.ValidationError as e:
+            errors = list(e.messages)
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return value
 
     def save(self):
         password = self.validated_data['password']
