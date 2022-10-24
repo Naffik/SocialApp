@@ -166,8 +166,10 @@ class UserAPITests(BaseTestCase):
         token_regex = r"\/account\/password-reset\/([A-Za-z0-9:\-]+)\/([A-Za-z0-9:\-]+)\/"
         match = re.search(token_regex, email_content)
         assert match.groups(), "Could not find the link in the email"
-        respone = self.client.get(match.group(0))
-        self.assertEqual(respone.status_code, status.HTTP_200_OK)
+        response = self.client.get(match.group(0))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['success'])
+        self.assertEqual(response.data['message'], 'Credentials valid')
 
     def test_uset_password_reset_complete(self):
         data = {
@@ -180,8 +182,8 @@ class UserAPITests(BaseTestCase):
         token_regex = r"\/account\/password-reset\/([A-Za-z0-9:\-]+)\/([A-Za-z0-9:\-]+)\/"
         match = re.search(token_regex, email_content)
         assert match.groups(), "Could not find the link in the email"
-        respone = self.client.get(match.group(0))
-        self.assertEqual(respone.status_code, status.HTTP_200_OK)
+        response = self.client.get(match.group(0))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         uidb64 = match.group(1)
         token = match.group(2)

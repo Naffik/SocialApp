@@ -10,7 +10,7 @@ class User(AbstractUser):
     display_name = models.CharField(max_length=255, blank=True)
     first_name = models.CharField(max_length=32)
     last_name = models.CharField(max_length=32)
-    data_of_birth = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    date_of_birth = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     bio = models.CharField(max_length=512, blank=True, null=True)
     avatar = models.ImageField(upload_to='profile_images/', blank=True, default='profile_images/default.jpg')
 

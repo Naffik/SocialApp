@@ -92,8 +92,10 @@ class SetNewPasswordSerializer(serializers.Serializer):
         return super().validate(attrs)
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(read_only=True)
+    username = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar')

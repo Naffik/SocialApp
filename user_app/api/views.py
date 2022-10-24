@@ -1,12 +1,15 @@
+from django.contrib.admin.utils import lookup_field
 from django.http import Http404
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from user_app.models import User
-from user_app.api.serializers import (RegistrationSerializer, RequestPasswordResetSerializer, SetNewPasswordSerializer)
+from user_app.api.serializers import (RegistrationSerializer, RequestPasswordResetSerializer, SetNewPasswordSerializer,
+                                      UserProfileSerializer)
 from user_app.api.utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -114,3 +117,27 @@ class SetNewPasswordView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
+
+
+class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsProfileUser]
+    lookup_field = 'email'
+
+    def get_object(self, *args, **kwargs):
+        user = User.objects.get(email=self.request.user)
+        return user
+
+    def perform_destroy(self, instance):
+        if not instance.avatar == 'profile_images/default.jpg':
+            instance.avatar.delete()
+        instance.delete()
+
+    def perform_update(self, serializer):
+        user = User.objects.get(email=self.request.user)
+        try:
+            if not user.avatar == 'profile_images/default.jpg':
+                user.avatar.delete()
+        except FileNotFoundError:
+            pass
+        serializer.save()
