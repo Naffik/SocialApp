@@ -1,18 +1,17 @@
-from django.contrib.admin.utils import lookup_field
-from django.http import Http404
-from rest_framework.decorators import api_view
+from django.views.generic import detail
+from rest_framework.decorators import api_view, action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import status, generics, viewsets
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from user_app.models import User
 from user_app.api.serializers import (RegistrationSerializer, RequestPasswordResetSerializer, SetNewPasswordSerializer,
-                                      UserProfileSerializer)
+                                      UserProfileSerializer, BasicUserProfileSerializer, FollowSerializer,
+                                      UserSerializer, BlockSerializer)
 from user_app.api.utils import Util
 from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
 from django.conf import settings
 import jwt
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -21,9 +20,20 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse
 from .permissions import IsProfileUserOrReadOnly, IsAdminOrReadOnly, IsProfileUser
 from .utils import Util
+from friendship.models import Friend, FriendshipRequest, Follow, Block
+from friendship.exceptions import AlreadyExistsError, AlreadyFriendsError
+from .serializers import FriendshipRequestSerializer, FriendSerializer, FriendshipRequestResponseSerializer\
 
 
 class RegisterView(generics.GenericAPIView):
+    """
+    Create new user with POST data
+
+    - username
+    - email
+    - password
+    - password2
+    """
     serializer_class = RegistrationSerializer
 
     def post(self, request):
@@ -52,6 +62,9 @@ class RegisterView(generics.GenericAPIView):
 
 
 class VerifyEmail(APIView):
+    """
+    Verify created user email address
+    """
     def get(self, request):
         token = request.GET.get('token')
         try:
@@ -68,6 +81,9 @@ class VerifyEmail(APIView):
 
 
 class RequestPasswordResetView(generics.GenericAPIView):
+    """
+    Sends an email with password reset link
+    """
     serializer_class = RequestPasswordResetSerializer
 
     def post(self, request):
@@ -90,7 +106,9 @@ class RequestPasswordResetView(generics.GenericAPIView):
 
 
 class PasswordTokenCheckView(APIView):
-
+    """
+    Checks if password reset link is valid
+    """
     def get(self, request, uidb64, token):
 
         try:
@@ -111,6 +129,13 @@ class PasswordTokenCheckView(APIView):
 
 
 class SetNewPasswordView(generics.GenericAPIView):
+    """
+    Reset password with POST data
+
+    - password
+    - token
+    - uidb64
+    """
     serializer_class = SetNewPasswordSerializer
 
     def patch(self, request):
@@ -119,13 +144,22 @@ class SetNewPasswordView(generics.GenericAPIView):
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
 
 
-class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = [IsProfileUser]
-    lookup_field = 'email'
+class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    ViewSet for User model
+    """
+    permission_classes = [IsProfileUserOrReadOnly]
+    lookup_field = 'username'
+
+    def get_serializer_class(self, request=None):
+        if self.request is None:
+            return BasicUserProfileSerializer
+        elif self.request.user.username == self.kwargs.get('username'):
+            return UserProfileSerializer
+        return BasicUserProfileSerializer
 
     def get_object(self, *args, **kwargs):
-        user = User.objects.get(email=self.request.user)
+        user = User.objects.get(username=self.kwargs.get('username'))
         return user
 
     def perform_destroy(self, instance):
@@ -141,3 +175,284 @@ class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
         except FileNotFoundError:
             pass
         serializer.save()
+
+
+class UserListView(generics.ListAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.all()
+
+
+class FriendViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for Friend model
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = BasicUserProfileSerializer
+    lookup_field = 'pk'
+
+    def create(self, request):
+        """
+        This method is not allowed
+        """
+        response = {'detail': 'Method \"POST\" not allowed.'}
+        return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+    def update(self, request):
+        """
+        This method is not allowed
+        """
+        response = {'detail': 'Method \"PUT\" not allowed.'}
+        return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+    def partial_update(self, request, pk=None):
+        """
+        This method is not allowed
+        """
+        response = {'detail': 'Method \"PATCH\" not allowed.'}
+        return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, pk=None):
+        """
+        This method is not allowed
+        """
+        response = {'detail': 'Method \"DELETE\" not allowed.'}
+        return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+    def list(self, request):
+        """
+        Returns list of user's friends
+        """
+        friend_requests = Friend.objects.friends(user=request.user)
+        self.queryset = friend_requests
+        self.http_method_names = ['get', 'head', 'options', ]
+        return Response(BasicUserProfileSerializer(friend_requests, many=True).data)
+
+    def retrieve(self, request, pk=None):
+        """
+        Return detail info of user's friend with id specified in the URL
+        """
+        self.queryset = Friend.objects.friends(user=request.user)
+        requested_user = get_object_or_404(User, pk=pk)
+        if Friend.objects.are_friends(request.user, requested_user):
+            self.http_method_names = ['get', 'head', 'options', ]
+            return Response(BasicUserProfileSerializer(requested_user, many=False).data)
+        else:
+            return Response({'message': "Friend relationship not found for user."}, status.HTTP_400_BAD_REQUEST)
+
+    @ action(detail=False)
+    def requests(self, request):
+        """
+        Returns a list of user's received friend requests
+        """
+        friend_requests = Friend.objects.unrejected_requests(user=request.user)
+        self.queryset = friend_requests
+        return Response(FriendshipRequestSerializer(friend_requests, many=True).data)
+
+    @ action(detail=False)
+    def sent_requests(self, request):
+        """
+        Returns a list of user's sent friend requests
+        """
+        friend_requests = Friend.objects.sent_requests(user=request.user)
+        self.queryset = friend_requests
+        return Response(FriendshipRequestSerializer(friend_requests, many=True).data)
+
+    @ action(detail=False)
+    def rejected_requests(self, request):
+        """
+        Returns a list of rejected friend requests
+        """
+        friend_requests = Friend.objects.rejected_requests(user=request.user)
+        self.queryset = friend_requests
+        return Response(FriendshipRequestSerializer(friend_requests, many=True).data)
+
+    @ action(detail=False, serializer_class=FriendshipRequestSerializer, methods=['post'])
+    def add_friend(self, request, username=None):
+        """
+        Creates a friend request from POST data:
+
+        - to_user
+        - message
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        to_user = get_object_or_404(User, username=serializer.validated_data.get('to_user'))
+
+        try:
+            friend_obj = Friend.objects.add_friend(request.user, to_user, message=request.data.get('message', ''))
+            print(friend_obj)
+            return Response(FriendshipRequestSerializer(friend_obj).data, status.HTTP_201_CREATED)
+        except (AlreadyExistsError, AlreadyFriendsError) as e:
+            return Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
+
+    @ action(detail=False, serializer_class=FriendshipRequestSerializer, methods=['post'])
+    def remove_friend(self, request):
+        """
+        Deletes a friend relationship.
+
+        The username specified in the POST data will be
+        removed from the current user's friends.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        to_user = get_object_or_404(User, username=serializer.validated_data.get('to_user'))
+
+        if Friend.objects.remove_friend(request.user, to_user):
+            message = 'Friend deleted.'
+            status_code = status.HTTP_204_NO_CONTENT
+        else:
+            message = 'Friend not found.'
+            status_code = status.HTTP_400_BAD_REQUEST
+
+        return Response({"message": message}, status=status_code)
+
+    @ action(detail=False, serializer_class=FriendshipRequestResponseSerializer, methods=['post'])
+    def accept_request(self, request, pk=None):
+        """
+        Accepts a friend request
+
+        The request id specified in the URL will be accepted
+        """
+        pk = request.data.get('id', None)
+        friendship_request = get_object_or_404(FriendshipRequest, pk=pk)
+
+        if not friendship_request.to_user == request.user:
+            return Response({"message": "Request for current user not found."}, status.HTTP_400_BAD_REQUEST)
+
+        friendship_request.accept()
+        return Response({"message": "Request accepted, user added to friends."}, status.HTTP_201_CREATED)
+
+    @ action(detail=False, serializer_class=FriendshipRequestResponseSerializer, methods=['post'])
+    def reject_request(self, request, pk=None):
+        """
+        Rejects a friend request
+
+        The request id specified in the URL will be rejected
+        """
+        pk = request.data.get('id', None)
+        friendship_request = get_object_or_404(FriendshipRequest, pk=pk)
+        if not friendship_request.to_user == request.user:
+            return Response({"message": "Request for current user not found."}, status.HTTP_400_BAD_REQUEST)
+
+        friendship_request.reject()
+
+        return Response({"message": "Request rejected, user NOT added to friends."}, status.HTTP_201_CREATED)
+
+    @action(detail=False, serializer_class=FollowSerializer, methods=['post'])
+    def add_follow(self, request):
+        """
+        Add a follow from POST data:
+
+        - folowee
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        followee = get_object_or_404(User, username=serializer.validated_data.get('followee'))
+        follower = request.user
+        try:
+            follow_obj = Follow.objects.add_follower(follower, followee)
+            return Response(FollowSerializer(follow_obj).data, status.HTTP_201_CREATED)
+        except AlreadyExistsError as e:
+            return Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, serializer_class=FollowSerializer, methods=['post'])
+    def remove_follow(self, request):
+        """
+        Remove a follow from POST data:
+
+        - followee
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        followee = get_object_or_404(User, username=serializer.validated_data.get('followee'))
+        print(followee)
+
+        if Follow.objects.remove_follower(request.user, followee):
+            message = 'Follow deleted.'
+            status_code = status.HTTP_204_NO_CONTENT
+        else:
+            message = 'Follow not found.'
+            status_code = status.HTTP_400_BAD_REQUEST
+
+        return Response({"message": message}, status=status_code)
+
+    @action(detail=False)
+    def followers(self, request):
+        """
+        Returns a list of all user's followers
+        """
+        followers = Follow.objects.followers(user=request.user)
+        self.queryset = followers
+        self.http_method_names = ['get', 'head', 'options', ]
+        return Response(BasicUserProfileSerializer(followers, many=True).data)
+
+    @action(detail=False)
+    def following(self, request):
+        """
+        Returns a list of users the given user follows
+        """
+        following = Follow.objects.following(user=request.user)
+        self.queryset = following
+        self.http_method_names = ['get', 'head', 'options', ]
+        return Response(BasicUserProfileSerializer(following, many=True).data)
+
+    @action(detail=False, serializer_class=BlockSerializer, methods=['post'])
+    def add_block(self, request):
+        """
+        Add a block from POST data:
+
+        - blocked
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        blocked = get_object_or_404(User, username=serializer.validated_data.get('blocked'))
+        blocker = request.user
+        print(f"{blocker} {blocked}")
+        try:
+            block_obj = Block.objects.add_block(blocker, blocked)
+            return Response(BlockSerializer(block_obj).data, status.HTTP_201_CREATED)
+        except AlreadyExistsError as e:
+            return Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, serializer_class=BlockSerializer, methods=['post'])
+    def remove_block(self, request):
+        """
+        Remove a blocked from POST data:
+
+        - blocked
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        blocked = get_object_or_404(User, username=serializer.validated_data.get('blocked'))
+
+        if Block.objects.remove_block(request.user, blocked):
+            message = 'Block deleted.'
+            status_code = status.HTTP_204_NO_CONTENT
+        else:
+            message = 'Block not found.'
+            status_code = status.HTTP_400_BAD_REQUEST
+
+        return Response({"message": message}, status=status_code)
+
+    @action(detail=False)
+    def blockers(self, request):
+        """
+        Returns a list of all user's blocked users
+        """
+        blocked = Block.objects.blocked(user=request.user)
+        self.queryset = blocked
+        self.http_method_names = ['get', 'head', 'options', ]
+        return Response(BasicUserProfileSerializer(blocked, many=True).data)
+
+    @action(detail=False)
+    def blocking(self, request):
+        """
+        Returns a list of users the given user blocks
+        """
+        blocking = Block.objects.blocking(user=request.user)
+        self.queryset = blocking
+        self.http_method_names = ['get', 'head', 'options', ]
+        return Response(BasicUserProfileSerializer(blocking, many=True).data)

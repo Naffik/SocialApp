@@ -8,12 +8,16 @@ from rest_framework.test import APITestCase, APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 import django.core.mail
 
+kwargs = {
+    'username': 'testcase'
+}
 
 CREATE_USER_URL = reverse('register')
 LOGIN_USER_URL = reverse('token_obtain_pair')
 TOKEN_REFRESH_URL = reverse('token_refresh')
 USER_PASSWORD_RESET_URL = reverse('request-password-reset')
 USER_PASSWORD_RESET_COMPLETE = reverse('password-reset-complete')
+USER_PROFILE_DETAIL = reverse('user-profile-detail', kwargs=kwargs)
 
 
 class UsersManagersTests(TestCase):
@@ -193,4 +197,8 @@ class UserAPITests(BaseTestCase):
             'uidb64': uidb64
         }
         response = self.client.patch(USER_PASSWORD_RESET_COMPLETE, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_user_details(self):
+        response = self.client.get(USER_PROFILE_DETAIL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

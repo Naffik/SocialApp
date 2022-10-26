@@ -1,12 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.core import exceptions
 import django.contrib.auth.password_validation as validators
-from django.contrib.sites.shortcuts import get_current_site
 from user_app.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from friendship.models import FriendshipRequest, Follow, Block
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -98,4 +99,77 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar')
+        fields = ('id', 'username', 'display_name', 'email', 'first_name',
+                  'last_name', 'date_of_birth', 'bio', 'avatar')
+
+
+class BasicUserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'display_name', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar')
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+class FriendSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = get_user_model()
+        fields = ('id', 'username', 'email')
+
+
+class FriendshipRequestSerializer(serializers.ModelSerializer):
+    to_user = serializers.CharField()
+    from_user = serializers.StringRelatedField()
+
+    class Meta:
+        model = FriendshipRequest
+        fields = ('id', 'from_user', 'to_user', 'message',
+                  'created', 'rejected', 'viewed')
+        extra_kwargs = {
+            'from_user': {'read_only': True},
+            'created': {'read_only': True},
+            'rejected': {'read_only': True},
+            'viewed': {'read_only': True},
+        }
+
+
+class FriendshipRequestResponseSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = FriendshipRequest
+        fields = ('id',)
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    followee = serializers.CharField()
+    follower = serializers.StringRelatedField()
+
+    class Meta:
+        model = Follow
+        fields = ('id', 'follower', 'followee', 'created')
+        extra_kwargs = {
+            'followee': {'read_only': True},
+            'created': {'read_only': True},
+        }
+
+
+class BlockSerializer(serializers.ModelSerializer):
+    blocked = serializers.CharField()
+    blocker = serializers.StringRelatedField()
+
+    class Meta:
+        model = Block
+        fields = ('id', 'blocker', 'blocked', 'created')
+        extra_kwargs = {
+            'blocked': {'read_only': True},
+            'created': {'read_only': True},
+        }
