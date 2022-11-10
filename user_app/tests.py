@@ -8,16 +8,14 @@ from rest_framework.test import APITestCase, APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 import django.core.mail
 
-kwargs = {
-    'username': 'testcase'
-}
 
 CREATE_USER_URL = reverse('register')
 LOGIN_USER_URL = reverse('token_obtain_pair')
 TOKEN_REFRESH_URL = reverse('token_refresh')
 USER_PASSWORD_RESET_URL = reverse('request-password-reset')
 USER_PASSWORD_RESET_COMPLETE = reverse('password-reset-complete')
-USER_PROFILE_DETAIL = reverse('user-profile-detail', kwargs=kwargs)
+USER_PROFILE_DETAIL = reverse('user-profile-detail', kwargs={'username': 'testcase'})
+USER_FRIEND_ADD = reverse('friend-add-friend')
 
 
 class UsersManagersTests(TestCase):
@@ -202,3 +200,37 @@ class UserAPITests(BaseTestCase):
     def test_get_user_details(self):
         response = self.client.get(USER_PROFILE_DETAIL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class FriendBaseTestCase(APITestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        self.username_1 = 'friend_1'
+        self.email_1 = 'friend_1@example.com'
+        self.password_1 = 'zaq1@WSX'
+        self.user_1 = User.objects.create_user(
+            username=self.username_1,
+            email=self.email_1,
+            password=self.password_1)
+
+        self.username_2 = 'friend_2'
+        self.email_2 = 'testcase@example.com'
+        self.password_2 = 'zaq1@WSX'
+        self.user_2 = User.objects.create_user(
+            username=self.username_2,
+            email=self.email_2,
+            password=self.password_2)
+
+        self.client = APIClient(enforce_csrf_checks=True)
+
+
+class FriendAPITests(FriendBaseTestCase):
+
+    def test_add_friend(self):
+        self.client.force_authenticate(self.user_1)
+        data = {
+            'to_user': 'friend_2'
+        }
+        response = self.client.post(USER_FRIEND_ADD, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)

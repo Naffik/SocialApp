@@ -146,7 +146,7 @@ class SetNewPasswordView(generics.GenericAPIView):
 
 class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    ViewSet for User model
+    Retrieve/Update/Destroy ViewSet for User model
     """
     permission_classes = [IsProfileUserOrReadOnly]
     lookup_field = 'username'
@@ -283,7 +283,6 @@ class FriendViewSet(viewsets.ModelViewSet):
 
         try:
             friend_obj = Friend.objects.add_friend(request.user, to_user, message=request.data.get('message', ''))
-            print(friend_obj)
             return Response(FriendshipRequestSerializer(friend_obj).data, status.HTTP_201_CREATED)
         except (AlreadyExistsError, AlreadyFriendsError) as e:
             return Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -368,7 +367,6 @@ class FriendViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         followee = get_object_or_404(User, username=serializer.validated_data.get('followee'))
-        print(followee)
 
         if Follow.objects.remove_follower(request.user, followee):
             message = 'Follow deleted.'
@@ -410,7 +408,6 @@ class FriendViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         blocked = get_object_or_404(User, username=serializer.validated_data.get('blocked'))
         blocker = request.user
-        print(f"{blocker} {blocked}")
         try:
             block_obj = Block.objects.add_block(blocker, blocked)
             return Response(BlockSerializer(block_obj).data, status.HTTP_201_CREATED)

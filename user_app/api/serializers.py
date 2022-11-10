@@ -99,8 +99,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'display_name', 'email', 'first_name',
-                  'last_name', 'date_of_birth', 'bio', 'avatar')
+        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar')
 
 
 class BasicUserProfileSerializer(serializers.ModelSerializer):
@@ -116,6 +115,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+
+class ChatUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('display_name', 'username', 'avatar')
 
 
 class FriendSerializer(serializers.ModelSerializer):

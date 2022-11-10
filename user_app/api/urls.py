@@ -3,6 +3,7 @@ from .views import (RegisterView, VerifyEmail, RequestPasswordResetView, Passwor
                     UserProfileDetailView, FriendViewSet, UserListView)
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import routers
+import pprint
 
 router = routers.DefaultRouter()
 router.register('friends', FriendViewSet, 'friend'),
@@ -20,3 +21,4 @@ urlpatterns = [
 ]
 
 urlpatterns += router.urls
+# pprint.pprint(router.get_urls())
