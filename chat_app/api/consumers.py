@@ -11,9 +11,18 @@ from friendship.models import Friend
 class ChatConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
+        self.chat_uuid = None
         self.user_room = None
         self.user_pk = None
         self.user = None
+
+    def is_user_in_chat_room(self, chat_uuid, user_pk):
+        return ChatRoom.objects.filter(member=user_pk).filter(chat_uuid=chat_uuid).exists()
+
+    def get_user_pk(self, user):
+        user = User.objects.get(username=user)
+        user_pk = user.pk
+        return user_pk
 
     def get_chats(self):
         chats = ChatRoom.objects.filter(member=self.user.pk)
@@ -113,8 +122,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.user = self.scope['user']
-        print(self.user)
+        self.chat_uuid = self.scope["url_route"]["kwargs"]["chat_uuid"]
         self.user_room = await database_sync_to_async(list)(ChatRoom.objects.filter(member=self.user.pk))
+        user = self.scope["user"]
+        self.user_pk = await database_sync_to_async(self.get_user_pk)(user)
+        is_member = await database_sync_to_async(self.is_user_in_chat_room)(self.chat_uuid, self.user_pk)
+        print(is_member)
         for room in self.user_room:
             await self.channel_layer.group_add(
                 room.chat_uuid,
@@ -125,14 +138,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await database_sync_to_async(self.add_online_user)(self.user)
         await self.send_online_user_list()
         await self.send_online_friends_list()
-        await self.channel_layer.send(
-            self.channel_name,
-            {
-                'type': 'chat_message',
-                'message': await database_sync_to_async(self.get_previous_messages)
-                (json.dumps({"start": "0", "end": "50"}))
-            }
-        )
+        if is_member:
+            await self.channel_layer.send(
+                self.channel_name,
+                {
+                    'type': 'chat_message',
+                    'message': await database_sync_to_async(self.get_previous_messages)
+                    (json.dumps({"start": "0", "end": "50"}))
+                }
+            )
+        else:
+            await self.channel_layer.send(
+                self.channel_name,
+                {
+                    'type': 'chat_message',
+                    'message': {
+                        'detail': 'User is not a member of this chat.'
+                    }
+                }
+            )
+
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -147,14 +172,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         action = text_data_json['action']
-        chat_uuid = text_data_json['chat_uuid']
-        user_pk = text_data_json['user']
         chat_message = {}
         if action == 'message':
             message = text_data_json['message']
             chat_message = await database_sync_to_async(
                 self.save_message
-            )(message, user_pk, chat_uuid)
+            )(message, self.user_pk, self.chat_uuid)
         elif action == 'typing':
             chat_message = text_data_json
         elif action == 'previous':
@@ -168,14 +191,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'message': chat_message
                 }
             )
-        if not action == 'previous':
-            await self.channel_layer.group_send(
-                chat_uuid,
-                {
-                    'type': 'chat_message',
-                    'message': chat_message
-                }
-            )
+        # if not action == 'previous':
+        await self.channel_layer.group_send(
+            chat_uuid,
+            {
+                'type': 'chat_message',
+                'message': chat_message
+            }
+        )
 
     async def chat_message(self, event):
         message = event['message']

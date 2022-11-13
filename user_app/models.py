@@ -23,6 +23,11 @@ class User(AbstractUser):
         return self.username
 
 
+class UserNickname(models.Model):
+    nickname = models.CharField(max_length=16)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+
+
 class OnlineUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 

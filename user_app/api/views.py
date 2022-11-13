@@ -25,6 +25,7 @@ from friendship.exceptions import AlreadyExistsError, AlreadyFriendsError
 from .serializers import FriendshipRequestSerializer, FriendSerializer, FriendshipRequestResponseSerializer\
 
 
+
 class RegisterView(generics.GenericAPIView):
     """
     Create new user with POST data
@@ -178,6 +179,9 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserListView(generics.ListAPIView):
+    """
+    List view for user model
+    """
     permission_classes = [IsAdminUser]
     serializer_class = UserSerializer
 
