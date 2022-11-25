@@ -11,6 +11,7 @@ from friendship.models import Friend
 class ChatConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
+        self.is_member = None
         self.chat_uuid = None
         self.user_room = None
         self.user_pk = None
@@ -54,14 +55,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
         chat_obj = ChatRoom.objects.get(chat_uuid=chat_uuid)
         message_obj = ChatMessage.objects.create(chat=chat_obj, user=user_obj, message=message)
         return {
-            'chat_uuid': chat_uuid,
-            'action': 'message',
+            'pk': message_obj.pk,
             'user': user_pk,
-            'message': message,
             'avatar': user_obj.avatar.url,
+            'message': message,
             'username': user_obj.username,
             'timestamp': str(message_obj.timestamp)
         }
+
+    def get_last_message(self):
+        message = ChatMessage.objects.all().order_by('timestamp')[-1:][0]
+        message = self.messages_to_json(message)
+        chat_message = {
+            'type': 'chat.message',
+            'message': message
+        }
+        return chat_message
 
     def get_previous_messages(self, text_data):
         text_data_json = json.loads(text_data)
@@ -70,7 +79,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         messages = ChatMessage.objects.all().order_by('timestamp')[start:end]
         messages = self.messages_to_json(messages)
         chat_message = {
-            'type': 'chat_message',
+            'type': 'chat.message',
             'message': messages
         }
         return chat_message
@@ -78,19 +87,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def messages_to_json(self, messages):
         result = []
         for message in messages:
-            result.append({
-                'pk': str(message.pk),
-                'user': message.user.username,
-                'avatar': message.user.avatar.url,
-                'message': message.message,
-                'timestamp': str(message.timestamp)
-            })
+            if message.image:
+                result.append({
+                    'pk': str(message.pk),
+                    'user': message.user.username,
+                    'avatar': message.user.avatar.url,
+                    'message': message.message,
+                    'image': message.image.url,
+                    'timestamp': str(message.timestamp)
+                })
+            else:
+                result.append({
+                    'pk': str(message.pk),
+                    'user': message.user.username,
+                    'avatar': message.user.avatar.url,
+                    'message': message.message,
+                    'timestamp': str(message.timestamp)
+                })
         return result
 
     async def send_chats_list(self):
         chats_list = await database_sync_to_async(self.get_chats)()
         chat_message = {
-            'type': 'chat_message',
+            'type': 'chat.message',
             'message': {
                 'action': 'chats',
                 'chat_list': chats_list
@@ -101,7 +120,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def send_online_user_list(self):
         online_user_list = await database_sync_to_async(self.get_online_users)()
         chat_message = {
-            'type': 'chat_message',
+            'type': 'chat.message',
             'message': {
                 'action': 'online_user',
                 'user_list': online_user_list
@@ -112,37 +131,37 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def send_online_friends_list(self):
         online_friends_list = await database_sync_to_async(self.get_online_friends)()
         chat_message = {
-            'type': 'chat_message',
+            'type': 'chat.message',
             'message': {
                 'action': 'online_friends',
                 'friend_list': online_friends_list
             }
         }
-        await self.channel_layer.send(self.channel_name, chat_message)
+        await self.channel_layer.group_send('online_friends', chat_message)
 
     async def connect(self):
         self.user = self.scope['user']
         self.chat_uuid = self.scope["url_route"]["kwargs"]["chat_uuid"]
         self.user_room = await database_sync_to_async(list)(ChatRoom.objects.filter(member=self.user.pk))
-        user = self.scope["user"]
-        self.user_pk = await database_sync_to_async(self.get_user_pk)(user)
-        is_member = await database_sync_to_async(self.is_user_in_chat_room)(self.chat_uuid, self.user_pk)
-        print(is_member)
+        self.user_pk = await database_sync_to_async(self.get_user_pk)(self.user)
+        self.is_member = await database_sync_to_async(self.is_user_in_chat_room)(self.chat_uuid, self.user_pk)
+
         for room in self.user_room:
             await self.channel_layer.group_add(
                 room.chat_uuid,
                 self.channel_name
             )
+
         await self.channel_layer.group_add('online_user', self.channel_name)
         await self.channel_layer.group_add('online_friends', self.channel_name)
         await database_sync_to_async(self.add_online_user)(self.user)
-        await self.send_online_user_list()
         await self.send_online_friends_list()
-        if is_member:
+
+        if self.is_member:
             await self.channel_layer.send(
                 self.channel_name,
                 {
-                    'type': 'chat_message',
+                    'type': 'chat.message',
                     'message': await database_sync_to_async(self.get_previous_messages)
                     (json.dumps({"start": "0", "end": "50"}))
                 }
@@ -151,9 +170,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.send(
                 self.channel_name,
                 {
-                    'type': 'chat_message',
+                    'type': 'chat.message',
                     'message': {
-                        'detail': 'User is not a member of this chat.'
+                        'detail': 'User is not a member of the chat.'
                     }
                 }
             )
@@ -162,7 +181,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await database_sync_to_async(self.delete_online_user)(self.user)
-        await self.send_online_user_list()
+        await self.send_online_friends_list()
         for room in self.user_room:
             await self.channel_layer.group_discard(
                 room.chat_uuid,
@@ -173,32 +192,42 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         action = text_data_json['action']
         chat_message = {}
-        if action == 'message':
-            message = text_data_json['message']
-            chat_message = await database_sync_to_async(
-                self.save_message
-            )(message, self.user_pk, self.chat_uuid)
-        elif action == 'typing':
-            chat_message = text_data_json
-        elif action == 'previous':
-            chat_message = await database_sync_to_async(
-                self.get_previous_messages
-            )(text_data)
-            await self.channel_layer.send(
-                self.channel_name,
+        if self.is_member:
+            if action == 'message':
+                message = text_data_json['message']
+                chat_message = await database_sync_to_async(
+                    self.save_message
+                )(message, self.user_pk, self.chat_uuid)
+            elif action == 'typing':
+                chat_message = text_data_json
+            elif action == 'previous':
+                chat_message = await database_sync_to_async(
+                    self.get_previous_messages
+                )(text_data)
+                await self.channel_layer.send(
+                    self.channel_name,
+                    {
+                        'type': 'chat.message',
+                        'message': chat_message
+                    }
+                )
+            await self.channel_layer.group_send(
+                self.chat_uuid,
                 {
-                    'type': 'chat_message',
+                    'type': 'chat.message',
                     'message': chat_message
                 }
             )
-        # if not action == 'previous':
-        await self.channel_layer.group_send(
-            chat_uuid,
-            {
-                'type': 'chat_message',
-                'message': chat_message
-            }
-        )
+        else:
+            await self.channel_layer.send(
+                self.channel_name,
+                {
+                    'type': 'chat.message',
+                    'message': {
+                        'detail': 'User is not a member of this chat.'
+                    }
+                }
+            )
 
     async def chat_message(self, event):
         message = event['message']

@@ -8,6 +8,11 @@ TYPE_CHOICE = (
 )
 
 
+def chat_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/chat_<uuid>/<filename>/
+    return 'chat_{0}/{1}'.format(instance.chat.chat_uuid, filename)
+
+
 class ChatRoom(models.Model):
     chat_uuid = ShortUUIDField()
     type = models.CharField(max_length=10, choices=TYPE_CHOICE, default='DM')
@@ -21,16 +26,15 @@ class ChatRoom(models.Model):
 class ChatMessage(models.Model):
     chat = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    message = models.CharField(max_length=255)
+    message = models.CharField(max_length=255, blank=True)
+    image = models.ImageField(upload_to=chat_directory_path, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.message
 
-
-def chat_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/chat_<uuid>/<filename>/
-    return 'chat_{0}/{1}/'.format(instance.chat.chat_uuid, filename)
+    def get_last_message(self):
+        return self
 
 
 class ChatImage(models.Model):

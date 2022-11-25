@@ -10,7 +10,6 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatRoom
         exclude = ['id']
-        # fields = '__all__'
 
 
 class ChatMessageSerializer(serializers.ModelSerializer):
@@ -20,5 +19,6 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         model = ChatMessage
         exclude = ['id', 'chat']
 
-    def get_username(self, obj):
+    @staticmethod
+    def get_username(obj):
         return obj.user.username
