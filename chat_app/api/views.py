@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 
 from chat_app.api.permissions import IsChatUser
-from chat_app.models import ChatRoom, ChatMessage, ChatImage
+from chat_app.models import ChatRoom, ChatMessage
 from chat_app.api.serializers import ChatRoomSerializer, ChatMessageSerializer
 
 

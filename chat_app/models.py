@@ -36,12 +36,12 @@ class ChatMessage(models.Model):
     def get_last_message(self):
         return self
 
-
-class ChatImage(models.Model):
-    chat = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    image = models.ImageField(upload_to=chat_directory_path)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.image.name
+#
+# class ChatImage(models.Model):
+#     chat = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, null=True)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+#     image = models.ImageField(upload_to=chat_directory_path)
+#     timestamp = models.DateTimeField(auto_now_add=True)
+#
+#     def __str__(self):
+#         return self.image.name
