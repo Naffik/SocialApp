@@ -7,5 +7,6 @@ from rest_framework.documentation import include_docs_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('user_app.api.urls')),
+    path('chat/', include('chat_app.api.urls')),
     path('docs/', include_docs_urls(title='SocialApp')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
