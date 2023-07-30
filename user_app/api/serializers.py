@@ -96,18 +96,45 @@ class SetNewPasswordSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(read_only=True)
     username = serializers.CharField(read_only=True)
+    # followers = serializers.SerializerMethodField(read_only=True)
+    # follows = serializers.SerializerMethodField(read_only=True)
+    friends_count = serializers.IntegerField(read_only=True)
+    followers_count = serializers.IntegerField(read_only=True)
+    follows_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar')
+        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar',
+                  'friends_count', 'followers_count', 'follows_count')
+
+    # def get_follows(self, instance):
+    #     return instance.get_total_follows()
+    #
+    # def get_followers(self, instance):
+    #     return instance.get_total_followers()
+
+    def get_friends(self, instance):
+        return instance.get_total_friends()
 
 
 class BasicUserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True)
+    followers = serializers.SerializerMethodField(read_only=True)
+    follows = serializers.SerializerMethodField(read_only=True)
+    friends = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar')
+        fields = ('username', 'display_name', 'bio', 'avatar', 'followers', 'follows', 'friends')
+
+    def get_follows(self, instance):
+        return instance.get_total_follows()
+
+    def get_followers(self, instance):
+        return instance.get_total_followers()
+
+    def get_friends(self, instance):
+        return instance.get_total_friends()
 
 
 class UserSerializer(serializers.ModelSerializer):
