@@ -47,8 +47,10 @@ INSTALLED_APPS = [
     'friendship',
     'rest_framework',
     'django_filters',
+    'taggit',
     'user_app',
     'chat_app',
+    'web_app',
 ]
 
 MIDDLEWARE = [
@@ -95,7 +97,6 @@ DATABASES = {
         'HOST': 'postgres_db'
     }
 }
-
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',

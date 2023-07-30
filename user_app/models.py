@@ -1,8 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from friendship.models import Friend
-from .managers import CustomUserManager
+from user_app.api.managers import CustomUserManager
+from friendship.models import Friend, Follow, Block
 
 
 class User(AbstractUser):
@@ -21,6 +21,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def friends_count(self):
+        return Friend.objects.filter(to_user=self.pk).count()
+
+    def followers_count(self):
+        return Follow.objects.filter(followee=self.pk).count()
+
+    def follows_count(self):
+        return Follow.objects.filter(follower=self.pk).count()
 
 
 class UserNickname(models.Model):
