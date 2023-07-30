@@ -19,9 +19,9 @@ SocialApp REST API is a social media platform that combines the functionalities 
 - Add posts
 - Create comments
 - Add to favourite
-- Like/Dislike posts
+- Like posts
 - Search posts
-- Add tag to posts and comments
+- Add tags to posts and comments
 
 ## Technologies
 
@@ -40,7 +40,7 @@ SocialApp REST API is a social media platform that combines the functionalities 
 
 ## Installation
 
-* First you need to clone repository.
+* First you need to clone a repository.
     ```bash
     git clone https://github.com/Naffik/Naffik.git
     ```
@@ -65,7 +65,7 @@ SocialApp REST API is a social media platform that combines the functionalities 
 	export POSTGRES_USER=database username
 	export POSTGRES_PASSWORD=database password
 	```
-* This project has a Docker Compose file included in the repository at `docker-compose.yml`. First you need to cd into GoldenMemes folder where docker file is located. To build and run the project with Docker Compose, use the following command:
+* This project has a Docker Compose file included in the repository at `docker-compose.yml`. First you need to cd into Socialapp folder where docker file is located. To build and run the project with Docker Compose, use the following command:
     ```bash
     docker-compose up --build
     ```
