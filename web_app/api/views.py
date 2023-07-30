@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from web_app.api.pagination import PostPagination
 from web_app.api.permissions import IsPostUserOrReadOnly
 from web_app.api.serializers import PostSerializer, PostCreateSerializer
-from web_app.models import Post, Like, DisLike
+from web_app.models import Post, Like
 
 
 class PostList(generics.ListAPIView):
@@ -18,7 +18,6 @@ class PostList(generics.ListAPIView):
         user = self.request.user
         if user.is_authenticated:
             post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                                         is_disliked=Exists(DisLike.objects.filter(users=user, post=OuterRef('pk'))),
                                          is_favourite=Exists(Post.objects.filter(favourites=user))).order_by('pk')
         else:
             post = Post.objects.all().order_by('pk')
@@ -64,7 +63,7 @@ class PostSearch(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['post_author__username', 'title', 'tags']
     search_fields = ['^title']
-    ordering_fields = ['title', 'created', 'like', 'dislike']
+    ordering_fields = ['title', 'created', 'like']
 
     def get_queryset(self, *args, **kwargs):
         my_tags = []
