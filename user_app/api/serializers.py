@@ -128,13 +128,13 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
         fields = ('username', 'display_name', 'bio', 'avatar', 'followers', 'follows', 'friends')
 
     def get_follows(self, instance):
-        return instance.get_total_follows()
+        return instance.follows_count()
 
     def get_followers(self, instance):
-        return instance.get_total_followers()
+        return instance.followers_count()
 
     def get_friends(self, instance):
-        return instance.get_total_friends()
+        return instance.friends_count()
 
 
 class UserSerializer(serializers.ModelSerializer):
