@@ -97,7 +97,6 @@ DATABASES = {
         'HOST': 'postgres_db'
     }
 }
-
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',

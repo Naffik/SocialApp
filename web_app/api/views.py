@@ -10,6 +10,9 @@ from web_app.models import Post, Like
 
 
 class PostList(generics.ListAPIView):
+    """
+    List view for post model
+    """
     serializer_class = PostSerializer
     permission_classes = [AllowAny]
     pagination_class = PostPagination
@@ -25,6 +28,13 @@ class PostList(generics.ListAPIView):
 
 
 class PostCreate(generics.CreateAPIView):
+    """
+    Create new post with POST data
+
+    - title
+    - tags
+    - content
+    """
     serializer_class = PostCreateSerializer
     permission_classes = [IsAuthenticated]
 
@@ -34,6 +44,9 @@ class PostCreate(generics.CreateAPIView):
 
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve/Update/Destroy ViewSet for Post model
+    """
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsPostUserOrReadOnly]
@@ -57,11 +70,14 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class PostSearch(generics.ListAPIView):
+    """
+    Search list of post model
+    """
     serializer_class = PostSerializer
     permission_classes = [AllowAny]
     pagination_class = PostPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['post_author__username', 'title', 'tags']
+    filterset_fields = ['post_author__username', 'title', 'content']
     search_fields = ['^title']
     ordering_fields = ['title', 'created', 'like']
 
@@ -71,8 +87,8 @@ class PostSearch(generics.ListAPIView):
         if tags is not None:
             for x in tags.split(','):
                 my_tags.append(x)
-            qs = Post.objects.filter(tags__name__in=my_tags)
+            queryset = Post.objects.filter(tags__name__in=my_tags)
         else:
-            qs = Post.objects.all()
+            queryset = Post.objects.all()
 
-        return qs
+        return queryset
