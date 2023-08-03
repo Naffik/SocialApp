@@ -1,11 +1,15 @@
 from django.db.models import Exists, OuterRef
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, filters
+from rest_framework import generics, filters, status
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from user_app.models import User
 from web_app.api.pagination import PostPagination
 from web_app.api.permissions import IsPostUserOrReadOnly
-from web_app.api.serializers import PostSerializer, PostCreateSerializer
+from web_app.api.serializers import PostSerializer, PostCreateSerializer, PostFavSerializer
 from web_app.models import Post, Like
 
 
@@ -91,4 +95,26 @@ class PostSearch(generics.ListAPIView):
         else:
             queryset = Post.objects.all()
 
-        return queryset
+        return queryset.order_by('created')
+
+
+class PostFavAdd(APIView):
+    permission_classes = [IsAuthenticated]
+    bad_request_message = 'An error has occurred'
+
+    def post(self, request):
+        post = get_object_or_404(Post, pk=request.data.get('pk'))
+        user = self.request.user
+        if user not in post.favourites.all():
+            post.favourites.add(user)
+            return Response({'detail': 'User added to post'}, status=status.HTTP_200_OK)
+        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        post = get_object_or_404(Post, pk=request.data.get('pk'))
+        user = self.request.user
+        if user in post.favourites.all():
+            post.favourites.remove(user)
+            return Response({'detail': 'User removed from post'}, status=status.HTTP_200_OK)
+        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+

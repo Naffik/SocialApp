@@ -10,9 +10,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from web_app.models import Post
 
 CREATE_POST_URL = reverse('post-create')
-DETAIL_POST_URL = reverse('post-detail', kwargs={'pk': 1})
+# DETAIL_POST_URL = reverse('post-detail', kwargs={'pk': 10})
+DETAIL_POST_URL_NOT_FOUND = reverse('post-detail', kwargs={'pk': 9999})
 SEARCH_POST_URL = reverse('post-search')
 LIST_POST_URL = reverse('post-list')
+ADD_REMOVE_POST_FAV_URL = reverse('post-fav-add-remove')
+ADD_REMOVE_POST_FAV_URL_NOT_FOUND = reverse('post-fav-add-remove')
 
 
 class BaseTestCase(APITestCase):
@@ -23,19 +26,29 @@ class BaseTestCase(APITestCase):
             username='testcase',
             email='testcase@example.com',
             password='testcase')
-        Post.objects.create(post_author=self.user, title='Test post 1', tags=['tag1', 'tag2'],
-                            content='Test content 1')
-        Post.objects.create(post_author=self.user, title='Second test post', tags=['tag2', 'tag3'],
-                            content='Another test content 2')
-        self.client = APIClient(enforce_csrf_checks=True)
+        self.post1 = Post.objects.create(post_author=self.user, title='Test post 1', tags=['tag1', 'tag2'],
+                                         content='Test content 1')
+        self.post2 = Post.objects.create(post_author=self.user, title='Second test post', tags=['tag2', 'tag3'],
+                                         content='Another test content 2')
 
 
 class PostAPITests(BaseTestCase):
 
-    def test_post_list(self):
+    def test_list_post(self):
         response = self.client.get(LIST_POST_URL)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 2)
+
+    def test_get_post_detail_no_results(self):
+        response = self.client.get(DETAIL_POST_URL_NOT_FOUND)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_post_detail(self):
+        response = self.client.get(reverse('post-detail', kwargs={'pk': self.post1.pk}))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_post_unauthorized(self):
         data = {
@@ -45,6 +58,7 @@ class PostAPITests(BaseTestCase):
         }
 
         response = self.client.post(CREATE_POST_URL, data, format='json')
+
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Post.objects.count(), 2)
 
@@ -57,35 +71,86 @@ class PostAPITests(BaseTestCase):
         }
 
         response = self.client.post(CREATE_POST_URL, data, format='json')
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Post.objects.count(), 3)
 
     def test_search_by_title(self):
         response = self.client.get(SEARCH_POST_URL, {'title': 'Test post 1'})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['title'], 'Test post 1')
 
     def test_search_by_content(self):
         response = self.client.get(SEARCH_POST_URL, {'content': 'Test content 1'})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['content'], 'Test content 1')
 
     def test_search_by_tags(self):
         response = self.client.get(SEARCH_POST_URL, {'tags': 'tag2'})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 2)
 
     def test_search_no_results(self):
         response = self.client.get(SEARCH_POST_URL, {'title': 'non_existent_text'})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 0)
 
-    def test_get_post_detail_no_results(self):
-        response = self.client.get(DETAIL_POST_URL, kwargs={'pk': 9999})
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_add_user_to_post_fav(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(ADD_REMOVE_POST_FAV_URL, {'pk': self.post1.pk})
 
-    # def test_get_post_detail(self):
-    #     response = self.client.get(DETAIL_POST_URL)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['detail'], 'User added to post')
+        self.assertTrue(self.user in self.post1.favourites.all())
+
+    def test_remove_user_from_post_fav(self):
+        self.post1.favourites.add(self.user)
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(ADD_REMOVE_POST_FAV_URL, {'pk': self.post1.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['detail'], 'User removed from post')
+        self.assertFalse(self.user in self.post1.favourites.all())
+
+    def test_add_user_to_post_fav_second_time(self):
+        self.post1.favourites.add(self.user)
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(ADD_REMOVE_POST_FAV_URL, {'pk': self.post1.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'], 'An error has occurred')
+        self.assertTrue(self.user in self.post1.favourites.all())
+
+    def test_remove_user_to_post_fav_second_time(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(ADD_REMOVE_POST_FAV_URL, {'pk': self.post1.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'], 'An error has occurred')
+        self.assertFalse(self.user in self.post1.favourites.all())
+
+    def test_add_user_to_nonexistent_post_fav(self):
+        expected_data = {
+            'detail': 'Not found.'
+        }
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(ADD_REMOVE_POST_FAV_URL_NOT_FOUND, {'pk': 9999})
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.json(), expected_data)
+
+    def test_remove_user_from_nonexistent_post_fav(self):
+        expected_data = {
+            'detail': 'Not found.'
+        }
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(ADD_REMOVE_POST_FAV_URL_NOT_FOUND, {'pk': 9999})
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.json(), expected_data)

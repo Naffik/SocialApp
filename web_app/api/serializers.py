@@ -59,10 +59,3 @@ class PostCreateSerializer(TaggitSerializer, serializers.ModelSerializer):
         else:
             representation.pop('image', None)
         return representation
-
-
-class PostFavSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Post
-        exclude = ('status', 'favourites', 'number_of_comments', )
