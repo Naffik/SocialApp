@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from user_app.models import User
 from user_app.api.serializers import (RegistrationSerializer, RequestPasswordResetSerializer, SetNewPasswordSerializer,
                                       UserProfileSerializer, BasicUserProfileSerializer, FollowSerializer,
-                                      UserSerializer, BlockSerializer)
+                                      UserSerializer, BlockSerializer, FriendSerializer)
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 import jwt
@@ -242,10 +242,10 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         Returns list of user's friends
         """
-        friend_requests = Friend.objects.friends(user=request.user)
-        self.queryset = friend_requests
+        friends = Friend.objects.friends(user=request.user)
+        self.queryset = friends
         self.http_method_names = ['get', 'head', 'options', ]
-        return Response(BasicUserProfileSerializer(friend_requests, many=True).data)
+        return Response(FriendSerializer(self.queryset, many=True).data)
 
     def retrieve(self, request, pk=None):
         """

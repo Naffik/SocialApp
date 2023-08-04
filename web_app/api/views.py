@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from user_app.models import User
 from web_app.api.pagination import PostPagination
 from web_app.api.permissions import IsPostUserOrReadOnly
-from web_app.api.serializers import PostSerializer, PostCreateSerializer, PostFavSerializer
+from web_app.api.serializers import PostSerializer, PostCreateSerializer
 from web_app.models import Post, Like
 
 
@@ -55,6 +55,15 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsPostUserOrReadOnly]
 
+    def get_queryset(self, *args, **kwargs):
+        user = self.request.user
+        if user.is_authenticated:
+            post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                                         is_favourite=Exists(Post.objects.filter(favourites=user)))
+        else:
+            post = Post.objects.filter(pk=self.request.get('pk'))
+        return post
+
     def perform_destroy(self, instance):
         instance.image.delete()
         instance.delete()
@@ -99,6 +108,9 @@ class PostSearch(generics.ListAPIView):
 
 
 class PostFavAdd(APIView):
+    """
+    Add or remove a post to the favorites
+    """
     permission_classes = [IsAuthenticated]
     bad_request_message = 'An error has occurred'
 

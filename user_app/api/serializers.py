@@ -152,10 +152,15 @@ class ChatUserSerializer(serializers.ModelSerializer):
 
 
 class FriendSerializer(serializers.ModelSerializer):
+    friend = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'email')
+        fields = ('friend',)
+
+    def get_friend(self, obj):
+        user_serializer = BasicUserProfileSerializer(obj)
+        return user_serializer.data
 
 
 class FriendshipRequestSerializer(serializers.ModelSerializer):
