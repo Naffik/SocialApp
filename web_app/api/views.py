@@ -2,15 +2,15 @@ from django.db.models import Exists, OuterRef
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters, status
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from user_app.models import User
 from web_app.api.pagination import PostPagination
-from web_app.api.permissions import IsPostUserOrReadOnly
-from web_app.api.serializers import PostSerializer, PostCreateSerializer
-from web_app.models import Post, Like
+from web_app.api.permissions import IsPostUserOrReadOnly, IsCommentUserOrReadOnly
+from web_app.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer
+from web_app.models import Post, Like, Comment
 
 
 class PostList(generics.ListAPIView):
@@ -61,7 +61,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
             post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
                                          is_favourite=Exists(Post.objects.filter(favourites=user)))
         else:
-            post = Post.objects.filter(pk=self.request.get('pk'))
+            post = Post.objects.filter(pk=self.kwargs.get('pk'))
         return post
 
     def perform_destroy(self, instance):
@@ -130,3 +130,58 @@ class PostFavAdd(APIView):
             return Response({'detail': 'User removed from post'}, status=status.HTTP_200_OK)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class CommentList(generics.ListAPIView):
+    """
+    List view for Comment model
+    """
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = PostPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['comment_author__username', 'post__id']
+
+
+class CommentCreate(generics.CreateAPIView):
+    """
+    Create new comment with POST data
+
+    - id
+    """
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        post = Post.objects.get(pk=pk)
+        comment_user = self.request.user
+        post.number_of_comments = post.number_of_comments + 1
+        post.save()
+
+        serializer.save(post=post, comment_author=comment_user)
+
+
+class PostCommentList(generics.ListAPIView):
+    """
+    List view for Post's comments
+    """
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = PostPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['comment_author__username', 'post__title']
+
+    def get_queryset(self, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        return Comment.objects.filter(post=pk)
+
+
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve/Update/Destroy ViewSet for Comment model
+    """
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsCommentUserOrReadOnly]
