@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from web_app.models import Post
+from web_app.models import Post, Comment
 
 CREATE_POST_URL = reverse('post-create')
 # DETAIL_POST_URL = reverse('post-detail', kwargs={'pk': 10})
@@ -17,8 +17,13 @@ LIST_POST_URL = reverse('post-list')
 ADD_REMOVE_POST_FAV_URL = reverse('post-fav-add-remove')
 ADD_REMOVE_POST_FAV_URL_NOT_FOUND = reverse('post-fav-add-remove')
 
+CREATE_COMMENT_URL = reverse('post-comment-create', kwargs={'pk': 1})
+LIST_POSTS_COMMENTS_URL = reverse('post-comment-list', kwargs={'pk': 1})
+LIST_COMMENTS_URL = reverse('comment-list')
+DETAIL_COMMENT_URL = reverse('comment-detail', kwargs={'pk': 1})
 
-class BaseTestCase(APITestCase):
+
+class PostBaseTestCase(APITestCase):
 
     def setUp(self):
         User = get_user_model()
@@ -32,7 +37,7 @@ class BaseTestCase(APITestCase):
                                          content='Another test content 2')
 
 
-class PostAPITests(BaseTestCase):
+class PostAPITests(PostBaseTestCase):
 
     def test_list_post(self):
         response = self.client.get(LIST_POST_URL)
@@ -154,3 +159,34 @@ class PostAPITests(BaseTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.json(), expected_data)
+
+
+class CommentBaseTestCase(APITestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        self.admin_user = User.objects.create_superuser(
+            username='admin',
+            password='adminpassword',
+            email='admin@example.com'
+        )
+        self.user = User.objects.create_user(
+            username='testcase',
+            email='testcase@example.com',
+            password='testcase')
+        self.post = Post.objects.create(post_author=self.user, title='Test post 1', tags=['tag1', 'tag2'],
+                                        content='Test content')
+        self.comment = Comment.objects.create(post=self.post, comment_author=self.user, content="Test")
+
+    def test_list_comments_authorized(self):
+        self.client.force_authenticate(user=self.admin_user)
+        response = self.client.get(LIST_COMMENTS_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+
+    def test_list_comments_unauthorized(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(LIST_COMMENTS_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
