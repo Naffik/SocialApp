@@ -1,7 +1,8 @@
 
 # SOCIAL APP
 
-SocialApp REST API is a social media platform that combines the functionalities of Twitter and a text chat. Additionally, the app allows you to have private text conversations with selected individuals through the chat function.
+SocialApp REST API is a social media platform that combines the functionalities of Twitter and a text chat. 
+Additionally, the app allows you to have private text conversations with selected individuals through the chat function.
 
 ## Main Features
 
@@ -13,15 +14,16 @@ SocialApp REST API is a social media platform that combines the functionalities 
 - Add/Remove user to friends
 - Send/Cancel friend request
 - Block/Unblock users
+- Add posts
+- Like posts
+- Search posts
+- Add tags to posts
+- Add posts to favourite
+- Create comments
 
 ### In the future following features will be added:
 
-- Add posts
-- Create comments
-- Add to favourite
-- Like posts
-- Search posts
-- Add tags to posts and comments
+- Add tags to comments
 
 ## Technologies
 

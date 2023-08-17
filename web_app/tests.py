@@ -174,6 +174,10 @@ class CommentBaseTestCase(APITestCase):
             username='testcase',
             email='testcase@example.com',
             password='testcase')
+        self.other_user = User.objects.create_user(
+            username='testcase2',
+            email='testcase2@example.com',
+            password='testcase2')
         self.post = Post.objects.create(post_author=self.user, title='Test post 1', tags=['tag1', 'tag2'],
                                         content='Test content')
         self.comment = Comment.objects.create(post=self.post, comment_author=self.user, content="Test")
@@ -190,3 +194,99 @@ class CommentBaseTestCase(APITestCase):
         response = self.client.get(LIST_COMMENTS_URL)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_comment_list_with_filters(self):
+        all_comment_count = Comment.objects.count()
+        self.client.force_authenticate(user=self.admin_user)
+        response = self.client.get(LIST_COMMENTS_URL, {'comment_author__username': 'testcase'})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), all_comment_count)
+
+    def test_create_comment(self):
+        self.client.force_authenticate(user=self.user)
+        initial_comment_count = Comment.objects.count()
+        initial_post_comment_count = self.post.number_of_comments
+
+        data = {
+            'post': self.post.id,
+            'content': 'New test comment',
+        }
+
+        response = self.client.post(CREATE_COMMENT_URL, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Comment.objects.count(), initial_comment_count + 1)
+
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.number_of_comments, initial_post_comment_count + 1)
+
+        comment = Comment.objects.get(id=response.data['id'])
+        self.assertEqual(comment.comment_author, self.user)
+        self.assertEqual(comment.post, self.post)
+        self.assertEqual(comment.content, 'New test comment')
+
+    def test_create_comment_with_invalid_data(self):
+        self.client.force_authenticate(user=self.user)
+        data = {
+            'post': self.post.id,
+        }
+
+        response = self.client.post(CREATE_COMMENT_URL, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_comments_for_post(self):
+        all_comment_count = Comment.objects.count()
+        response = self.client.get(reverse('post-comment-list', kwargs={'pk': self.post.id}))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), all_comment_count)
+
+    def test_get_comments_for_post_with_filters(self):
+        all_comment_count = Comment.objects.count()
+        response = self.client.get(reverse('post-comment-list', kwargs={'pk': self.post.id}),
+                                   {'comment_author__username': 'testcase'})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), all_comment_count)
+
+    def test_get_comment_detail(self):
+        response = self.client.get(reverse('comment-detail', kwargs={'pk': self.comment.id}))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_comment(self):
+        data = {
+            'content': 'Updated comment content',
+        }
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(reverse('comment-detail', kwargs={'pk': self.comment.id}), data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.comment.refresh_from_db()
+        self.assertEqual(self.comment.content, 'Updated comment content')
+
+    def test_update_comment_by_other_user(self):
+        data = {
+            'content': 'Updated comment content',
+        }
+        self.client.force_authenticate(user=self.other_user)
+        response = self.client.put(reverse('comment-detail', kwargs={'pk': self.comment.id}), data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_comment(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(reverse('comment-detail', kwargs={'pk': self.comment.id}))
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Comment.objects.filter(id=self.comment.id).exists())
+
+    def test_delete_comment_by_other_user(self):
+        self.client.force_authenticate(user=self.other_user)
+        response = self.client.delete(reverse('comment-detail', kwargs={'pk': self.comment.id}))
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertTrue(Comment.objects.filter(id=self.comment.id).exists())
