@@ -6,3 +6,4 @@ COPY requirements.txt /code/
 RUN pip3 install -r requirements.txt
 RUN apt-get update && apt-get install -y binutils libproj-dev gdal-bin python-gdal python3-gdal
 COPY . /code/
+COPY wait-for-it.sh /wait-for-it.sh
