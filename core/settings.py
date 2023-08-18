@@ -167,12 +167,33 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+        'user_app.api.throttling.UserProfileDetailThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '60/minute',
+        'user': '1000/hour',
+        'hourly': '100/hour',
+        'register': '5/hour',
+        'email-verify': '10/hour',
+        'request-password-reset': '3/hour',
+        'password-reset': '5/hour',
+        'password-reset-complete': '5/hour',
+        'token_obtain_pair': '5/minute',
+        'token_refresh': '20/hour',
+        'user-profile-detail-user': '500/hour',
+        'user-profile-detail-anon': '50/hour',
+    }
 }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = env('EMAIL_HOST')
