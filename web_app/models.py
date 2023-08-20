@@ -11,7 +11,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to='images/', null=True, blank=True, verbose_name="")
     number_of_comments = models.IntegerField(null=True, default=0)
     tags = TaggableManager()
-    favourites = models.ManyToManyField(User, related_name="favourite", blank=True, default=None)
+    favorites = models.ManyToManyField(User, related_name="favorite", blank=True, default=None)
 
     def __str__(self):
         return self.title

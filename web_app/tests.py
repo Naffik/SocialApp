@@ -30,7 +30,13 @@ class PostBaseTestCase(APITestCase):
         self.user = User.objects.create_user(
             username='testcase',
             email='testcase@example.com',
-            password='testcase')
+            password='testcase'
+        )
+        self.other_user = User.objects.create_user(
+            username='testcase_other',
+            email='testcase_other@example.com',
+            password='testcase'
+        )
         self.post1 = Post.objects.create(post_author=self.user, title='Test post 1', tags=['tag1', 'tag2'],
                                          content='Test content 1')
         self.post2 = Post.objects.create(post_author=self.user, title='Second test post', tags=['tag2', 'tag3'],
@@ -112,25 +118,25 @@ class PostAPITests(PostBaseTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['detail'], 'User added to post')
-        self.assertTrue(self.user in self.post1.favourites.all())
+        self.assertTrue(self.user in self.post1.favorites.all())
 
     def test_remove_user_from_post_fav(self):
-        self.post1.favourites.add(self.user)
+        self.post1.favorites.add(self.user)
         self.client.force_authenticate(user=self.user)
         response = self.client.delete(ADD_REMOVE_POST_FAV_URL, {'pk': self.post1.pk})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['detail'], 'User removed from post')
-        self.assertFalse(self.user in self.post1.favourites.all())
+        self.assertFalse(self.user in self.post1.favorites.all())
 
     def test_add_user_to_post_fav_second_time(self):
-        self.post1.favourites.add(self.user)
+        self.post1.favorites.add(self.user)
         self.client.force_authenticate(user=self.user)
         response = self.client.post(ADD_REMOVE_POST_FAV_URL, {'pk': self.post1.pk})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['detail'], 'An error has occurred')
-        self.assertTrue(self.user in self.post1.favourites.all())
+        self.assertTrue(self.user in self.post1.favorites.all())
 
     def test_remove_user_to_post_fav_second_time(self):
         self.client.force_authenticate(user=self.user)
@@ -138,7 +144,7 @@ class PostAPITests(PostBaseTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['detail'], 'An error has occurred')
-        self.assertFalse(self.user in self.post1.favourites.all())
+        self.assertFalse(self.user in self.post1.favorites.all())
 
     def test_add_user_to_nonexistent_post_fav(self):
         expected_data = {
@@ -159,6 +165,22 @@ class PostAPITests(PostBaseTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.json(), expected_data)
+
+    def test_list_fav_posts_authorized(self):
+        self.post1.favorites.add(self.user)
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse('list-users-fav-post', kwargs={'username': self.user.username}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_fav_posts_unauthorized(self):
+        response = self.client.get(reverse('list-users-fav-post', kwargs={'username': self.user.username}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_list_fav_user_access_other_user_list(self):
+        self.post1.favorites.add(self.user)
+        self.client.force_authenticate(user=self.other_user)
+        response = self.client.get(reverse('list-users-fav-post', kwargs={'username': self.user.username}))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class CommentBaseTestCase(APITestCase):

@@ -9,11 +9,11 @@ from rest_framework.views import APIView
 from user_app.models import User
 from web_app.api.pagination import PostPagination
 from web_app.api.permissions import IsPostUserOrReadOnly, IsCommentUserOrReadOnly
-from web_app.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer
+from web_app.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer, PostFavSerializer
 from web_app.models import Post, Like, Comment
 
 
-class PostList(generics.ListAPIView):
+class PostListView(generics.ListAPIView):
     """
     List view for post model
     """
@@ -25,13 +25,13 @@ class PostList(generics.ListAPIView):
         user = self.request.user
         if user.is_authenticated:
             post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                                         is_favourite=Exists(Post.objects.filter(favourites=user))).order_by('pk')
+                                         is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('pk')
         else:
             post = Post.objects.all().order_by('pk')
         return post
 
 
-class PostCreate(generics.CreateAPIView):
+class PostCreateView(generics.CreateAPIView):
     """
     Create new post with POST data
 
@@ -47,7 +47,7 @@ class PostCreate(generics.CreateAPIView):
         serializer.save(post_author=post_author)
 
 
-class PostDetail(generics.RetrieveUpdateDestroyAPIView):
+class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve/Update/Destroy ViewSet for Post model
     """
@@ -59,7 +59,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         if user.is_authenticated:
             post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                                         is_favourite=Exists(Post.objects.filter(favourites=user)))
+                                         is_favorite=Exists(Post.objects.filter(favorites=user)))
         else:
             post = Post.objects.filter(pk=self.kwargs.get('pk'))
         return post
@@ -70,7 +70,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
-        response = super(PostDetail, self).update(request, pk=pk)
+        response = super(PostDetailView, self).update(request, pk=pk)
         return response
 
     def perform_update(self, serializer):
@@ -82,7 +82,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer.save()
 
 
-class PostSearch(generics.ListAPIView):
+class PostSearchView(generics.ListAPIView):
     """
     Search list of post model
     """
@@ -107,7 +107,7 @@ class PostSearch(generics.ListAPIView):
         return queryset.order_by('created')
 
 
-class PostFavAdd(APIView):
+class PostFavAddView(APIView):
     """
     Add or remove a post to the favorites
     """
@@ -117,21 +117,45 @@ class PostFavAdd(APIView):
     def post(self, request):
         post = get_object_or_404(Post, pk=request.data.get('pk'))
         user = self.request.user
-        if user not in post.favourites.all():
-            post.favourites.add(user)
+        if user not in post.favorites.all():
+            post.favorites.add(user)
             return Response({'detail': 'User added to post'}, status=status.HTTP_200_OK)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
         post = get_object_or_404(Post, pk=request.data.get('pk'))
         user = self.request.user
-        if user in post.favourites.all():
-            post.favourites.remove(user)
+        if user in post.favorites.all():
+            post.favorites.remove(user)
             return Response({'detail': 'User removed from post'}, status=status.HTTP_200_OK)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CommentList(generics.ListAPIView):
+class PostFavListView(generics.ListAPIView):
+    """
+    List of request user posts added to favorites
+    """
+    serializer_class = PostFavSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = PostPagination
+    lookup_field = 'user__username'
+
+    def get_queryset(self, *args, **kwargs):
+        username = self.kwargs.get('username')
+        user = self.request.user
+        if user.username != username:
+            return Post.objects.none()
+        return Post.objects.filter(favorites=user)
+
+    def list(self, request, *args, **kwargs):
+        username = self.kwargs.get('username')
+        user = self.request.user
+        if user.username != username:
+            return Response({'detail': 'Permissions denied'}, status=status.HTTP_400_BAD_REQUEST)
+        return super(PostFavListView, self).list(request, *args, **kwargs)
+
+
+class CommentListView(generics.ListAPIView):
     """
     List view for Comment model
     """
@@ -143,7 +167,7 @@ class CommentList(generics.ListAPIView):
     filterset_fields = ['comment_author__username', 'post__id']
 
 
-class CommentCreate(generics.CreateAPIView):
+class CommentCreateView(generics.CreateAPIView):
     """
     Create new comment with POST data
 
@@ -162,7 +186,7 @@ class CommentCreate(generics.CreateAPIView):
         serializer.save(post=post, comment_author=comment_user)
 
 
-class PostCommentList(generics.ListAPIView):
+class PostCommentListView(generics.ListAPIView):
     """
     List view for Post's comments
     """
@@ -178,7 +202,7 @@ class PostCommentList(generics.ListAPIView):
         return Comment.objects.filter(post=pk)
 
 
-class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve/Update/Destroy ViewSet for Comment model
     """
