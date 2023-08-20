@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 CORS_ORIGIN_WHITELIST = [
@@ -184,7 +185,7 @@ REST_FRAMEWORK = {
         'anon': '60/minute',
         'user': '1000/hour',
         'hourly': '100/hour',
-        'register': '5/hour',
+        'register': '100/hour',
         'email-verify': '10/hour',
         'request-password-reset': '3/hour',
         'password-reset': '5/hour',

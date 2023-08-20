@@ -18,20 +18,23 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
     # comments = CommentSerializer(many=True, read_only=True)
     tags = TagListSerializerField()
     post_author = serializers.StringRelatedField(read_only=True)
+    post_author_avatar = serializers.SerializerMethodField()
     likes = serializers.SerializerMethodField(read_only=True)
-
     is_liked = serializers.BooleanField(read_only=True)
-    is_favourite = serializers.BooleanField(read_only=True)
+    is_favorite = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Post
         # exclude = ('number_of_comments',)
         # fields = "__all__"
-        fields = ['id', 'tags', 'post_author', 'content', 'title', 'created', 'image', 'favourites',
-                  'likes', 'is_liked', 'is_favourite']
+        fields = ['id', 'tags', 'post_author', 'post_author_avatar', 'content', 'title', 'created', 'image', 'favorites',
+                  'likes', 'is_liked', 'is_favorite']
 
     def get_likes(self, instance):
         return instance.get_total_like()
+
+    def get_post_author_avatar(self, instance):
+        return instance.post_author.avatar.url
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -49,7 +52,7 @@ class PostCreateSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        exclude = ('number_of_comments', 'favourites')
+        exclude = ('number_of_comments', 'favorites')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -59,3 +62,11 @@ class PostCreateSerializer(TaggitSerializer, serializers.ModelSerializer):
         else:
             representation.pop('image', None)
         return representation
+
+
+class PostFavSerializer(PostSerializer):
+
+    class Meta:
+        model = Post
+        exclude = ('favorites',)
+        
