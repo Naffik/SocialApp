@@ -25,9 +25,9 @@ class PostListView(generics.ListAPIView):
         user = self.request.user
         if user.is_authenticated:
             post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                                         is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('pk')
+                                         is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
         else:
-            post = Post.objects.all().order_by('pk')
+            post = Post.objects.all().order_by('-created')
         return post
 
 
