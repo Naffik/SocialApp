@@ -209,3 +209,10 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsCommentUserOrReadOnly]
+
+    def perform_destroy(self, instance):
+        post = Post.objects.get(pk=instance.post.pk)
+        post.number_of_comments = post.number_of_comments - 1
+        post.save()
+        instance.delete()
+
