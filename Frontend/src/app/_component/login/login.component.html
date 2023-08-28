@@ -1,0 +1,30 @@
+<div class="right-side-content">
+  <div class="form">
+    <form class="login-form" #loginForm="ngForm" (ngSubmit)="login()">
+      <p>Zaloguj się, aby używac platformy</p>
+      <div class="login-form-content">
+        <div class="form-item">
+          <label for="email">Podaj Email</label>
+          <input #email type="text" id="email" [(ngModel)]="model.email" name="email" required>
+        </div>
+        <div class="form-item">
+          <div class="input-container">
+            <label for="password">Podaj Hasło</label>
+            <input #password type="password" id="password" [attr.type]="showPassword ? 'text' : 'password'" [(ngModel)]="model.password" name="password" required>
+            <button *ngIf="model.password && model.password.length > 0" class="toggle-password btn-circle" type="button" (click)="showPassword = !showPassword">
+              <i class="fa fa-eye"></i>
+          </button>
+        </div>
+      </div>
+        <div class="form-item">
+          <div class="checkbox">
+            <input type="checkbox" id="rememberMeCheckbox" checked>
+            <label #rememberMe for="rememberMeCheckobox" class="checkboxLabel">Zapamiętaj mnie</label>
+          </div>
+        </div>
+        <button class="formButton" [disabled]="!loginForm.valid" type="submit"> Zaloguj </button>
+        <button class="formButton" type="remind">Nie pamiętasz hasła?</button>
+      </div>
+    </form>
+  </div>
+</div>
