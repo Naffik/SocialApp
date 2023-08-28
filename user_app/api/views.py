@@ -1,4 +1,5 @@
 from django.db.models import Count, Exists
+from django.http import Http404
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -11,7 +12,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from user_app.models import User
 from user_app.api.serializers import (RegistrationSerializer, RequestPasswordResetSerializer, SetNewPasswordSerializer,
                                       UserProfileSerializer, BasicUserProfileSerializer, FollowSerializer,
-                                      UserSerializer, BlockSerializer, FriendSerializer)
+                                      UserSerializer, BlockSerializer, FriendSerializer,
+                                      CustomTokenObtainPairSerializer)
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 import jwt
@@ -30,6 +32,7 @@ from user_app.api.serializers import FriendshipRequestSerializer, FriendshipRequ
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     throttle_scope = 'token_obtain_pair'
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class CustomTokenRefreshView(TokenRefreshView):
@@ -177,37 +180,17 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
             return UserProfileSerializer
         return BasicUserProfileSerializer
 
-    # def get_object(self, *args, **kwargs):
-    #     friends = Friend.objects.filter(to_user=self.request.user)
-    #     print(Count(friends))
-    #     user = User.objects.filter(username=self.kwargs.get('username'))
-    #     print(user)
-    #     user = user.annotate(friends=Count(friends))
-    #     return user
-    #
-    def get_queryset(self):
-        username = self.kwargs.get('username')
-        user = User.objects.all().filter(username=username)
-        # print(user.first())
-        # friends = Friend.objects.filter(to_user=user.first())
-        # print(friends)
-        # print(Count(friends))
-        # user = user.annotate(friends_count='user')
-        return user
+    def get_queryset(self, *args, **kwargs):
+        try:
+            print(User.objects.filter(username=self.kwargs.get('username')))
+            return User.objects.filter(username=self.kwargs.get('username'))
+        except User.DoesNotExist:
+            raise Http404
 
     def perform_destroy(self, instance):
         if not instance.avatar == 'profile_images/default.jpg':
             instance.avatar.delete()
         instance.delete()
-
-    def perform_update(self, serializer):
-        user = User.objects.get(email=self.request.user)
-        try:
-            if not user.avatar == 'profile_images/default.jpg':
-                user.avatar.delete()
-        except FileNotFoundError:
-            pass
-        serializer.save()
 
 
 class UserListView(generics.ListAPIView):
