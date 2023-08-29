@@ -1,0 +1,57 @@
+<!-- <div class="search-results"
+  infiniteScroll
+  [infiniteScrollDistance]="1"
+  [infiniteScrollThrottle]="50"
+  (scrolled)="onScroll()"
+  [scrollWindow]="false">
+  <div class="data-card" *ngFor="let item of items">
+    {{item}}
+  </div>
+  <div *ngIf="isLoading">Loading...</div>
+</div> -->
+
+
+
+<div class="content">
+  <div *ngFor="let post of posts" class="post">
+      <div class="post-header">
+        <img [src]="baseUrl + post.post_author_avatar" alt="Avatar użytkownika" class="avatar">
+
+          <span class="username"
+            (mouseenter)="onUsernameEnter(post.post_author)"
+            (mouseleave)="onUsernameLeave()"
+            [ngbPopover]="getActiveUserInfo()"
+            triggers="mouseenter:mouseleave">
+              {{post.post_author}}
+          </span>
+          <span class="nick">@{{post.display_name}}</span>
+
+        <span class="date" (mouseover)="showTooltip = true" (mouseleave)="showTooltip = false">
+          {{ post.created | timeSince }}
+          <span class="tooltip" *ngIf="showTooltip">{{ post.created | dateFormat  }}</span>
+        </span>
+      </div>
+      <div class="post-content">
+        {{ post.content }}
+        <div *ngIf="post.image" class="post-image">
+          <img [src]="baseUrl + post.image" alt="Image for {{ post.title }}"
+            style="cursor: pointer;">
+        </div>
+        <div class="tags">
+          <p>Tags:</p>
+          <div class="tag-container">
+              <span *ngFor="let tag of post.tags">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="post-actions">
+          <button class="like-btn">Polubienia: <span class="like-count">{{post.likes}}</span></button>
+          <span class="share">Udostępnij</span>
+          <span class="comments">Komentarze: {{post.number_of_comments}} </span>
+      </div>
+    </div>
+    <div *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p class="loading-text">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+    </div>
+</div>
