@@ -5,6 +5,7 @@ from django.urls import path, include
 from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
+    path('api/', include('web_app.api.urls')),
     path('admin/', admin.site.urls),
     path('account/', include('user_app.api.urls')),
     path('chat/', include('chat_app.api.urls')),

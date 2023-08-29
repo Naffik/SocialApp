@@ -1,29 +1,39 @@
-from django.views.generic import detail
-from rest_framework.decorators import api_view, action
+from django.db.models import Count, Exists
+from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status, generics, viewsets
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 from user_app.models import User
 from user_app.api.serializers import (RegistrationSerializer, RequestPasswordResetSerializer, SetNewPasswordSerializer,
                                       UserProfileSerializer, BasicUserProfileSerializer, FollowSerializer,
-                                      UserSerializer, BlockSerializer)
-from user_app.api.utils import Util
+                                      UserSerializer, BlockSerializer, FriendSerializer)
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 import jwt
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
+from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse
-from .permissions import IsProfileUserOrReadOnly, IsAdminOrReadOnly, IsProfileUser
+from .permissions import IsProfileUserOrReadOnly
+from .throttling import UserProfileDetailThrottle
 from .utils import Util
 from friendship.models import Friend, FriendshipRequest, Follow, Block
 from friendship.exceptions import AlreadyExistsError, AlreadyFriendsError
-from .serializers import FriendshipRequestSerializer, FriendSerializer, FriendshipRequestResponseSerializer\
+from user_app.api.serializers import FriendshipRequestSerializer, FriendshipRequestResponseSerializer\
 
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    throttle_scope = 'token_obtain_pair'
+
+
+class CustomTokenRefreshView(TokenRefreshView):
+    throttle_scope = 'token_refresh'
 
 
 class RegisterView(generics.GenericAPIView):
@@ -36,6 +46,7 @@ class RegisterView(generics.GenericAPIView):
     - password2
     """
     serializer_class = RegistrationSerializer
+    throttle_scope = 'register'
 
     def post(self, request):
         user = request.data
@@ -66,6 +77,8 @@ class VerifyEmail(APIView):
     """
     Verify created user email address
     """
+    throttle_scope = 'email-verify'
+
     def get(self, request):
         token = request.GET.get('token')
         try:
@@ -85,6 +98,7 @@ class RequestPasswordResetView(generics.GenericAPIView):
     """
     Sends an email with password reset link
     """
+    throttle_scope = 'request-password-reset'
     serializer_class = RequestPasswordResetSerializer
 
     def post(self, request):
@@ -110,6 +124,8 @@ class PasswordTokenCheckView(APIView):
     """
     Checks if password reset link is valid
     """
+    throttle_scope = 'password-reset'
+
     def get(self, request, uidb64, token):
 
         try:
@@ -137,6 +153,7 @@ class SetNewPasswordView(generics.GenericAPIView):
     - token
     - uidb64
     """
+    throttle_scope = 'password-reset-complete'
     serializer_class = SetNewPasswordSerializer
 
     def patch(self, request):
@@ -149,6 +166,7 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve/Update/Destroy ViewSet for User model
     """
+    throttle_classes = [UserProfileDetailThrottle]
     permission_classes = [IsProfileUserOrReadOnly]
     lookup_field = 'username'
 
@@ -159,8 +177,22 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
             return UserProfileSerializer
         return BasicUserProfileSerializer
 
-    def get_object(self, *args, **kwargs):
-        user = User.objects.get(username=self.kwargs.get('username'))
+    # def get_object(self, *args, **kwargs):
+    #     friends = Friend.objects.filter(to_user=self.request.user)
+    #     print(Count(friends))
+    #     user = User.objects.filter(username=self.kwargs.get('username'))
+    #     print(user)
+    #     user = user.annotate(friends=Count(friends))
+    #     return user
+    #
+    def get_queryset(self):
+        username = self.kwargs.get('username')
+        user = User.objects.all().filter(username=username)
+        # print(user.first())
+        # friends = Friend.objects.filter(to_user=user.first())
+        # print(friends)
+        # print(Count(friends))
+        # user = user.annotate(friends_count='user')
         return user
 
     def perform_destroy(self, instance):
@@ -229,10 +261,10 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         Returns list of user's friends
         """
-        friend_requests = Friend.objects.friends(user=request.user)
-        self.queryset = friend_requests
+        friends = Friend.objects.friends(user=request.user)
+        self.queryset = friends
         self.http_method_names = ['get', 'head', 'options', ]
-        return Response(BasicUserProfileSerializer(friend_requests, many=True).data)
+        return Response(FriendSerializer(self.queryset, many=True).data)
 
     def retrieve(self, request, pk=None):
         """
