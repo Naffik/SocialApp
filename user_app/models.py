@@ -9,9 +9,9 @@ from friendship.models import Friend, Follow, Block
 
 class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
-    display_name = models.CharField(max_length=255, blank=True)
-    first_name = models.CharField(max_length=32, null=True, blank=True)
-    last_name = models.CharField(max_length=32, null=True, blank=True)
+    display_name = models.CharField(max_length=255, null=True, blank=True)
+    first_name = models.CharField(max_length=32, null=False, blank=False)
+    last_name = models.CharField(max_length=32, null=False, blank=False)
     date_of_birth = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     bio = models.CharField(max_length=512, blank=True, null=True)
     avatar = models.ImageField(upload_to='profile_images/', blank=True, default='profile_images/default.jpg')

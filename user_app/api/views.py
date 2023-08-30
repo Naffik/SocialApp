@@ -9,11 +9,11 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from user_app.models import User
+from user_app.models import User, Action
 from user_app.api.serializers import (RegistrationSerializer, RequestPasswordResetSerializer, SetNewPasswordSerializer,
                                       UserProfileSerializer, BasicUserProfileSerializer, FollowSerializer,
                                       UserSerializer, BlockSerializer, FriendSerializer,
-                                      CustomTokenObtainPairSerializer)
+                                      CustomTokenObtainPairSerializer, ActionSerializer)
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 import jwt
@@ -21,6 +21,8 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse
+
+from .pagination import PostPagination
 from .permissions import IsProfileUserOrReadOnly
 from .throttling import UserProfileDetailThrottle
 from .utils import Util, create_action
@@ -47,6 +49,8 @@ class RegisterView(generics.GenericAPIView):
     - email
     - password
     - password2
+    - first_name
+    - last_name
     """
     serializer_class = RegistrationSerializer
     throttle_scope = 'register'
@@ -177,12 +181,12 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request is None:
             return BasicUserProfileSerializer
         elif self.request.user.username == self.kwargs.get('username'):
+            print("test")
             return UserProfileSerializer
         return BasicUserProfileSerializer
 
     def get_queryset(self, *args, **kwargs):
         try:
-            print(User.objects.filter(username=self.kwargs.get('username')))
             return User.objects.filter(username=self.kwargs.get('username'))
         except User.DoesNotExist:
             raise Http404
@@ -202,6 +206,24 @@ class UserListView(generics.ListAPIView):
 
     def get_queryset(self):
         return User.objects.all()
+
+
+class ActionView(generics.ListAPIView):
+    """
+    List view for action model
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = ActionSerializer
+    pagination_class = PostPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        actions = Action.objects.exclude(user=user)
+        follows = Follow.objects.following(user=user)
+        if follows:
+            actions = Action.filter(user_id__in=follows)
+            return actions
+        return actions
 
 
 class FriendViewSet(viewsets.ModelViewSet):
@@ -361,7 +383,7 @@ class FriendViewSet(viewsets.ModelViewSet):
             return Response({"message": "Request for current user not found."}, status.HTTP_400_BAD_REQUEST)
 
         friendship_request.reject()
-        create_action(request.user, 'odrzuciłeś zaproszenie do znajomych od użytkownikowa', friendship_request)
+        create_action(request.user, 'odrzuciłeś zaproszenie do znajomych od użytkownika', friendship_request)
 
         return Response({"message": "Request rejected, user NOT added to friends."}, status.HTTP_201_CREATED)
 
@@ -378,7 +400,7 @@ class FriendViewSet(viewsets.ModelViewSet):
         follower = request.user
         try:
             follow_obj = Follow.objects.add_follower(follower, followee)
-            create_action(request.user, 'zacząłeś obserwować użytkownikowa', followee)
+            create_action(request.user, 'zacząłeś obserwować użytkownika', followee)
             return Response(FollowSerializer(follow_obj).data, status.HTTP_201_CREATED)
         except AlreadyExistsError as e:
             return Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -396,7 +418,7 @@ class FriendViewSet(viewsets.ModelViewSet):
 
         if Follow.objects.remove_follower(request.user, followee):
             message = 'Follow deleted.'
-            create_action(request.user, 'przestałeś obserwować użytkownikowa', followee)
+            create_action(request.user, 'przestałeś obserwować użytkownika', followee)
             status_code = status.HTTP_204_NO_CONTENT
         else:
             message = 'Follow not found.'
@@ -437,7 +459,7 @@ class FriendViewSet(viewsets.ModelViewSet):
         blocker = request.user
         try:
             block_obj = Block.objects.add_block(blocker, blocked)
-            create_action(request.user, 'zablokowałeś użytkownikowa', blocked)
+            create_action(request.user, 'zablokowałeś użytkownika', blocked)
             return Response(BlockSerializer(block_obj).data, status.HTTP_201_CREATED)
         except AlreadyExistsError as e:
             return Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -455,7 +477,7 @@ class FriendViewSet(viewsets.ModelViewSet):
 
         if Block.objects.remove_block(request.user, blocked):
             message = 'Block deleted.'
-            create_action(request.user, 'przestałeś blokować użytkownikowa', blocked)
+            create_action(request.user, 'przestałeś blokować użytkownika', blocked)
             status_code = status.HTTP_204_NO_CONTENT
         else:
             message = 'Block not found.'

@@ -3,7 +3,7 @@ from django.core import exceptions
 import django.contrib.auth.password_validation as validators
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from user_app.models import User
+from user_app.models import User, Action
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -26,7 +26,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password2']
+        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -56,7 +56,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         account = User(email=self.validated_data['email'],
                        username=self.validated_data['username'],
-                       display_name=self.validated_data['username'])
+                       display_name=self.validated_data['username'],
+                       first_name=self.validated_data['first_name'],
+                       last_name=self.validated_data['last_name'])
 
         account.set_password(password)
         account.save()
@@ -107,8 +109,6 @@ class SetNewPasswordSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(read_only=True)
     username = serializers.CharField(read_only=True)
-    # followers = serializers.SerializerMethodField(read_only=True)
-    # follows = serializers.SerializerMethodField(read_only=True)
     friends_count = serializers.IntegerField(read_only=True)
     followers_count = serializers.IntegerField(read_only=True)
     follows_count = serializers.IntegerField(read_only=True)
@@ -118,34 +118,19 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar',
                   'friends_count', 'followers_count', 'follows_count')
 
-    # def get_follows(self, instance):
-    #     return instance.get_total_follows()
-    #
-    # def get_followers(self, instance):
-    #     return instance.get_total_followers()
-
-    def get_friends(self, instance):
-        return instance.get_total_friends()
-
 
 class BasicUserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True)
-    followers = serializers.SerializerMethodField(read_only=True)
-    follows = serializers.SerializerMethodField(read_only=True)
-    friends = serializers.SerializerMethodField(read_only=True)
+    display_name = serializers.CharField(read_only=True)
+    bio = serializers.CharField(read_only=True)
+    avatar = serializers.CharField(read_only=True)
+    friends_count = serializers.IntegerField(read_only=True)
+    followers_count = serializers.IntegerField(read_only=True)
+    follows_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'bio', 'avatar', 'followers', 'follows', 'friends')
-
-    def get_follows(self, instance):
-        return instance.follows_count()
-
-    def get_followers(self, instance):
-        return instance.followers_count()
-
-    def get_friends(self, instance):
-        return instance.friends_count()
+        fields = ('username', 'display_name', 'bio', 'avatar', 'friends_count', 'followers_count', 'follows_count')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -160,6 +145,15 @@ class ChatUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('display_name', 'username', 'avatar')
+
+
+class ActionSerializer(serializers.ModelSerializer):
+    user__username = serializers.ReadOnlyField(source='user.username')
+    target_ct__username = serializers.ReadOnlyField(source='target_ct.username')
+
+    class Meta:
+        model = Action
+        fields = ('user__username', 'verb', 'target_ct__username')
 
 
 class FriendSerializer(serializers.ModelSerializer):
