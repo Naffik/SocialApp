@@ -27,8 +27,8 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
         model = Post
         # exclude = ('number_of_comments',)
         # fields = "__all__"
-        fields = ['id', 'tags', 'post_author', 'post_author_avatar', 'display_name', 'content', 'title',
-                  'created', 'image', 'favorites', 'likes', 'is_liked', 'is_favorite', 'number_of_comments']
+        fields = ['id', 'tags', 'post_author', 'post_author_avatar', 'display_name', 'content', 'created', 'image',
+                  'favorites', 'likes', 'is_liked', 'is_favorite', 'number_of_comments']
 
     def get_likes(self, instance):
         return instance.get_total_like()

@@ -11,6 +11,7 @@ from web_app.api.pagination import PostPagination
 from web_app.api.permissions import IsPostUserOrReadOnly, IsCommentUserOrReadOnly
 from web_app.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer, PostFavSerializer
 from web_app.models import Post, Like, Comment
+from friendship.models import Friend, Follow, Block
 
 
 class PostListView(generics.ListAPIView):
@@ -24,8 +25,10 @@ class PostListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                                         is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+            blocked = Block.objects.blocking(user=user)
+            post = Post.objects.exclude(post_author__in=blocked)\
+                .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                          is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
         else:
             post = Post.objects.all().order_by('-created')
         return post
@@ -35,7 +38,6 @@ class PostCreateView(generics.CreateAPIView):
     """
     Create new post with POST data
 
-    - title
     - tags
     - content
     """
@@ -166,6 +168,15 @@ class CommentListView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['comment_author__username', 'post__id']
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            blocked = Block.objects.blocking(user=user)
+            comments = Comment.objects.exclude(post_author__in=blocked)
+        else:
+            comments = Comment.objects.all()
+        return comments
+
 
 class CommentCreateView(generics.CreateAPIView):
     """
@@ -195,11 +206,17 @@ class PostCommentListView(generics.ListAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = PostPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['comment_author__username', 'post__title']
+    filterset_fields = ['comment_author__username', 'post__content']
 
     def get_queryset(self, *args, **kwargs):
         pk = self.kwargs.get('pk')
-        return Comment.objects.filter(post=pk)
+        user = self.request.user
+        if user.is_authenticated:
+            blocked = Block.objects.blocking(user=user)
+            comments = Comment.objects.exclude(comment_author__in=blocked).filter(post=pk)
+        else:
+            comments = Comment.objects.filter(post=pk)
+        return comments
 
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
