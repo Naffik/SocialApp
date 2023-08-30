@@ -4,7 +4,6 @@ from taggit.managers import TaggableManager
 
 
 class Post(models.Model):
-    title = models.CharField(max_length=100, null=True, blank=True)
     content = models.TextField(max_length=256, null=False, blank=False)
     post_author = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
@@ -14,7 +13,7 @@ class Post(models.Model):
     favorites = models.ManyToManyField(User, related_name="favorite", blank=True, default=None)
 
     def __str__(self):
-        return self.title
+        return self.content[:20]
 
     def get_total_like(self):
         return self.like.users.count()

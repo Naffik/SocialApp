@@ -1,0 +1,221 @@
+.content{
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.post {
+  border: 1px solid black;
+  padding: 16px;
+  width: 650px;
+  margin: 16px 0;
+  border-radius: 8px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 16px;
+}
+
+.post-info .username,
+.post-info .email,
+.post-info .date {
+  display: block;
+}
+
+.date{
+  position: relative;
+  cursor: pointer;
+  color:#7e7e7e
+}
+
+.username {
+}
+
+.date:hover,
+.username:hover {
+  text-decoration: underline;
+}
+
+.nick{
+  color:#7e7e7e;
+  margin: 0 15px 0 15px;
+}
+
+.post-content {
+  margin-bottom: 16px;
+  margin-left: 67px;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.like-btn {
+  background-color: #a10ddb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.like-btn:focus {
+  outline: none;
+}
+
+.post-content img{
+  max-width:480px;
+  object-fit:cover;
+  border-radius:25px;
+}
+/* .post-image{
+  display: flex;
+  justify-content: center;
+} */
+
+.tooltip {
+  display: flex;
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 12px 25px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: -15px;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  top: 125%;
+  white-space: nowrap;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}
+
+.date:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  align-items: center;
+}
+
+
+@media (hover: hover) and (max-height: 650px) {  /* 650px to przykładowa wartość */
+  .date:hover .tooltip {
+      bottom: unset;
+      top: 125%;
+  }
+
+  .date:hover .tooltip::after {
+      top: unset;
+      bottom: 100%;
+      border-color: transparent transparent black transparent;
+  }
+}
+
+.spinner {
+  border: 8px solid rgba(255, 255, 255, 0.3); /* Jasny kolor tła dla obręczy spinnera */
+  border-radius: 50%; /* Nadanie kształtu koła */
+  border-top: 8px solid #a10ddb; /* Ciemny kolor dla górnego segmentu spinnera */
+  width: 50px; /* Szerokość spinnera */
+  height: 50px; /* Wysokość spinnera */
+  animation: spin 1s linear infinite; /* Animacja obracania się spinnera */
+  margin: 0 auto; /* Wyśrodkowanie spinnera w poziomie (jeżeli rodzic ma wyśrodkowanie tekstu lub flex) */
+}
+
+/* Animacja obrotu */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  display: inline-block;
+  font-size: 20px;
+}
+
+.dot {
+  animation: blink 1.4s infinite both;
+  font-weight: normal;
+  animation-fill-mode: both;
+  opacity: 0;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.profile-info {
+  position: absolute;
+  background-color: red;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  /* Ustawienia pozycji mogą wymagać dostosowania */
+}
+
+.tags {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column; /* Dla głównego kontenera */
+}
+
+.tag-container {
+  display: flex;
+  flex-direction: row; /* Dla kontenera ze znacznikami */
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.tags > .tag-container > span {
+  background: #E5A6FF;
+  border-radius: 5px;
+  border: 1px #840AB6 solid;
+  color: #840AB6;
+  padding: 4px;
+  cursor: pointer;
+}

@@ -23,7 +23,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse
 from .permissions import IsProfileUserOrReadOnly
 from .throttling import UserProfileDetailThrottle
-from .utils import Util
+from .utils import Util, create_action
 from friendship.models import Friend, FriendshipRequest, Follow, Block
 from friendship.exceptions import AlreadyExistsError, AlreadyFriendsError
 from user_app.api.serializers import FriendshipRequestSerializer, FriendshipRequestResponseSerializer\
@@ -302,6 +302,7 @@ class FriendViewSet(viewsets.ModelViewSet):
 
         try:
             friend_obj = Friend.objects.add_friend(request.user, to_user, message=request.data.get('message', ''))
+            create_action(request.user, 'wysłałeś zaproszenie do znajomych użytkownikowi', to_user)
             return Response(FriendshipRequestSerializer(friend_obj).data, status.HTTP_201_CREATED)
         except (AlreadyExistsError, AlreadyFriendsError) as e:
             return Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -320,6 +321,7 @@ class FriendViewSet(viewsets.ModelViewSet):
 
         if Friend.objects.remove_friend(request.user, to_user):
             message = 'Friend deleted.'
+            create_action(request.user, 'usunąłeś ze znajomych użytkownika', to_user)
             status_code = status.HTTP_204_NO_CONTENT
         else:
             message = 'Friend not found.'
@@ -341,6 +343,8 @@ class FriendViewSet(viewsets.ModelViewSet):
             return Response({"message": "Request for current user not found."}, status.HTTP_400_BAD_REQUEST)
 
         friendship_request.accept()
+        create_action(request.user, 'zaakceptowałeś zaproszenie do znajomych od użytkownika', friendship_request)
+
         return Response({"message": "Request accepted, user added to friends."}, status.HTTP_201_CREATED)
 
     @ action(detail=False, serializer_class=FriendshipRequestResponseSerializer, methods=['post'])
@@ -352,10 +356,12 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         pk = request.data.get('id', None)
         friendship_request = get_object_or_404(FriendshipRequest, pk=pk)
+
         if not friendship_request.to_user == request.user:
             return Response({"message": "Request for current user not found."}, status.HTTP_400_BAD_REQUEST)
 
         friendship_request.reject()
+        create_action(request.user, 'odrzuciłeś zaproszenie do znajomych od użytkownikowa', friendship_request)
 
         return Response({"message": "Request rejected, user NOT added to friends."}, status.HTTP_201_CREATED)
 
@@ -372,6 +378,7 @@ class FriendViewSet(viewsets.ModelViewSet):
         follower = request.user
         try:
             follow_obj = Follow.objects.add_follower(follower, followee)
+            create_action(request.user, 'zacząłeś obserwować użytkownikowa', followee)
             return Response(FollowSerializer(follow_obj).data, status.HTTP_201_CREATED)
         except AlreadyExistsError as e:
             return Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -389,6 +396,7 @@ class FriendViewSet(viewsets.ModelViewSet):
 
         if Follow.objects.remove_follower(request.user, followee):
             message = 'Follow deleted.'
+            create_action(request.user, 'przestałeś obserwować użytkownikowa', followee)
             status_code = status.HTTP_204_NO_CONTENT
         else:
             message = 'Follow not found.'
@@ -429,6 +437,7 @@ class FriendViewSet(viewsets.ModelViewSet):
         blocker = request.user
         try:
             block_obj = Block.objects.add_block(blocker, blocked)
+            create_action(request.user, 'zablokowałeś użytkownikowa', blocked)
             return Response(BlockSerializer(block_obj).data, status.HTTP_201_CREATED)
         except AlreadyExistsError as e:
             return Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -446,6 +455,7 @@ class FriendViewSet(viewsets.ModelViewSet):
 
         if Block.objects.remove_block(request.user, blocked):
             message = 'Block deleted.'
+            create_action(request.user, 'przestałeś blokować użytkownikowa', blocked)
             status_code = status.HTTP_204_NO_CONTENT
         else:
             message = 'Block not found.'
