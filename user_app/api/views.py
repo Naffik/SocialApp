@@ -84,24 +84,24 @@ class RegisterView(generics.GenericAPIView):
 
 class CheckUsernameView(APIView):
     """
-    Checks whether a username is available
+    Check whether a username is available
     """
 
     def get(self, request, *args, **kwargs):
         username = request.GET.get('username')
-        if username not in User.objects.filter(username=username):
+        if User.objects.filter(username=username).exists():
             return Response({'message': 'Username is available'})
         return Response({'message': 'Username is already taken'})
 
 
 class CheckEmailView(APIView):
     """
-    Checks whether an email is available
+    Check whether an email is available
     """
 
     def get(self, request, *args, **kwargs):
         email = request.GET.get('username')
-        if email not in User.objects.filter(email=email):
+        if User.objects.filter(email=email).exists():
             return Response({'message': 'Email is available'})
         return Response({'message': 'Email is already used'})
 
