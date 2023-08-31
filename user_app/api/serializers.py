@@ -1,6 +1,9 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.core import exceptions
 import django.contrib.auth.password_validation as validators
+from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from user_app.models import User, Action
@@ -23,10 +26,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    date_of_birth = serializers.DateTimeField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name']
+        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name', 'date_of_birth']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -47,6 +51,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def save(self):
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
+        date_of_birth = self.validated_data['date_of_birth']
+        print(date_of_birth)
 
         if password != password2:
             raise ValidationError({'error': 'Password should be same as Password2'})
@@ -54,11 +60,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=self.validated_data['email']).exists():
             raise ValidationError({'error': 'Email already exists'})
 
+        if not date_of_birth:
+            date_of_birth = datetime.now()
         account = User(email=self.validated_data['email'],
                        username=self.validated_data['username'],
                        display_name=self.validated_data['username'],
                        first_name=self.validated_data['first_name'],
-                       last_name=self.validated_data['last_name'])
+                       last_name=self.validated_data['last_name'],
+                       date_of_birth=date_of_birth)
 
         account.set_password(password)
         account.save()

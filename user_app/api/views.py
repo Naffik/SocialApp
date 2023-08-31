@@ -51,6 +51,7 @@ class RegisterView(generics.GenericAPIView):
     - password2
     - first_name
     - last_name
+    - date_of_birth
     """
     serializer_class = RegistrationSerializer
     throttle_scope = 'register'
@@ -58,6 +59,7 @@ class RegisterView(generics.GenericAPIView):
     def post(self, request):
         user = request.data
         serializer = self.serializer_class(data=user)
+        print(self.request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         user_data = serializer.data
@@ -78,6 +80,30 @@ class RegisterView(generics.GenericAPIView):
         # Util.send_email(data)
 
         return Response(user_data, status=status.HTTP_201_CREATED)
+
+
+class CheckUsernameView(APIView):
+    """
+    Checks whether a username is available
+    """
+
+    def get(self, request, *args, **kwargs):
+        username = request.GET.get('username')
+        if username not in User.objects.filter(username=username):
+            return Response({'message': 'Username is available'})
+        return Response({'message': 'Username is already taken'})
+
+
+class CheckEmailView(APIView):
+    """
+    Checks whether an email is available
+    """
+
+    def get(self, request, *args, **kwargs):
+        email = request.GET.get('username')
+        if email not in User.objects.filter(email=email):
+            return Response({'message': 'Email is available'})
+        return Response({'message': 'Email is already used'})
 
 
 class VerifyEmail(APIView):

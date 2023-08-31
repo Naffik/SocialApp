@@ -26,7 +26,7 @@ class Like(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.post.title
+        return self.post.content[:20]
 
 
 class Comment(models.Model):
