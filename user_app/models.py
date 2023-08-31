@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -12,7 +14,7 @@ class User(AbstractUser):
     display_name = models.CharField(max_length=255, null=True, blank=True)
     first_name = models.CharField(max_length=32, null=False, blank=False)
     last_name = models.CharField(max_length=32, null=False, blank=False)
-    date_of_birth = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    date_of_birth = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     bio = models.CharField(max_length=512, blank=True, null=True)
     avatar = models.ImageField(upload_to='profile_images/', blank=True, default='profile_images/default.jpg')
 
@@ -32,6 +34,13 @@ class User(AbstractUser):
 
     def follows_count(self):
         return Follow.objects.filter(follower=self.pk).count()
+
+    # def save(self, *args, **kwargs):
+    #     if self.date_of_birth is None:
+    #         raise ValueError("Date of birth is required.")
+    #     if self.date_of_birth >= datetime.now():
+    #         raise ValueError("Date of birth cannot be in the future.")
+    #     super().save(*args, **kwargs)
 
 
 class OnlineUser(models.Model):
