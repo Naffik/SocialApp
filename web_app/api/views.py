@@ -1,16 +1,25 @@
+from django.utils import timezone
+
+import redis
 from django.db.models import Exists, OuterRef
+from django.core.cache import cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from taggit.serializers import TaggitSerializer
 
 from user_app.models import User
 from web_app.api.pagination import PostPagination
 from web_app.api.permissions import IsPostUserOrReadOnly, IsCommentUserOrReadOnly
 from web_app.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer, PostFavSerializer
 from web_app.models import Post, Like, Comment
+from friendship.models import Friend, Follow, Block
+
+
+redis_instance = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 
 class PostListView(generics.ListAPIView):
@@ -23,19 +32,28 @@ class PostListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated:
-            post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                                         is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+        cache_key = f"post_list:{user.id if user.is_authenticated else 'anonymous'}"
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return cached_data
         else:
-            post = Post.objects.all().order_by('-created')
-        return post
+            if user.is_authenticated:
+                blocked = Block.objects.blocking(user=user)
+                posts = Post.objects.exclude(post_author__in=blocked)\
+                    .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                              is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+            else:
+                posts = Post.objects.all().order_by('-created')
+
+            cache.set(cache_key, posts, 1)
+            return posts
 
 
 class PostCreateView(generics.CreateAPIView):
     """
     Create new post with POST data
 
-    - title
     - tags
     - content
     """
@@ -166,6 +184,15 @@ class CommentListView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['comment_author__username', 'post__id']
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            blocked = Block.objects.blocking(user=user)
+            comments = Comment.objects.exclude(post_author__in=blocked)
+        else:
+            comments = Comment.objects.all()
+        return comments
+
 
 class CommentCreateView(generics.CreateAPIView):
     """
@@ -195,11 +222,17 @@ class PostCommentListView(generics.ListAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = PostPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['comment_author__username', 'post__title']
+    filterset_fields = ['comment_author__username', 'post__content']
 
     def get_queryset(self, *args, **kwargs):
         pk = self.kwargs.get('pk')
-        return Comment.objects.filter(post=pk)
+        user = self.request.user
+        if user.is_authenticated:
+            blocked = Block.objects.blocking(user=user)
+            comments = Comment.objects.exclude(comment_author__in=blocked).filter(post=pk)
+        else:
+            comments = Comment.objects.filter(post=pk)
+        return comments
 
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -209,3 +242,34 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsCommentUserOrReadOnly]
+
+    def perform_destroy(self, instance):
+        post = Post.objects.get(pk=instance.post.pk)
+        post.number_of_comments = post.number_of_comments - 1
+        post.save()
+        instance.delete()
+
+
+class PopularTagsView(APIView):
+    """
+    List of most popular tags
+    """
+
+    def get(self, request, *args, **kwargs):
+        tags_count = self.request.data.get('tags_count')
+        time_in_hours = self.request.data.get('time_in_hours')
+
+        time_delta = timezone.now() - timezone.timedelta(days=time_in_hours)
+
+        recent_posts = Post.objects.filter(created__gte=time_delta)
+
+        tag_count = {}
+        for post in recent_posts:
+            for tag in post.tags.all():
+                tag_count[tag.name] = tag_count.get(tag.name, 0) + 1
+
+        sorted_tags = sorted(tag_count.items(), key=lambda x: x[1], reverse=True)
+
+        popular_tags = [tag[0] for tag in sorted_tags[:tags_count]]
+
+        return Response({'popular_tags': popular_tags})

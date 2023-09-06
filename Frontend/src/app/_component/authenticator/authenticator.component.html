@@ -3,14 +3,18 @@
     <div class="left-side-content">
       <h1>Media społecznościowe <span style="display: block;">z czatem tekstowym</span></h1>
         <p> No jakiś cringowy tekst </p>
-      <button (click)="onRegisterClick()" *ngIf="isLoginState()" [ngClass]="{ 'hidden': !isVisible }">Zarejestruj się!</button>
-      <button (click)="onLoginClick()" *ngIf="isRegisterState()" [ngClass]="{ 'hidden': !isVisible }">Zaloguj się!</button>
+      <button (click)="registerToggle()" *ngIf="!registerMode" [ngClass]="{ 'hidden': !isVisible }">Zarejestruj się!</button>
+      <button (click)="registerToggle()" *ngIf="registerMode" [ngClass]="{ 'hidden': !isVisible }">Zaloguj się!</button>
     </div>
   </div>
-  <div #login class="right-side" id="login">
+  <div *ngIf="!registerMode" class="right-side" id="login">
     <app-login></app-login>
-      <span *ngIf="isLoginState()">Nie masz jeszcze konta? <button class="switchFormButton" (click)="onRegisterClick()">Zarejestruj się!</button></span>
-      <span *ngIf="isRegisterState()">Masz już konto? <button class="switchFormButton" (click)="onLoginClick()" >Zaloguj się!</button></span>
-     <!-- <app-register></app-register> -->
+      <span *ngIf="!registerMode">Nie masz jeszcze konta? <button class="switchFormButton" (click)="registerToggle()">Zarejestruj się!</button></span>
+      <span *ngIf="registerMode">Masz już konto? <button class="switchFormButton" (click)="registerToggle()" >Zaloguj się!</button></span>
+  </div>
+  <div *ngIf="registerMode" class="right-side" id="login">
+    <app-register></app-register>
+    <span *ngIf="registerMode">Nie masz jeszcze konta? <button class="switchFormButton" (click)="registerToggle()">Zarejestruj się!</button></span>
+      <span *ngIf="!registerMode">Masz już konto? <button class="switchFormButton" (click)="registerToggle()" >Zaloguj się!</button></span>
   </div>
 </div>

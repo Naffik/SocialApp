@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from .views import (PostListView, PostDetailView, PostSearchView, PostCreateView, PostFavAddView, CommentListView,
-                    CommentDetailView, PostCommentListView, CommentCreateView, PostFavListView, )
+                    CommentDetailView, PostCommentListView, CommentCreateView, PostFavListView, PopularTagsView, )
 
 router = DefaultRouter()
 
@@ -17,4 +17,5 @@ urlpatterns = [
     path(r'post/<int:pk>/create-comment/', CommentCreateView.as_view(), name='post-comment-create'),
     path(r'comment/', CommentListView.as_view(), name='comment-list'),
     path(r'comment/<int:pk>/', CommentDetailView.as_view(), name='comment-detail'),
+    path(r'popular-tags/', PopularTagsView.as_view(), name='popular-tags'),
 ]

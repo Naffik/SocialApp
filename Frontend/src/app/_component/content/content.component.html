@@ -13,45 +13,71 @@
 
 
 <div class="content">
-  <div *ngFor="let post of posts" class="post">
-      <div class="post-header">
-        <img [src]="baseUrl + post.post_author_avatar" alt="Avatar użytkownika" class="avatar">
+  <div *ngFor="let post of posts" class="post">    
+    <div class="post-header">
+      <img [src]="baseUrl + post.post_author_avatar" 
+          alt="Avatar użytkownika" 
+          class="avatar"
+          (mouseenter)="onUsernameEnter(post, $event)"
+          (mouseleave)="hidePopover()">
+          
+      <span class="username"
+            (mouseenter)="onUsernameEnter(post, $event)"
+            (mouseleave)="hidePopover()">
+        {{post.post_author}}
+      </span>
 
-          <span class="username"
-            (mouseenter)="onUsernameEnter(post.post_author)"
-            (mouseleave)="onUsernameLeave()"
-            [ngbPopover]="getActiveUserInfo()"
-            triggers="mouseenter:mouseleave">
-              {{post.post_author}}
+      <span class="nick" 
+            (mouseenter)="onUsernameEnter(post, $event)"
+            (mouseleave)="hidePopover()">
+        @{{post.display_name}}
+      </span>
+
+      <span class="date" (mouseover)="showTooltip = true" (mouseleave)="showTooltip = false">
+        {{ post.created | timeSince }}
+        <span class="tooltip" *ngIf="showTooltip">{{ post.created | dateFormat  }}</span>
+      </span>
+
+      <div class="custom-popover" 
+      *ngIf="activePopover === post.id" 
+              (mouseenter)="activePopover = post.post_author"
+              (mouseleave)="hidePopover()">
+        <p *ngIf="userInfoToShow$ | async as user">
+          <span><img [src]="user.avatar"
+                    alt="Avatar użytkownika" 
+                    class="avatar"> 
           </span>
-          <span class="nick">@{{post.display_name}}</span>
-
-        <span class="date" (mouseover)="showTooltip = true" (mouseleave)="showTooltip = false">
-          {{ post.created | timeSince }}
-          <span class="tooltip" *ngIf="showTooltip">{{ post.created | dateFormat  }}</span>
-        </span>
+          <span>{{ user.username }}</span>
+          <span>@{{ user.display_name }}</span>
+          <span>Followers: {{ user.followers }}</span>
+          <span>Follows: {{ user.follows }}</span>
+          <span>Friends: {{ user.friends }}</span>
+        </p>
       </div>
-      <div class="post-content">
-        {{ post.content }}
-        <div *ngIf="post.image" class="post-image">
-          <img [src]="baseUrl + post.image" alt="Image for {{ post.title }}"
-            style="cursor: pointer;">
-        </div>
-        <div class="tags">
-          <p>Tags:</p>
-          <div class="tag-container">
-              <span *ngFor="let tag of post.tags">{{ tag }}</span>
-          </div>
-        </div>
+      
+    </div>
+    
+    <div class="post-content">
+      {{ post.content }}
+      <div *ngIf="post.image" class="post-image">
+        <img [src]="baseUrl + post.image" alt="Image for {{ post.title }}"
+          style="cursor: pointer;">
       </div>
-      <div class="post-actions">
-          <button class="like-btn">Polubienia: <span class="like-count">{{post.likes}}</span></button>
-          <span class="share">Udostępnij</span>
-          <span class="comments">Komentarze: {{post.number_of_comments}} </span>
+      <div class="tags">
+        <p>Tags:</p>
+        <div class="tag-container">
+            <span *ngFor="let tag of post.tags">{{ tag }}</span>
+        </div>
       </div>
     </div>
-    <div *ngIf="isLoading">
-      <div class="spinner"></div>
-      <p class="loading-text">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+    <div class="post-actions">
+        <button class="like-btn">Polubienia: <span class="like-count">{{post.likes}}</span></button>
+        <span class="share">Udostępnij</span>
+        <span class="comments">Komentarze: {{post.number_of_comments}} </span>
     </div>
+  </div>
+  <div *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+  </div>
 </div>

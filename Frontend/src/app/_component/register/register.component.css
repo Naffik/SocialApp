@@ -1,7 +1,5 @@
 .input-container {
   position: relative;
-  /* width: 100%; */
-  margin-bottom: 15px;
 }
 
 .form-control {
@@ -128,7 +126,8 @@
 }
 
 input[type='text'],
-input[type="password"]{
+input[type="password"],
+input[type="date"] {
   border: 1px solid black;
   height: 55px;
   padding: 0 2rem;
@@ -186,4 +185,37 @@ input[type='checkbox']{
 
 ::-ms-reveal {
   display: none;
+}
+
+.login-form-content .formButton:disabled{
+  background-color: #d3d3d3;
+  cursor: not-allowed;
+}
+
+.login-form-content .formButton:hover{
+  background-color:#6a1a8a;
+}
+
+.login-form-content .formButton:hover:disabled{
+  background-color: #d3d3d3;
+}
+
+.error-style {
+  color: red;
+  font-weight: bold;
+}
+
+.success-style {
+  color: green;
+  font-weight: normal;
+}
+
+.error-message {
+  text-align: center;
+  /* Inne style, które już masz */
+}
+
+.centered-text {
+  display: inline-block;
+  text-align: left; /* Możesz ustawić na "center", jeśli chcesz wyśrodkować tekst na środku wewnątrz span */
 }
