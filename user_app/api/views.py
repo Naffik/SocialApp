@@ -89,7 +89,9 @@ class CheckUsernameView(APIView):
 
     def get(self, request, *args, **kwargs):
         username = request.data.get('username')
-        if not User.objects.filter(username=username).exists():
+        if not username:
+            return Response({'message': 'Username cannot be empty'})
+        if not User.objects.filter(username__exact=username).exists():
             return Response({'message': 'Username is available'})
         return Response({'message': 'Username is already taken'})
 
@@ -101,7 +103,9 @@ class CheckEmailView(APIView):
 
     def get(self, request, *args, **kwargs):
         email = request.data.get('email')
-        if not User.objects.filter(email=email).exists():
+        if not email:
+            return Response({'message': 'Email cannot be empty'})
+        if not User.objects.filter(email__exact=email).exists():
             return Response({'message': 'Email is available'})
         return Response({'message': 'Email is already used'})
 
