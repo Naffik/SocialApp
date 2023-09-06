@@ -108,7 +108,7 @@ class CheckEmailView(APIView):
 
 class VerifyEmail(APIView):
     """
-    Verify created user email address is available
+    Verify created user email address
     """
     throttle_scope = 'email-verify'
 
