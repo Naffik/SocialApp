@@ -88,7 +88,7 @@ class CheckUsernameView(APIView):
     """
 
     def get(self, request, *args, **kwargs):
-        username = request.data.get('username')
+        username = request.query_params.get('username')
         if not username:
             return Response({'message': 'Username cannot be empty'})
         if not User.objects.filter(username__exact=username).exists():
@@ -102,7 +102,7 @@ class CheckEmailView(APIView):
     """
 
     def get(self, request, *args, **kwargs):
-        email = request.data.get('email')
+        email = request.query_params.get('email')
         if not email:
             return Response({'message': 'Email cannot be empty'})
         if not User.objects.filter(email__exact=email).exists():
