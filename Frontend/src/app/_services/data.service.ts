@@ -14,9 +14,7 @@ export class DataService {
     return this.http.get<any>(url);
   }
 
-  fetchUserInfo(username: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/account/profile/${username}`);
-  }
+
 
 //   getPostById(postId: number): Observable<any> {
 //     return this.http.get(`${this.baseUrl}/api/posts/${postId}`);

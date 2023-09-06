@@ -7,28 +7,16 @@ import { AuthService } from '../../_services/auth.service';
   styleUrls: ['./authenticator.component.css']
 })
 export class AuthenticatorComponent {
-  state = AuthenticatorCompState.LOGIN;
 
   model:any ={};
   isVisible = false;
+  registerMode = false;
 
   constructor(private authService: AuthService){ }
 
 
-  onLoginClick() {
-    this.state = AuthenticatorCompState.LOGIN;
-   }
-
-  onRegisterClick() {
-    this.state = AuthenticatorCompState.REGISTER;
-   }
-
-   isLoginState(){
-    return this.state == AuthenticatorCompState.LOGIN;
-   }
-
-   isRegisterState(){
-    return this.state == AuthenticatorCompState.REGISTER;
+   registerToggle(){
+    this.registerMode = !this.registerMode;
    }
 
    loggedIn(){
@@ -40,9 +28,3 @@ export class AuthenticatorComponent {
     localStorage.removeItem('access');
   }
 }
-
-  export enum AuthenticatorCompState {
-    LOGIN,
-    REGISTER
-  }
-
