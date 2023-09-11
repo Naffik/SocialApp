@@ -11,7 +11,7 @@ import { ContentComponent } from './_component/content/content.component';
 import { HomeComponent } from './_component/home/home.component';
 import { LoginComponent } from './_component/login/login.component';
 import { RegisterComponent } from './_component/register/register.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DateFormatPipe } from './_pipe/date-format.pipe';
 import { TimeSincePipe } from './_pipe/time-since.pipe';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
@@ -36,7 +36,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
     BrowserModule,
     FormsModule,
     NgbModule,
-    CommonModule
+    CommonModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

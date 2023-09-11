@@ -10,14 +10,16 @@ export class AuthenticatorComponent {
 
   model:any ={};
   isVisible = false;
-  registerMode = false;
 
   constructor(private authService: AuthService){ }
 
+  get registerMode(): boolean {
+    return this.authService.registerMode;
+  }
 
-   registerToggle(){
-    this.registerMode = !this.registerMode;
-   }
+  registerToggle(): void {
+    this.authService.registerToggle();
+  }
 
    loggedIn(){
     const token = localStorage.getItem("access");

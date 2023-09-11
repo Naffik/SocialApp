@@ -117,6 +117,7 @@
   gap: 30px;
 }
 
+
 .form-item label:not(.checkboxLabel){
   background-color: white;
   position: absolute;
@@ -200,22 +201,10 @@ input[type='checkbox']{
   background-color: #d3d3d3;
 }
 
-.error-style {
-  color: red;
-  font-weight: bold;
-}
-
-.success-style {
+.success-message {
   color: green;
-  font-weight: normal;
 }
 
 .error-message {
-  text-align: center;
-  /* Inne style, które już masz */
-}
-
-.centered-text {
-  display: inline-block;
-  text-align: left; /* Możesz ustawić na "center", jeśli chcesz wyśrodkować tekst na środku wewnątrz span */
+  color: red;
 }
