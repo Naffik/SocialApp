@@ -89,6 +89,7 @@ class CheckUsernameView(APIView):
 
     def get(self, request, *args, **kwargs):
         username = request.query_params.get('username')
+        username = username.lower()
         if not username:
             return Response({'message': 'Username cannot be empty'})
         if not User.objects.filter(username__exact=username).exists():
