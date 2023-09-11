@@ -18,6 +18,9 @@ class Post(models.Model):
     def get_total_like(self):
         return self.like.users.count()
 
+    def get_total_favorites(self):
+        return self.favorites.count()
+
 
 class Like(models.Model):
     post = models.OneToOneField(Post, related_name='like', on_delete=models.CASCADE)
