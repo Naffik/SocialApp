@@ -17,26 +17,21 @@ export class ContentComponent implements OnInit {
   isLoading: boolean = false;
   activeUsername: string | null = null;
   showTooltip = false;
-  userInfoToShow$: BehaviorSubject<any> = new BehaviorSubject(null);
-  isPopoverVisible = false;
-  popoverTop: string = '0px';
-  popoverLeft: string = '0px';
+  // userInfoToShow$: BehaviorSubject<any> = new BehaviorSubject(null);
+  // isPopoverVisible = false;
+  // popoverTop: string = '0px';
+  // popoverLeft: string = '0px';
   activePopover: string | null = null;
   visiblePopovers: { [username: string]: boolean } = {};
   private userCache: { [username: string]: any } = {};
 
-
   activePost: any = null; // przechowuje aktywny post zamiast nazwy użytkownika
-
-
-  
 
   constructor(private dataService: DataService, private http: HttpClient) { }
 
   ngOnInit() {
     this.nextUrl = 'http://127.0.0.1:8000/api/post/?page=1&size=10';
     this.loadMorePosts();
-
   }
 
   loadMorePosts() {
@@ -62,54 +57,50 @@ export class ContentComponent implements OnInit {
     return this.activePopover === post.post_author;
  }
 
-  onUsernameEnter(post: any, event: MouseEvent): void {
-    this.activePost = post;
-    this.isPopoverVisible=true;
-    this.activePopover = post.id; // Używamy ID posta zamiast post.post_author
-    console.log("Active Popover: ", this.activePopover);
-    console.log('isPopoverVisible set to:', this.isPopoverVisible); // Dodaj to
-    this.fetchUserInfo(post.post_author).subscribe(
-      userInfo => {
-        console.log('Fetched user info:', userInfo); // Dodaj to
-        this.userInfoToShow$.next(userInfo);
-        this.setPopoverPosition(event);
-      },
-      err => {
-        console.error(err);
-      }
-    );
-  }
+  // onUsernameEnter(post: any, event: MouseEvent): void {
+  //   this.activePost = post;
+  //   this.isPopoverVisible=true;
+  //   this.activePopover = post.id;
+  //   this.fetchUserInfo(post.post_author).subscribe(
+  //     userInfo => {
+  //       this.userInfoToShow$.next(userInfo);
+  //       this.setPopoverPosition(event);
+  //     },
+  //     err => {
+  //       console.error(err);
+  //     }
+  //   );
+  // }
 
-  hidePopover(): void {
-    this.activePost = null;
-    this.userInfoToShow$.next(null);
-  }
+  // hidePopover(): void {
+  //   this.activePost = null;
+  //   this.userInfoToShow$.next(null);
+  // }
 
-  setPopoverPosition(event: MouseEvent): void {
-    const targetElement = event.target as HTMLElement;
-    this.popoverTop = (targetElement.getBoundingClientRect().bottom + window.scrollY) + 'px';
-    this.popoverLeft = (targetElement.getBoundingClientRect().left + window.scrollX) + 'px';
-    console.log(targetElement)
-  }
+  // setPopoverPosition(event: MouseEvent): void {
+  //   const targetElement = event.target as HTMLElement;
+  //   this.popoverTop = (targetElement.getBoundingClientRect().bottom + window.scrollY) + 'px';
+  //   this.popoverLeft = (targetElement.getBoundingClientRect().left + window.scrollX) + 'px';
+  // }
 
 
-  fetchUserInfo(username: string): Observable<any> {
-    if (this.userCache[username]) {
-      return of(this.userCache[username]);
-  }
-    return this.http.get<any>(`${this.baseUrl}/account/profile/${username}/`).pipe(
-      tap(userInfo => {
-        this.userCache[username] = userInfo;
-        this.addToCache(username, userInfo);
-      })
-    );
-  }
+  // fetchUserInfo(username: string): Observable<any> {
+  //   if (this.userCache[username]) {
+  //     return of(this.userCache[username]);
+  // }
+  //   return this.http.get<any>(`${this.baseUrl}/account/profile/${username}/`).pipe(
+  //     tap(userInfo => {
+  //       this.userCache[username] = userInfo;
+  //       this.addToCache(username, userInfo);
+  //     })
+  //   );
+  // }
 
 private addToCache(username: string, data: any): void {
   this.userCache[username] = data;
   setTimeout(() => {
       delete this.userCache[username];
-  }, 60000); // Usuń z pamięci podręcznej po 60 sekundach
+  }, 60000); 
 }
 
   @HostListener('window:scroll', ['$event'])

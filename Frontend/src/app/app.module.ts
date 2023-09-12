@@ -15,6 +15,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DateFormatPipe } from './_pipe/date-format.pipe';
 import { TimeSincePipe } from './_pipe/time-since.pipe';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
+import { AuthService } from './_services/auth.service';
+import { AlertifyService } from './_services/alertify.service';
+import { DataService } from './_services/data.service';
+import { ValidatorsService } from './_services/validators.service';
 // import { PostDetailComponent } from './_component/post-detail/post-detail.component';
 
 
@@ -39,7 +43,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
     CommonModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    AuthService, 
+    AlertifyService, 
+    DataService,
+    ValidatorsService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

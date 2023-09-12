@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../_services/auth.service';
+import { AlertifyService } from 'src/app/_services/alertify.service';
 
 
 @Component({
@@ -12,10 +13,14 @@ export class LoginComponent implements OnInit{
   showPassword = false;
   model:any = {};
   obj:any;
+  loginError: string = '';  
 
-  constructor(private authService: AuthService){}
 
-  ngOnInit(): void {}
+  constructor(private authService: AuthService, private alertify: AlertifyService){}
+
+  ngOnInit(): void {
+    
+  }
 
 
  scrollToElement() {
@@ -29,23 +34,23 @@ export class LoginComponent implements OnInit{
   //  console.log(rect.top + window.scrollY);
  }
 
-  // register(event: any) {
-  //   event.preventDefault();
-  //   this.authService.register(this.model).subscribe(next => {
-  //     alert('Konto zostało stworzone, brawo!');
-  //   }, error => {
-  //     console.log('Wystąpił błąd rejestracji', error);
-  //   });
-  // }
-
-
-
   login() {
-    // event.preventDefault();
+    // event.();
     this.authService.login(this.model).subscribe({
-    next: (v) => console.log(this.model),
-    error: (e) => console.error('Wystąpił błąd logowania', e),
-    complete: () => alert('Zalogowałęś się, brawo!')
+    // next: () => console.log(this.model),
+    error: (errorResponse) => {
+      console.log(errorResponse)
+      if (errorResponse.error.detail === 'No active account found with the given credentials') {
+        this.loginError = 'Podano nieprawidłoy adres email lub hasło.';
+        this.alertify.error('Wystąpił błąd logowania');
+      }else {
+        this.alertify.error('Wystąpił błąd logowania');
+        this.loginError = 'Brak dostępu do serwisu.';
+      }
+    },
+    complete: () => this.alertify.success('Logowanie pomyślne!')
     })
   }
+
+  
 }

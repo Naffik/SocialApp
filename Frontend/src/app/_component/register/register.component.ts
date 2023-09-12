@@ -3,6 +3,7 @@ import { AuthService } from '../../_services/auth.service';
 import { Subject, Subscription, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { ValidatorsService } from 'src/app/_services/validators.service';
+import { AlertifyService } from 'src/app/_services/alertify.service';
 
 
 
@@ -34,7 +35,7 @@ export class RegisterComponent implements OnInit{
 
   registerForm!: FormGroup;
 
-  constructor( private authService: AuthService, private validatorsService: ValidatorsService ) { }
+  constructor( private authService: AuthService, private validatorsService: ValidatorsService, private alertify: AlertifyService ) { }
 
   ngOnInit(): void {
     this.registerForm = this.validatorsService.createRegisterForm();
@@ -77,37 +78,6 @@ export class RegisterComponent implements OnInit{
     );
     console.log("isRegisterButtonDisabled", this.isRegisterButtonDisabled);
   }
-
-  diagnoseValidation() {
-    console.log('Diagnoza stanu walidacji formularza:');
-    this.diagnoseControlValidation(this.registerForm);
-
-    // Jeśli chcesz zdiagnozować kontrolki wewnątrz grupy personalDetails
-    let personalDetailsGroup = this.registerForm.get('personalDetails');
-    if (personalDetailsGroup) {
-        console.log('Diagnoza stanu walidacji grupy personalDetails:');
-        this.diagnoseControlValidation(personalDetailsGroup);
-    }
-}
-// 
-  diagnoseControlValidation(control: AbstractControl, parentName?: string) {
-    if (control instanceof FormGroup) {
-        for (let controlName in control.controls) {
-            let childControl = control.get(controlName);
-            if (childControl) {
-                this.diagnoseControlValidation(childControl, controlName);
-            }
-        }
-    } else if (control instanceof FormControl) {
-        if (control.invalid) {
-            console.log(`Kontrolka ${parentName} jest nieważna.`);
-            console.log('Błędy:', control.errors);
-        } else {
-            console.log(`Kontrolka ${parentName} jest ważna.`);
-        }
-    }
-  }
-  // 
   
   onPasswordChange() {
     const passwordControl = this.registerForm.get('accountDetails.password');
@@ -138,8 +108,8 @@ export class RegisterComponent implements OnInit{
     };    
     
     this.authService.register(formData).subscribe({
-      error: (e) => console.error('Wystąpił błąd logowania', e),
-      complete: () => alert('Zarejestrowałeś się, brawo!')
+      error: () => this.alertify.error('Wystąpił błąd rejestracji!'),
+      complete: () => this.alertify.success('Rejestracja udana!')
     })
   }
 

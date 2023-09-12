@@ -13,8 +13,13 @@
             <input #password type="password" id="password" [attr.type]="showPassword ? 'text' : 'password'" [(ngModel)]="model.password" name="password" required>
             <button *ngIf="model.password && model.password.length > 0" class="toggle-password btn-circle" type="button" (click)="showPassword = !showPassword">
               <i class="fa fa-eye"></i>
-          </button>
+            </button>
         </div>
+        <!--  -->
+        <div *ngIf="loginError" class="error-message">
+          {{ loginError }}
+        </div>
+
       </div>
         <div class="form-item">
           <div class="checkbox">

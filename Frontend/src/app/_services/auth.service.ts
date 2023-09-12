@@ -30,6 +30,10 @@ export class AuthService implements OnInit {
         if(user){
           localStorage.setItem('access', user.access);
           localStorage.setItem('refresh', user.refresh);
+          localStorage.setItem('first_name', user.first_name);
+          localStorage.setItem('last_name', user.last_name);
+          localStorage.setItem('avatar', user.avatar);
+
         }
     }))
   }

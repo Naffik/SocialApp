@@ -17,20 +17,14 @@
     <div class="post-header">
       <img [src]="baseUrl + post.post_author_avatar" 
           alt="Avatar użytkownika" 
-          class="avatar"
-          (mouseenter)="onUsernameEnter(post, $event)"
-          (mouseleave)="hidePopover()">
+          class="avatar">
           
-      <span class="username"
-            (mouseenter)="onUsernameEnter(post, $event)"
-            (mouseleave)="hidePopover()">
-        {{post.post_author}}
+      <span class="username">
+        {{post.display_name}}
       </span>
 
-      <span class="nick" 
-            (mouseenter)="onUsernameEnter(post, $event)"
-            (mouseleave)="hidePopover()">
-        @{{post.display_name}}
+      <span class="nick">
+        @{{post.post_author}}
       </span>
 
       <span class="date" (mouseover)="showTooltip = true" (mouseleave)="showTooltip = false">
@@ -38,7 +32,7 @@
         <span class="tooltip" *ngIf="showTooltip">{{ post.created | dateFormat  }}</span>
       </span>
 
-      <div class="custom-popover" 
+      <!-- <div class="custom-popover" 
       *ngIf="activePopover === post.id" 
               (mouseenter)="activePopover = post.post_author"
               (mouseleave)="hidePopover()">
@@ -53,7 +47,7 @@
           <span>Follows: {{ user.follows }}</span>
           <span>Friends: {{ user.friends }}</span>
         </p>
-      </div>
+      </div> -->
       
     </div>
     

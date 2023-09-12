@@ -13,8 +13,8 @@
             <input type="text" placeholder="Wyszukaj">
         </div>
         <button class="header-user-icon">
-            <img src="/assets/profile-pic.png" alt="account pictures">
-            <p> Imie Nazwisko </p>
+            <img [src]="baseUrl + avatarUrl" alt="account pictures">
+            <p> {{ firstName }} {{ lastName }} </p>
         </button>
     </div>
 </header>
@@ -42,8 +42,7 @@
       </div>
       <div class="second-section">
         <div class="message-contact">
-            <img src="/assets/profile-pic.png"
-                alt="Avatar icon">
+            <img src="/assets/profile-pic.png" alt="Avatar icon">
             <p> Imie Nazwisko </p>
         </div>
       </div>

@@ -20,13 +20,4 @@ export class AuthenticatorComponent {
   registerToggle(): void {
     this.authService.registerToggle();
   }
-
-   loggedIn(){
-    const token = localStorage.getItem("access");
-    return !!token;
-  }
-
-  logout(){
-    localStorage.removeItem('access');
-  }
 }

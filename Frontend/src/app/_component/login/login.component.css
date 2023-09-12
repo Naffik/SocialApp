@@ -196,3 +196,7 @@ input[type='checkbox']{
 ::-ms-reveal {
   display: none;
 }
+
+.error-message {
+  color: red;
+}
