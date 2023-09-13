@@ -166,15 +166,13 @@ class ActionSerializer(serializers.ModelSerializer):
 
 
 class FriendSerializer(serializers.ModelSerializer):
-    friend = serializers.SerializerMethodField(read_only=True)
+    username = serializers.CharField(read_only=True)
+    display_name = serializers.CharField(read_only=True)
+    avatar = serializers.CharField(read_only=True)
 
     class Meta:
-        model = get_user_model()
-        fields = ('friend',)
-
-    def get_friend(self, obj):
-        user_serializer = BasicUserProfileSerializer(obj)
-        return user_serializer.data
+        model = User
+        fields = ('username', 'display_name', 'avatar', 'first_name', 'last_name')
 
 
 class FriendshipRequestSerializer(serializers.ModelSerializer):

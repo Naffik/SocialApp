@@ -256,9 +256,10 @@ class PopularTagsView(APIView):
     """
 
     def get(self, request, *args, **kwargs):
-        tags_count = self.request.data.get('tags_count')
-        time_in_hours = self.request.data.get('time_in_hours')
-
+        tags_count = request.query_params.get('tags_count')
+        time_in_hours = request.query_params.get('time_in_hours')
+        if not time_in_hours:
+            time_in_hours = 1
         time_delta = timezone.now() - timezone.timedelta(days=time_in_hours)
 
         recent_posts = Post.objects.filter(created__gte=time_delta)

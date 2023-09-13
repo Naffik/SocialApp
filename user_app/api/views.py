@@ -396,7 +396,8 @@ class FriendViewSet(viewsets.ModelViewSet):
             return Response({"message": "Request for current user not found."}, status.HTTP_400_BAD_REQUEST)
 
         friendship_request.accept()
-        create_action(request.user, 'zaakceptowałeś zaproszenie do znajomych od użytkownika', friendship_request)
+        create_action(request.user, 'zaakceptowałeś zaproszenie do znajomych od użytkownika',
+                      friendship_request.from_user)
 
         return Response({"message": "Request accepted, user added to friends."}, status.HTTP_201_CREATED)
 
@@ -414,7 +415,7 @@ class FriendViewSet(viewsets.ModelViewSet):
             return Response({"message": "Request for current user not found."}, status.HTTP_400_BAD_REQUEST)
 
         friendship_request.reject()
-        create_action(request.user, 'odrzuciłeś zaproszenie do znajomych od użytkownika', friendship_request)
+        create_action(request.user, 'odrzuciłeś zaproszenie do znajomych od użytkownika', friendship_request.from_user)
 
         return Response({"message": "Request rejected, user NOT added to friends."}, status.HTTP_201_CREATED)
 
