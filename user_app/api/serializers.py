@@ -16,12 +16,15 @@ from friendship.models import FriendshipRequest, Follow, Block
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
-        data.update({'first_name': self.user.first_name})
-        data.update({'last_name': self.user.last_name})
-        data.update({'avatar': self.user.avatar.url})
-        return data
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['first_name'] = user.first_name
+        token['last_name'] = user.last_name
+        token['avatar'] = user.avatar.url
+        token['username'] = user.username
+        return token
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
