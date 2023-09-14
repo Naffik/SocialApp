@@ -35,6 +35,11 @@ class User(AbstractUser):
     def follows_count(self):
         return Follow.objects.filter(follower=self.pk).count()
 
+    def is_friend(self, request_user, user):
+        return Friend.objects.are_friends(request_user, user)
+
+    def follow(self, request_user, user):
+        return Follow.objects.follows(request_user, user)
     # def save(self, *args, **kwargs):
     #     if self.date_of_birth is None:
     #         raise ValueError("Date of birth is required.")

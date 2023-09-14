@@ -148,6 +148,15 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
     def get_avatar_url(self, obj):
         return obj.avatar.url
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        print(type(instance.is_friend))
+        if type(instance.is_friend) == bool:
+            representation['is_friend'] = instance.is_friend
+        if type(instance.follow) == bool:
+            representation['follow'] = instance.follow
+        return representation
+
 
 class UserSerializer(serializers.ModelSerializer):
 

@@ -209,16 +209,20 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'username'
 
     def get_serializer_class(self, request=None):
-        if self.request is None:
-            return BasicUserProfileSerializer
-        elif self.request.user.username == self.kwargs.get('username'):
-            print("test")
+        if self.request.user.username == self.kwargs.get('username'):
             return UserProfileSerializer
         return BasicUserProfileSerializer
 
-    def get_queryset(self, *args, **kwargs):
+    def get_object(self, *args, **kwargs):
+        request_user = self.request.user
+        username = self.kwargs.get('username')
         try:
-            return User.objects.filter(username=self.kwargs.get('username'))
+            user = User.objects.get(username=username)
+            if not request_user.is_authenticated or request_user.username == username:
+                return user
+            user.is_friend = user.is_friend(request_user, user)
+            user.follow = user.follow(request_user, user)
+            return user
         except User.DoesNotExist:
             raise Http404
 
