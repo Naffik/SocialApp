@@ -118,28 +118,35 @@ class SetNewPasswordSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(read_only=True)
     username = serializers.CharField(read_only=True)
+    avatar_url = serializers.SerializerMethodField('get_avatar_url')
     friends_count = serializers.IntegerField(read_only=True)
     followers_count = serializers.IntegerField(read_only=True)
     follows_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar',
+        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar_url',
                   'friends_count', 'followers_count', 'follows_count')
+
+    def get_avatar_url(self, obj):
+        return obj.avatar.url
 
 
 class BasicUserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True)
     display_name = serializers.CharField(read_only=True)
     bio = serializers.CharField(read_only=True)
-    avatar = serializers.CharField(read_only=True)
+    avatar_url = serializers.SerializerMethodField('get_avatar_url', read_only=True)
     friends_count = serializers.IntegerField(read_only=True)
     followers_count = serializers.IntegerField(read_only=True)
     follows_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'bio', 'avatar', 'friends_count', 'followers_count', 'follows_count')
+        fields = ('username', 'display_name', 'bio', 'avatar_url', 'friends_count', 'followers_count', 'follows_count')
+
+    def get_avatar_url(self, obj):
+        return obj.avatar.url
 
 
 class UserSerializer(serializers.ModelSerializer):
