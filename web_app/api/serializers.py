@@ -19,6 +19,8 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
     post_author = serializers.StringRelatedField(read_only=True)
     display_name = serializers.StringRelatedField(read_only=True)
     post_author_avatar = serializers.SerializerMethodField(read_only=True)
+    number_of_favorites = serializers.SerializerMethodField(read_only=True)
+    favorites = serializers.SerializerMethodField(read_only=True)
     likes = serializers.SerializerMethodField(read_only=True)
     is_liked = serializers.BooleanField(read_only=True)
     is_favorite = serializers.BooleanField(read_only=True)
@@ -27,11 +29,18 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
         model = Post
         # exclude = ('number_of_comments',)
         # fields = "__all__"
-        fields = ['id', 'tags', 'post_author', 'post_author_avatar', 'display_name', 'content', 'title',
-                  'created', 'image', 'favorites', 'likes', 'is_liked', 'is_favorite', 'number_of_comments']
+        fields = ['id', 'tags', 'post_author', 'post_author_avatar', 'display_name', 'content', 'created', 'image',
+                  'number_of_favorites', 'favorites', 'likes', 'is_liked', 'is_favorite', 'number_of_comments']
 
     def get_likes(self, instance):
         return instance.get_total_like()
+
+    def get_favorites(self, instance):
+        favorite_users = instance.favorites.all()
+        return [user.username for user in favorite_users]
+
+    def get_number_of_favorites(self, instance):
+        return instance.get_total_favorites()
 
     def get_display_name(self, instance):
         return instance.post_author.display_name

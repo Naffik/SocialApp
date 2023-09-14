@@ -1,0 +1,263 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+.home-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dwie kolumny o równej szerokości */
+  grid-template-rows: auto; /* Domyślna wysokość wiersza */
+  grid-gap: 20px; /* Odstęp między kolumnami i wierszami */
+}
+
+
+.container{
+  background-size: cover;
+  background-position: center;
+
+}
+
+.left-side{
+  display: flex;
+  background-color: #b621f3;
+  /* background-color: #4b1262; */
+  color:white;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.left-side-content{
+  text-align: right;
+  padding: 1em 1em 1em 3em;
+}
+
+.left-side-content h1{
+  font-size: 40px;
+}
+
+.left-side-content p{
+  font-size: 20px;
+}
+
+.right-side{
+  display: flex;
+  background-color: white;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hidden{
+  visibility: hidden;
+  /* display: none; */
+   /* border: none; */
+  /* #FF9B94
+  #FAC1BD */
+  /* background: linear-gradient(45deg, #131086, #b621f3); */
+
+  /* background-color: white;
+  color: black;
+  padding: 1rem;
+  border-radius: 100px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 15px;
+  height: 55px;
+  cursor: pointer;
+  width:50%; */
+}
+
+@media (max-width:1350px){
+  .home-page {
+    grid-template-columns: 1fr; /* Jedna kolumna o pełnej szerokości */
+    grid-template-rows: auto auto; /* Dwa wiersze o domyślnej wysokości */
+  }
+
+  .left-side{
+    display: flex;
+    background-color: #b621f3;
+    /* background-color: #4b1262; */
+    color:white;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .right-side{
+    background-color:white;
+    height:100vh;
+  }
+
+  .left-side-content button{
+    visibility: visible;
+    border: none;
+    background-color: white;
+    color: black;
+    border-radius: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 15px;
+    height: 55px;
+    cursor: pointer;
+    width:40%;
+  }
+
+  .left-side-content button:hover{
+      background-color:#da99f4;
+    }
+}
+
+@media (max-width:768px){
+
+}
+
+.right-side-content{
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - 40px *2);
+  width: 100%;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.form{
+  display: flex;
+  border-radius: 20px;
+  justify-content: flex-end;
+  padding: 5px;
+  background-color: white;
+  flex-direction: column;
+}
+
+.form p{
+  text-align: center;
+  opacity: .7;
+  margin-bottom: 35px;
+}
+
+.login-form{
+  width: 450px;
+}
+
+.register-form{
+  width: 450px;
+  margin-top: 52px;
+}
+
+.login-form-content{
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.register-form-content{
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.form-footer{
+  display: flex;
+  gap: 30px;
+  margin: 30px 0px 30px 0px;
+}
+
+.form-footer a{
+  flex: 6;
+  gap: 15px;
+  border: 1px solid black;
+  border-radius: 100px;
+  padding: .6rem;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  color: black;
+  text-decoration: none;
+}
+
+.form-footer a:hover{
+  background-color: #eee;
+
+}
+
+.form-item label:not(.checkboxLabel){
+  background-color: white;
+  position: absolute;
+  padding: 0 10px;
+  transform: translate(30px, -10px);
+  font-size: 14px;
+}
+
+input[type='text'],
+input[type="password"]{
+  border: 1px solid black;
+  height: 55px;
+  padding: 0 2rem;
+  width: 85%;
+  outline: none;
+  transition: background .5s;
+  font-size: 18px;
+  border-radius: 100px;
+}
+
+.checkbox{
+  display:flex;
+  align-items: center;
+  gap: 7px;
+}
+
+input[type='checkbox']{
+  width: 20px;
+  height: 20px;
+  accent-color: #b621f3;
+  cursor: pointer;
+}
+
+.login-form-content button{
+  border: none;
+  background-color: #b621f3;
+  color: white;
+  padding: 1rem;
+  border-radius: 100px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 18px;
+  height: 55px;
+  cursor: pointer;
+}
+
+.login-form-content button:hover{
+  background-color:#6a1a8a;
+}
+
+.register-form-content button{
+  border: none;
+  background-color: #b621f3;
+  color: white;
+  padding: 1rem;
+  border-radius: 100px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 18px;
+  height: 55px;
+  cursor: pointer;
+}
+
+.register-form-content button:hover{
+  background-color:#6a1a8a;
+}
+
+.switchFormButton{
+  background-color: white;
+  border: none;
+  color: blue;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.switchFormButton:hover{
+  background-color: white;
+  color: rgb(2, 2, 135);
+}

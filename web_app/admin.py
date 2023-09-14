@@ -8,9 +8,9 @@ class CommentInLine(admin.StackedInline):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['id', 'post_author', 'title']
+    list_display = ['id', 'post_author']
     list_filter = ['created']
-    search_fields = ['title']
+    search_fields = ['content']
 
 
 @admin.register(Comment)

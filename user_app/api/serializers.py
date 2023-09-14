@@ -1,7 +1,12 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.core import exceptions
 import django.contrib.auth.password_validation as validators
-from user_app.models import User
+from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from user_app.models import User, Action
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -10,12 +15,25 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from friendship.models import FriendshipRequest, Follow, Block
 
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['first_name'] = user.first_name
+        token['last_name'] = user.last_name
+        token['avatar'] = user.avatar.url
+        token['username'] = user.username
+        return token
+
+
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    date_of_birth = serializers.DateTimeField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password2']
+        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name', 'date_of_birth']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -36,6 +54,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def save(self):
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
+        date_of_birth = self.validated_data['date_of_birth']
+        print(date_of_birth)
 
         if password != password2:
             raise ValidationError({'error': 'Password should be same as Password2'})
@@ -43,9 +63,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=self.validated_data['email']).exists():
             raise ValidationError({'error': 'Email already exists'})
 
+        if not date_of_birth:
+            date_of_birth = datetime.now()
         account = User(email=self.validated_data['email'],
                        username=self.validated_data['username'],
-                       display_name=self.validated_data['username'])
+                       display_name=self.validated_data['username'],
+                       first_name=self.validated_data['first_name'],
+                       last_name=self.validated_data['last_name'],
+                       date_of_birth=date_of_birth)
 
         account.set_password(password)
         account.save()
@@ -96,45 +121,44 @@ class SetNewPasswordSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(read_only=True)
     username = serializers.CharField(read_only=True)
-    # followers = serializers.SerializerMethodField(read_only=True)
-    # follows = serializers.SerializerMethodField(read_only=True)
+    avatar_url = serializers.SerializerMethodField('get_avatar_url')
     friends_count = serializers.IntegerField(read_only=True)
     followers_count = serializers.IntegerField(read_only=True)
     follows_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar',
+        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar_url',
                   'friends_count', 'followers_count', 'follows_count')
 
-    # def get_follows(self, instance):
-    #     return instance.get_total_follows()
-    #
-    # def get_followers(self, instance):
-    #     return instance.get_total_followers()
-
-    def get_friends(self, instance):
-        return instance.get_total_friends()
+    def get_avatar_url(self, obj):
+        return obj.avatar.url
 
 
 class BasicUserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True)
-    followers = serializers.SerializerMethodField(read_only=True)
-    follows = serializers.SerializerMethodField(read_only=True)
-    friends = serializers.SerializerMethodField(read_only=True)
+    display_name = serializers.CharField(read_only=True)
+    bio = serializers.CharField(read_only=True)
+    avatar_url = serializers.SerializerMethodField('get_avatar_url', read_only=True)
+    friends_count = serializers.IntegerField(read_only=True)
+    followers_count = serializers.IntegerField(read_only=True)
+    follows_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'bio', 'avatar', 'followers', 'follows', 'friends')
+        fields = ('username', 'display_name', 'bio', 'avatar_url', 'friends_count', 'followers_count', 'follows_count')
 
-    def get_follows(self, instance):
-        return instance.follows_count()
+    def get_avatar_url(self, obj):
+        return obj.avatar.url
 
-    def get_followers(self, instance):
-        return instance.followers_count()
-
-    def get_friends(self, instance):
-        return instance.friends_count()
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        print(type(instance.is_friend))
+        if type(instance.is_friend) == bool:
+            representation['is_friend'] = instance.is_friend
+        if type(instance.follow) == bool:
+            representation['follow'] = instance.follow
+        return representation
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -151,16 +175,23 @@ class ChatUserSerializer(serializers.ModelSerializer):
         fields = ('display_name', 'username', 'avatar')
 
 
-class FriendSerializer(serializers.ModelSerializer):
-    friend = serializers.SerializerMethodField(read_only=True)
+class ActionSerializer(serializers.ModelSerializer):
+    user__username = serializers.ReadOnlyField(source='user.username')
+    target_ct__username = serializers.ReadOnlyField(source='target_ct.username')
 
     class Meta:
-        model = get_user_model()
-        fields = ('friend',)
+        model = Action
+        fields = ('user__username', 'verb', 'target_ct__username')
 
-    def get_friend(self, obj):
-        user_serializer = BasicUserProfileSerializer(obj)
-        return user_serializer.data
+
+class FriendSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(read_only=True)
+    display_name = serializers.CharField(read_only=True)
+    avatar = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'display_name', 'avatar', 'first_name', 'last_name')
 
 
 class FriendshipRequestSerializer(serializers.ModelSerializer):

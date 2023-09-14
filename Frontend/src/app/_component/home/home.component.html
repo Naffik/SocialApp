@@ -1,0 +1,77 @@
+
+<div *ngIf="!loggedIn()">
+  <app-authenticator></app-authenticator>
+</div>
+<div *ngIf="loggedIn()" class="home-page">
+  <header>
+    <div class="header-left">
+    <h1 style="color:white;">Media społecznościowe z czatem tekstowym</h1>
+    </div>
+    <div class="header-right">
+        <div class="search-bar">
+            <img src="/assets/search.png">
+            <input type="text" placeholder="Wyszukaj">
+        </div>
+        <button class="header-user-icon">
+            <img src="/assets/profile-pic.png" alt="account pictures">
+            <p> Imie Nazwisko </p>
+        </button>
+    </div>
+</header>
+<div class="container">
+    <nav>
+         <!-- <h1> Media społecznościowe z czatem tekstowym </h1> -->
+        <ul>
+            <li><a href=#><img src="/assets/profile-home.png"></a></li>
+            <li><a href=#><img src="/assets/comment.png"></a></li>
+            <li><a href=#><img src="/assets/loves.png"></a></li>
+            <li><a href=#><img src="/assets/friends.png"></a></li>
+            <li><a href=#><img src="/assets/notification.png"></a></li>
+            <li><a href=#><img src="/assets/settings.png"></a></li>
+            <li><a (click)="logout()"><img src="/assets/logout.png"></a></li>
+        </ul>
+    </nav>
+
+    <div class="chat">
+      <div class="first-section">
+          <div class="chat-search-bar">
+              <img src="/assets/search.png">
+              <input type="text" placeholder="Wyszukaj">
+          </div>
+          <button class="new-message"><img src="/assets/add.png"> Nowa wiadomość</button>
+      </div>
+      <div class="second-section">
+        <div class="message-contact">
+            <img src="/assets/profile-pic.png"
+                alt="Avatar icon">
+            <p> Imie Nazwisko </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+        <div class="posts">
+          <app-content></app-content>
+        </div>
+    </div>
+
+    <div class="right-sidebar">
+        <div class="content-right-sidebar">
+          <button class="add-post-btn" >
+            <i class="fas fa-plus"></i> Dodaj post
+          </button>
+            <div class="trends">
+                <div class="first-section">
+                    <p>Trendy</p>
+                </div>
+                <div class="second-section">
+
+                </div>
+            </div>
+            <footer>
+                <a href="#"><img src="/assets/git.png"/></a>
+            </footer>
+        </div>
+    </div>
+</div>
+</div>
