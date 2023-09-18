@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.db.models import Exists
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -40,6 +41,14 @@ class User(AbstractUser):
 
     def follow(self, request_user, user):
         return Follow.objects.follows(request_user, user)
+
+    def request_friendship_sent(self, request_user):
+        request = Friend.objects.sent_requests(request_user)
+        print(request)
+        if request:
+            return True
+        return False
+
     # def save(self, *args, **kwargs):
     #     if self.date_of_birth is None:
     #         raise ValueError("Date of birth is required.")

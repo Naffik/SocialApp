@@ -209,7 +209,7 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'username'
 
     def get_serializer_class(self, request=None):
-        if self.request.user.username == self.kwargs.get('username'):
+        if self.request is not None and self.request.user.username == self.kwargs.get('username'):
             return UserProfileSerializer
         return BasicUserProfileSerializer
 
@@ -222,6 +222,7 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
                 return user
             user.is_friend = user.is_friend(request_user, user)
             user.follow = user.follow(request_user, user)
+            user.request_friendship_sent = user.request_friendship_sent(request_user)
             return user
         except User.DoesNotExist:
             raise Http404

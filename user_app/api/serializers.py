@@ -153,11 +153,12 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        print(type(instance.is_friend))
         if type(instance.is_friend) == bool:
             representation['is_friend'] = instance.is_friend
         if type(instance.follow) == bool:
             representation['follow'] = instance.follow
+        if type(instance.request_friendship_sent) == bool:
+            representation['request_friendship_sent'] = instance.request_friendship_sent
         return representation
 
 
