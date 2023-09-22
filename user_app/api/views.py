@@ -22,7 +22,7 @@ from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeErr
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse
 
-from .pagination import PostPagination
+from .pagination import DefaultPagination
 from .permissions import IsProfileUserOrReadOnly
 from .throttling import UserProfileDetailThrottle
 from .utils import Util, create_action
@@ -250,7 +250,7 @@ class ActionView(generics.ListAPIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = ActionSerializer
-    pagination_class = PostPagination
+    pagination_class = DefaultPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -267,6 +267,7 @@ class FriendViewSet(viewsets.ModelViewSet):
     ViewSet for Friend model
     """
     permission_classes = [IsAuthenticated]
+    pagination_class = DefaultPagination
     serializer_class = BasicUserProfileSerializer
     lookup_field = 'pk'
 
