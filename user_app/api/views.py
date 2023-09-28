@@ -486,6 +486,10 @@ class FriendViewSet(viewsets.ModelViewSet):
             followers = Follow.objects.followers(user=user)
         self.queryset = followers
         self.http_method_names = ['get', 'head', 'options', ]
+        page = self.paginate_queryset(followers)
+        if page is not None:
+            serializer = BasicUserProfileSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         return Response(BasicUserProfileSerializer(followers, many=True).data)
 
 
@@ -502,6 +506,10 @@ class FriendViewSet(viewsets.ModelViewSet):
             following = Follow.objects.following(user=user)
         self.queryset = following
         self.http_method_names = ['get', 'head', 'options', ]
+        page = self.paginate_queryset(following)
+        if page is not None:
+            serializer = BasicUserProfileSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         return Response(BasicUserProfileSerializer(following, many=True).data)
 
     @action(detail=False, serializer_class=BlockSerializer, methods=['post'])
