@@ -303,9 +303,18 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         Returns list of user's friends
         """
-        friends = Friend.objects.friends(user=request.user)
+        username = self.request.query_params.get('username')
+        if not username:
+            friends = Friend.objects.friends(user=request.user)
+        else:
+            user = get_object_or_404(User, username=username)
+            friends = Friend.objects.friends(user=user)
         self.queryset = friends
         self.http_method_names = ['get', 'head', 'options', ]
+        page = self.paginate_queryset(friends)
+        if page is not None:
+            serializer = FriendSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         return Response(FriendSerializer(self.queryset, many=True).data)
 
     def retrieve(self, request, pk=None):
@@ -465,21 +474,32 @@ class FriendViewSet(viewsets.ModelViewSet):
         return Response({"message": message}, status=status_code)
 
     @action(detail=False)
-    def followers(self, request):
+    def followers(self, request, username=None):
         """
         Returns a list of all user's followers
         """
-        followers = Follow.objects.followers(user=request.user)
+        username = self.request.query_params.get('username')
+        if not username:
+            followers = Follow.objects.followers(user=request.user)
+        else:
+            user = get_object_or_404(User, username=username)
+            followers = Follow.objects.followers(user=user)
         self.queryset = followers
         self.http_method_names = ['get', 'head', 'options', ]
         return Response(BasicUserProfileSerializer(followers, many=True).data)
+
 
     @action(detail=False)
     def following(self, request):
         """
         Returns a list of users the given user follows
         """
-        following = Follow.objects.following(user=request.user)
+        username = self.request.query_params.get('username')
+        if not username:
+            following = Follow.objects.following(user=request.user)
+        else:
+            user = get_object_or_404(User, username=username)
+            following = Follow.objects.following(user=user)
         self.queryset = following
         self.http_method_names = ['get', 'head', 'options', ]
         return Response(BasicUserProfileSerializer(following, many=True).data)
