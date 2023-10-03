@@ -144,22 +144,39 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
     followers_count = serializers.IntegerField(read_only=True)
     follows_count = serializers.IntegerField(read_only=True)
 
+    is_friend = serializers.SerializerMethodField()
+    follow = serializers.SerializerMethodField()
+    request_friendship_sent = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'bio', 'avatar_url', 'friends_count', 'followers_count', 'follows_count')
+        fields = ('username', 'display_name', 'bio', 'avatar_url', 'friends_count', 'followers_count', 'follows_count',
+                  'is_friend', 'follow', 'request_friendship_sent')
 
     def get_avatar_url(self, obj):
-        return obj.avatar.url
+        if isinstance(obj, dict):
+            return obj.get('avatar_url')
+        else:
+            return obj.avatar.url
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        if type(instance.is_friend) == bool:
-            representation['is_friend'] = instance.is_friend
-        if type(instance.follow) == bool:
-            representation['follow'] = instance.follow
-        if type(instance.request_friendship_sent) == bool:
-            representation['request_friendship_sent'] = instance.request_friendship_sent
-        return representation
+    def get_is_friend(self, obj):
+        return self.context.get('is_friend', False)
+
+    def get_follow(self, obj):
+        return self.context.get('follow', False)
+
+    def get_request_friendship_sent(self, obj):
+        return self.context.get('request_friendship_sent', False)
+
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #     if type(instance.is_friend) == bool:
+    #         representation['is_friend'] = instance.is_friend
+    #     if type(instance.follow) == bool:
+    #         representation['follow'] = instance.follow
+    #     if type(instance.request_friendship_sent) == bool:
+    #         representation['request_friendship_sent'] = instance.request_friendship_sent
+    #     return representation
 
 
 class UserSerializer(serializers.ModelSerializer):

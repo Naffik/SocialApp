@@ -1,4 +1,3 @@
-from django.db.models import Count, Exists
 from django.http import Http404
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -305,17 +304,26 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         username = self.request.query_params.get('username')
         if not username:
-            friends = Friend.objects.friends(user=request.user)
+            user = request.user
+            friends = Friend.objects.friends(user=user)
         else:
             user = get_object_or_404(User, username=username)
             friends = Friend.objects.friends(user=user)
-        self.queryset = friends
+        friend_list = []
+        for friend in friends:
+            follow_data = {
+                "is_friend": user.is_friend(request.user, friend),
+                "follow": user.follow(request.user, friend),
+                "request_friendship_sent": user.request_friendship_sent(request.user)
+            }
+            follow_data.update(BasicUserProfileSerializer(friend, context=follow_data).data)
+            friend_list.append(follow_data)
+        self.queryset = friend_list
         self.http_method_names = ['get', 'head', 'options', ]
-        page = self.paginate_queryset(friends)
+        page = self.paginate_queryset(friend_list)
         if page is not None:
-            serializer = FriendSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        return Response(FriendSerializer(self.queryset, many=True).data)
+            return self.get_paginated_response(friend_list)
+        return Response(FriendSerializer(friends, many=True).data)
 
     def retrieve(self, request, pk=None):
         """
@@ -480,16 +488,25 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         username = self.request.query_params.get('username')
         if not username:
-            followers = Follow.objects.followers(user=request.user)
+            user = request.user
+            followers = Follow.objects.followers(user=user)
         else:
             user = get_object_or_404(User, username=username)
             followers = Follow.objects.followers(user=user)
-        self.queryset = followers
+        followed_list = []
+        for followed in followers:
+            follow_data = {
+                "is_friend": user.is_friend(request.user, followed),
+                "follow": user.follow(request.user, followed),
+                "request_friendship_sent": user.request_friendship_sent(request.user)
+            }
+            follow_data.update(BasicUserProfileSerializer(followed, context=follow_data).data)
+            followed_list.append(follow_data)
+        self.queryset = followed_list
         self.http_method_names = ['get', 'head', 'options', ]
-        page = self.paginate_queryset(followers)
+        page = self.paginate_queryset(followed_list)
         if page is not None:
-            serializer = BasicUserProfileSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            return self.get_paginated_response(followed_list)
         return Response(BasicUserProfileSerializer(followers, many=True).data)
 
 
@@ -500,16 +517,25 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         username = self.request.query_params.get('username')
         if not username:
-            following = Follow.objects.following(user=request.user)
+            user = request.user
+            following = Follow.objects.following(user=user)
         else:
             user = get_object_or_404(User, username=username)
             following = Follow.objects.following(user=user)
-        self.queryset = following
+        following_list = []
+        for follow in following:
+            follow_data = {
+                "is_friend": user.is_friend(request.user, follow),
+                "follow": user.follow(request.user, follow),
+                "request_friendship_sent": user.request_friendship_sent(request.user)
+            }
+            follow_data.update(BasicUserProfileSerializer(follow, context=follow_data).data)
+            following_list.append(follow_data)
+        self.queryset = following_list
         self.http_method_names = ['get', 'head', 'options', ]
-        page = self.paginate_queryset(following)
+        page = self.paginate_queryset(following_list)
         if page is not None:
-            serializer = BasicUserProfileSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            return self.get_paginated_response(following_list)
         return Response(BasicUserProfileSerializer(following, many=True).data)
 
     @action(detail=False, serializer_class=BlockSerializer, methods=['post'])

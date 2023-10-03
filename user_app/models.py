@@ -44,7 +44,6 @@ class User(AbstractUser):
 
     def request_friendship_sent(self, request_user):
         request = Friend.objects.sent_requests(request_user)
-        print(request)
         if request:
             return True
         return False
