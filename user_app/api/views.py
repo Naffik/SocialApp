@@ -256,7 +256,7 @@ class ActionView(generics.ListAPIView):
         actions = Action.objects.exclude(user=user)
         follows = Follow.objects.following(user=user)
         if follows:
-            actions = Action.filter(user_id__in=follows)
+            actions = Action.objects.exclude(user=user).filter(user_id__in=follows)
             return actions
         return actions
 

@@ -194,12 +194,12 @@ class ChatUserSerializer(serializers.ModelSerializer):
 
 
 class ActionSerializer(serializers.ModelSerializer):
-    user__username = serializers.ReadOnlyField(source='user.username')
-    target_ct__username = serializers.ReadOnlyField(source='target_ct.username')
+    user = serializers.ReadOnlyField(source='user.username')
+    target = serializers.ReadOnlyField(source='target.username')
 
     class Meta:
         model = Action
-        fields = ('user__username', 'verb', 'target_ct__username')
+        fields = ('user', 'verb', 'target')
 
 
 class FriendSerializer(serializers.ModelSerializer):

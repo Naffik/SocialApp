@@ -232,3 +232,35 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         message = event['message']
         await self.send(text_data=json.dumps(message))
+
+
+class NotificationConsumer(AsyncWebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.room_group_name = None
+        self.room_name = None
+
+    async def connect(self):
+        self.room_name = self.scope['user'].username
+        self.room_group_name = f'notification_{self.room_name}'
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+
+    async def disconnect(self, close_code):
+
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def send_notification(self, event):
+        notification_content = event['notification_content']
+
+        await self.send(text_data=json.dumps({
+            'notification_content': notification_content
+        }))

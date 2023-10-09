@@ -4,6 +4,7 @@ from asgiref.sync import async_to_sync
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from chat_app.models import ChatRoom, ChatMessage
+from user_app.models import Action
 
 
 @receiver(post_save, sender=ChatMessage)
@@ -65,3 +66,23 @@ def auto_delete_image_on_change(sender, instance, **kwargs):
     if not old_image == new_image:
         if os.path.isfile(old_image.path):
             os.remove(old_image.path)
+
+
+@receiver(post_save, sender=Action)
+def channel_notification_signal(sender, instance,  created, **kwargs):
+    """
+    Send notification when action was taken.
+    """
+    username = instance.user.username
+    notification_content = f'{instance.user.username} {instance.verb} {instance.target.username}'
+    try:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'notification_{username}',
+            {
+                'type': 'send_notification',
+                'notification_content': notification_content
+            }
+        )
+    except Exception as e:
+        raise Exception(f"Something went wrong in channel_list signal {e}")

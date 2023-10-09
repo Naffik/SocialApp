@@ -6,4 +6,5 @@ from .channelsmiddleware import JwtAuthMiddlewareStack
 
 websocket_urlpatterns = [
 	re_path(r'c/(?P<chat_uuid>\w+)/$', consumers.ChatConsumer.as_asgi()),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+	re_path(r'notifications/(?P<username>\w+)/$', consumers.NotificationConsumer.as_asgi()),
+]
