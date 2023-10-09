@@ -221,7 +221,7 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
                 return user
             user.is_friend = user.is_friend(request_user, user)
             user.follow = user.follow(request_user, user)
-            user.request_friendship_sent = user.request_friendship_sent(request_user)
+            user.request_friendship_sent = user.request_friendship_sent(request_user, user)
             return user
         except User.DoesNotExist:
             raise Http404

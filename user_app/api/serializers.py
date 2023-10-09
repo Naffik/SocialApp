@@ -168,15 +168,15 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
     def get_request_friendship_sent(self, obj):
         return self.context.get('request_friendship_sent', False)
 
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     if type(instance.is_friend) == bool:
-    #         representation['is_friend'] = instance.is_friend
-    #     if type(instance.follow) == bool:
-    #         representation['follow'] = instance.follow
-    #     if type(instance.request_friendship_sent) == bool:
-    #         representation['request_friendship_sent'] = instance.request_friendship_sent
-    #     return representation
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if type(instance.is_friend) == bool:
+            representation['is_friend'] = instance.is_friend
+        if type(instance.follow) == bool:
+            representation['follow'] = instance.follow
+        if type(instance.request_friendship_sent) == bool:
+            representation['request_friendship_sent'] = instance.request_friendship_sent
+        return representation
 
 
 class UserSerializer(serializers.ModelSerializer):
