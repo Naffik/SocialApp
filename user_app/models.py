@@ -42,10 +42,11 @@ class User(AbstractUser):
     def follow(self, request_user, user):
         return Follow.objects.follows(request_user, user)
 
-    def request_friendship_sent(self, request_user):
-        request = Friend.objects.sent_requests(request_user)
-        if request:
-            return True
+    def request_friendship_sent(self, request_user, user):
+        requests = Friend.objects.sent_requests(request_user)
+        for request in requests:
+            if request.to_user == user:
+                return True
         return False
 
     # def save(self, *args, **kwargs):

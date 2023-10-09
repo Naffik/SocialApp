@@ -314,7 +314,7 @@ class FriendViewSet(viewsets.ModelViewSet):
             follow_data = {
                 "is_friend": user.is_friend(request.user, friend),
                 "follow": user.follow(request.user, friend),
-                "request_friendship_sent": user.request_friendship_sent(request.user)
+                "request_friendship_sent": user.request_friendship_sent(request.user, friend)
             }
             follow_data.update(BasicUserProfileSerializer(friend, context=follow_data).data)
             friend_list.append(follow_data)
@@ -498,7 +498,7 @@ class FriendViewSet(viewsets.ModelViewSet):
             follow_data = {
                 "is_friend": user.is_friend(request.user, followed),
                 "follow": user.follow(request.user, followed),
-                "request_friendship_sent": user.request_friendship_sent(request.user)
+                "request_friendship_sent": user.request_friendship_sent(request.user, followed)
             }
             follow_data.update(BasicUserProfileSerializer(followed, context=follow_data).data)
             followed_list.append(follow_data)
@@ -524,10 +524,11 @@ class FriendViewSet(viewsets.ModelViewSet):
             following = Follow.objects.following(user=user)
         following_list = []
         for follow in following:
+            # print(follow)
             follow_data = {
                 "is_friend": user.is_friend(request.user, follow),
                 "follow": user.follow(request.user, follow),
-                "request_friendship_sent": user.request_friendship_sent(request.user)
+                "request_friendship_sent": user.request_friendship_sent(request.user, follow)
             }
             follow_data.update(BasicUserProfileSerializer(follow, context=follow_data).data)
             following_list.append(follow_data)
