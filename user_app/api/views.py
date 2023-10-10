@@ -342,8 +342,23 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         Returns a list of user's received friend requests
         """
-        friend_requests = Friend.objects.unrejected_requests(user=request.user)
+        user = request.user
+        friend_requests = Friend.objects.unrejected_requests(user=user)
+        friend_requests_list = []
+        for request in friend_requests:
+            request_data = {
+                "avatar_url": request.to_user.avatar.url,
+                "username": request.to_user.username,
+                "display_name": request.to_user.display_name,
+            }
+            request_data.update(BasicUserProfileSerializer(request, context=request_data).data)
+            friend_requests_list.append(request_data)
+
         self.queryset = friend_requests
+        self.http_method_names = ['get', 'head', 'options', ]
+        page = self.paginate_queryset(friend_requests_list)
+        if page is not None:
+            return self.get_paginated_response(friend_requests_list)
         return Response(FriendshipRequestSerializer(friend_requests, many=True).data)
 
     @ action(detail=False)
@@ -351,8 +366,23 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         Returns a list of user's sent friend requests
         """
-        friend_requests = Friend.objects.sent_requests(user=request.user)
+        user = request.user
+        friend_requests = Friend.objects.sent_requests(user=user)
+        friend_requests_list = []
+        for request in friend_requests:
+            request_data = {
+                "avatar_url": request.to_user.avatar.url,
+                "username": request.to_user.username,
+                "display_name": request.to_user.display_name,
+            }
+            request_data.update(FriendshipRequestSerializer(request, context=request_data).data)
+            friend_requests_list.append(request_data)
+
         self.queryset = friend_requests
+        self.http_method_names = ['get', 'head', 'options', ]
+        page = self.paginate_queryset(friend_requests_list)
+        if page is not None:
+            return self.get_paginated_response(friend_requests_list)
         return Response(FriendshipRequestSerializer(friend_requests, many=True).data)
 
     @ action(detail=False)

@@ -215,17 +215,29 @@ class FriendSerializer(serializers.ModelSerializer):
 class FriendshipRequestSerializer(serializers.ModelSerializer):
     to_user = serializers.CharField()
     from_user = serializers.StringRelatedField()
+    avatar_url = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField()
 
     class Meta:
         model = FriendshipRequest
-        fields = ('id', 'from_user', 'to_user', 'message',
-                  'created', 'rejected', 'viewed')
+        fields = ('id', 'from_user', 'to_user', 'message', 'created', 'rejected', 'viewed', 'avatar_url', 'username',
+                  'display_name')
         extra_kwargs = {
             'from_user': {'read_only': True},
             'created': {'read_only': True},
             'rejected': {'read_only': True},
             'viewed': {'read_only': True},
         }
+
+    def get_avatar_url(self, obj):
+        return self.context.get('avatar_url', None)
+
+    def get_username(self, obj):
+        return self.context.get('username', None)
+
+    def get_display_name(self, obj):
+        return self.context.get('display_name', None)
 
 
 class FriendshipRequestResponseSerializer(serializers.ModelSerializer):
