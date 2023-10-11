@@ -351,7 +351,7 @@ class FriendViewSet(viewsets.ModelViewSet):
                 "username": request.to_user.username,
                 "display_name": request.to_user.display_name,
             }
-            request_data.update(BasicUserProfileSerializer(request, context=request_data).data)
+            request_data.update(FriendshipRequestSerializer(request, context=request_data).data)
             friend_requests_list.append(request_data)
 
         self.queryset = friend_requests
