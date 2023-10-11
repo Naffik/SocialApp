@@ -149,6 +149,32 @@ class PostFavAddView(APIView):
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class PostLikeAddView(APIView):
+    """
+    Add or remove a like
+    """
+    permission_classes = [IsAuthenticated]
+    bad_request_message = 'An error has occurred'
+
+    def post(self, request):
+        post = get_object_or_404(Post, pk=request.data.get('pk'))
+        user = self.request.user
+        like = Like.objects.get(post=post)
+        if not like.users.filter(username=user):
+            like.users.add(user)
+            return Response({'detail': 'User added like'}, status=status.HTTP_200_OK)
+        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        post = get_object_or_404(Post, pk=request.data.get('pk'))
+        user = self.request.user
+        like = Like.objects.get(post=post)
+        if like.users.filter(username=user):
+            like.users.remove(user)
+            return Response({'detail': 'User removed like'}, status=status.HTTP_200_OK)
+        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class PostFavListView(generics.ListAPIView):
     """
     List of request user posts added to favorites
