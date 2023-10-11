@@ -82,7 +82,7 @@ class PostCreateSerializer(TaggitSerializer, serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'tags', 'post_author', 'post_author_avatar', 'display_name', 'content', 'created', 'image',
-                  'number_of_favorites', 'number_of_likes', 'is_liked', 'is_favorite', 'number_of_comments']
+                  'number_of_favorites', 'likes', 'number_of_likes', 'is_liked', 'is_favorite', 'number_of_comments']
 
     def get_post_author_avatar(self, instance):
         return instance.post_author.avatar.url
