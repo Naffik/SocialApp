@@ -467,8 +467,8 @@ class FriendViewSet(viewsets.ModelViewSet):
         if not friendship_request.to_user == request.user:
             return Response({"message": "Request for current user not found."}, status.HTTP_400_BAD_REQUEST)
 
-        friendship_request.reject()
-        friendship_request.delete()
+        friendship_request.cancel()
+        # friendship_request.delete()
         create_action(request.user, 'odrzuciłeś zaproszenie do znajomych od użytkownika', friendship_request.from_user)
 
         return Response({"message": "Request rejected, user NOT added to friends."}, status.HTTP_201_CREATED)
