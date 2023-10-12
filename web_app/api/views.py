@@ -199,6 +199,20 @@ class PostFavListView(generics.ListAPIView):
         return super(PostFavListView, self).list(request, *args, **kwargs)
 
 
+class PostMediaListView(generics.ListAPIView):
+    """
+    List of request user posts added to favorites
+    """
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = PostPagination
+
+    def get_queryset(self, *args, **kwargs):
+        username = self.kwargs.get('username')
+        media = Post.objects.filter(post_author__username=username).exclude(image="")
+        return media
+
+
 class CommentListView(generics.ListAPIView):
     """
     List view for Comment model
@@ -210,11 +224,31 @@ class CommentListView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['comment_author__username', 'post__id']
 
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     print(user)
+    #     if user.is_authenticated:
+    #         comments = Comment.objects.exclude(comment_author__in=blocked)
+    #     else:
+    #         comments = Comment.objects.all()
+    #     return comments
+
+
+class UserCommentListView(generics.ListAPIView):
+    """
+    List view for Comment model for given user
+    """
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = PostPagination
+
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            blocked = Block.objects.blocking(user=user)
-            comments = Comment.objects.exclude(post_author__in=blocked)
+            comments = Comment.objects.filter(comment_author=user)\
+                .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                          is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
         else:
             comments = Comment.objects.all()
         return comments

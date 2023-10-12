@@ -122,4 +122,3 @@ class PostFavSerializer(PostSerializer):
     class Meta:
         model = Post
         exclude = ('favorites',)
-        

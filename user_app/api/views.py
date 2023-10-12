@@ -1,5 +1,6 @@
 from django.http import Http404
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -207,7 +208,7 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsProfileUserOrReadOnly]
     lookup_field = 'username'
 
-    def get_serializer_class(self, request=None):
+    def get_serializer_class(self):
         if self.request is not None and self.request.user.username == self.kwargs.get('username'):
             return UserProfileSerializer
         return BasicUserProfileSerializer
@@ -219,12 +220,26 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
             user = User.objects.get(username=username)
             if not request_user.is_authenticated or request_user.username == username:
                 return user
+            blocked = Block.objects.blocked(user=request_user)
+            if user in blocked:
+                raise PermissionDenied({'message': 'You have blocked this user'})
+            blocking = Block.objects.blocking(user=request_user)
+            if user in blocking:
+                raise PermissionDenied({'message': 'You have been blocked by this user'})
             user.is_friend = user.is_friend(request_user, user)
             user.follow = user.follow(request_user, user)
             user.request_friendship_sent = user.request_friendship_sent(request_user, user)
             return user
         except User.DoesNotExist:
-            raise Http404
+            raise NotFound("User not found")
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        except PermissionDenied as e:
+            return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
 
     def perform_destroy(self, instance):
         if not instance.avatar == 'profile_images/default.jpg':
