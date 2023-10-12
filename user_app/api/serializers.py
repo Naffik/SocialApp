@@ -144,20 +144,38 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
     followers_count = serializers.IntegerField(read_only=True)
     follows_count = serializers.IntegerField(read_only=True)
 
+    is_friend = serializers.SerializerMethodField()
+    follow = serializers.SerializerMethodField()
+    request_friendship_sent = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'bio', 'avatar_url', 'friends_count', 'followers_count', 'follows_count')
+        fields = ('username', 'display_name', 'bio', 'avatar_url', 'friends_count', 'followers_count', 'follows_count',
+                  'is_friend', 'follow', 'request_friendship_sent')
 
     def get_avatar_url(self, obj):
-        return obj.avatar.url
+        if isinstance(obj, dict):
+            return obj.get('avatar_url')
+        else:
+            return obj.avatar.url
+
+    def get_is_friend(self, obj):
+        return self.context.get('is_friend', False)
+
+    def get_follow(self, obj):
+        return self.context.get('follow', False)
+
+    def get_request_friendship_sent(self, obj):
+        return self.context.get('request_friendship_sent', False)
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        print(type(instance.is_friend))
         if type(instance.is_friend) == bool:
             representation['is_friend'] = instance.is_friend
         if type(instance.follow) == bool:
             representation['follow'] = instance.follow
+        if type(instance.request_friendship_sent) == bool:
+            representation['request_friendship_sent'] = instance.request_friendship_sent
         return representation
 
 
@@ -176,12 +194,12 @@ class ChatUserSerializer(serializers.ModelSerializer):
 
 
 class ActionSerializer(serializers.ModelSerializer):
-    user__username = serializers.ReadOnlyField(source='user.username')
-    target_ct__username = serializers.ReadOnlyField(source='target_ct.username')
+    user = serializers.ReadOnlyField(source='user.username')
+    target = serializers.ReadOnlyField(source='target.username')
 
     class Meta:
         model = Action
-        fields = ('user__username', 'verb', 'target_ct__username')
+        fields = ('user', 'verb', 'target')
 
 
 class FriendSerializer(serializers.ModelSerializer):
@@ -191,23 +209,35 @@ class FriendSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'avatar', 'first_name', 'last_name')
+        fields = ('username', 'bio', 'display_name', 'avatar', 'first_name', 'last_name')
 
 
 class FriendshipRequestSerializer(serializers.ModelSerializer):
     to_user = serializers.CharField()
     from_user = serializers.StringRelatedField()
+    avatar_url = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField()
 
     class Meta:
         model = FriendshipRequest
-        fields = ('id', 'from_user', 'to_user', 'message',
-                  'created', 'rejected', 'viewed')
+        fields = ('id', 'from_user', 'to_user', 'message', 'created', 'rejected', 'viewed', 'avatar_url', 'username',
+                  'display_name')
         extra_kwargs = {
             'from_user': {'read_only': True},
             'created': {'read_only': True},
             'rejected': {'read_only': True},
             'viewed': {'read_only': True},
         }
+
+    def get_avatar_url(self, obj):
+        return self.context.get('avatar_url', None)
+
+    def get_username(self, obj):
+        return self.context.get('username', None)
+
+    def get_display_name(self, obj):
+        return self.context.get('display_name', None)
 
 
 class FriendshipRequestResponseSerializer(serializers.ModelSerializer):

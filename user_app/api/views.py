@@ -1,4 +1,3 @@
-from django.db.models import Count, Exists
 from django.http import Http404
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -22,7 +21,7 @@ from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeErr
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse
 
-from .pagination import PostPagination
+from .pagination import DefaultPagination
 from .permissions import IsProfileUserOrReadOnly
 from .throttling import UserProfileDetailThrottle
 from .utils import Util, create_action
@@ -209,7 +208,7 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'username'
 
     def get_serializer_class(self, request=None):
-        if self.request.user.username == self.kwargs.get('username'):
+        if self.request is not None and self.request.user.username == self.kwargs.get('username'):
             return UserProfileSerializer
         return BasicUserProfileSerializer
 
@@ -222,6 +221,7 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
                 return user
             user.is_friend = user.is_friend(request_user, user)
             user.follow = user.follow(request_user, user)
+            user.request_friendship_sent = user.request_friendship_sent(request_user, user)
             return user
         except User.DoesNotExist:
             raise Http404
@@ -249,14 +249,14 @@ class ActionView(generics.ListAPIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = ActionSerializer
-    pagination_class = PostPagination
+    pagination_class = DefaultPagination
 
     def get_queryset(self):
         user = self.request.user
         actions = Action.objects.exclude(user=user)
         follows = Follow.objects.following(user=user)
         if follows:
-            actions = Action.filter(user_id__in=follows)
+            actions = Action.objects.exclude(user=user).filter(user_id__in=follows)
             return actions
         return actions
 
@@ -266,6 +266,7 @@ class FriendViewSet(viewsets.ModelViewSet):
     ViewSet for Friend model
     """
     permission_classes = [IsAuthenticated]
+    pagination_class = DefaultPagination
     serializer_class = BasicUserProfileSerializer
     lookup_field = 'pk'
 
@@ -301,10 +302,28 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         Returns list of user's friends
         """
-        friends = Friend.objects.friends(user=request.user)
-        self.queryset = friends
+        username = self.request.query_params.get('username')
+        if not username:
+            user = request.user
+            friends = Friend.objects.friends(user=user)
+        else:
+            user = get_object_or_404(User, username=username)
+            friends = Friend.objects.friends(user=user)
+        friend_list = []
+        for friend in friends:
+            follow_data = {
+                "is_friend": user.is_friend(request.user, friend),
+                "follow": user.follow(request.user, friend),
+                "request_friendship_sent": user.request_friendship_sent(request.user, friend)
+            }
+            follow_data.update(BasicUserProfileSerializer(friend, context=follow_data).data)
+            friend_list.append(follow_data)
+        self.queryset = friend_list
         self.http_method_names = ['get', 'head', 'options', ]
-        return Response(FriendSerializer(self.queryset, many=True).data)
+        page = self.paginate_queryset(friend_list)
+        if page is not None:
+            return self.get_paginated_response(friend_list)
+        return Response(FriendSerializer(friends, many=True).data)
 
     def retrieve(self, request, pk=None):
         """
@@ -323,8 +342,23 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         Returns a list of user's received friend requests
         """
-        friend_requests = Friend.objects.unrejected_requests(user=request.user)
+        user = request.user
+        friend_requests = Friend.objects.unrejected_requests(user=user)
+        friend_requests_list = []
+        for request in friend_requests:
+            request_data = {
+                "avatar_url": request.to_user.avatar.url,
+                "username": request.to_user.username,
+                "display_name": request.to_user.display_name,
+            }
+            request_data.update(FriendshipRequestSerializer(request, context=request_data).data)
+            friend_requests_list.append(request_data)
+
         self.queryset = friend_requests
+        self.http_method_names = ['get', 'head', 'options', ]
+        page = self.paginate_queryset(friend_requests_list)
+        if page is not None:
+            return self.get_paginated_response(friend_requests_list)
         return Response(FriendshipRequestSerializer(friend_requests, many=True).data)
 
     @ action(detail=False)
@@ -332,8 +366,23 @@ class FriendViewSet(viewsets.ModelViewSet):
         """
         Returns a list of user's sent friend requests
         """
-        friend_requests = Friend.objects.sent_requests(user=request.user)
+        user = request.user
+        friend_requests = Friend.objects.sent_requests(user=user)
+        friend_requests_list = []
+        for request in friend_requests:
+            request_data = {
+                "avatar_url": request.to_user.avatar.url,
+                "username": request.to_user.username,
+                "display_name": request.to_user.display_name,
+            }
+            request_data.update(FriendshipRequestSerializer(request, context=request_data).data)
+            friend_requests_list.append(request_data)
+
         self.queryset = friend_requests
+        self.http_method_names = ['get', 'head', 'options', ]
+        page = self.paginate_queryset(friend_requests_list)
+        if page is not None:
+            return self.get_paginated_response(friend_requests_list)
         return Response(FriendshipRequestSerializer(friend_requests, many=True).data)
 
     @ action(detail=False)
@@ -418,7 +467,8 @@ class FriendViewSet(viewsets.ModelViewSet):
         if not friendship_request.to_user == request.user:
             return Response({"message": "Request for current user not found."}, status.HTTP_400_BAD_REQUEST)
 
-        friendship_request.reject()
+        friendship_request.cancel()
+        # friendship_request.delete()
         create_action(request.user, 'odrzuciłeś zaproszenie do znajomych od użytkownika', friendship_request.from_user)
 
         return Response({"message": "Request rejected, user NOT added to friends."}, status.HTTP_201_CREATED)
@@ -463,23 +513,61 @@ class FriendViewSet(viewsets.ModelViewSet):
         return Response({"message": message}, status=status_code)
 
     @action(detail=False)
-    def followers(self, request):
+    def followers(self, request, username=None):
         """
         Returns a list of all user's followers
         """
-        followers = Follow.objects.followers(user=request.user)
-        self.queryset = followers
+        username = self.request.query_params.get('username')
+        if not username:
+            user = request.user
+            followers = Follow.objects.followers(user=user)
+        else:
+            user = get_object_or_404(User, username=username)
+            followers = Follow.objects.followers(user=user)
+        followed_list = []
+        for followed in followers:
+            follow_data = {
+                "is_friend": user.is_friend(request.user, followed),
+                "follow": user.follow(request.user, followed),
+                "request_friendship_sent": user.request_friendship_sent(request.user, followed)
+            }
+            follow_data.update(BasicUserProfileSerializer(followed, context=follow_data).data)
+            followed_list.append(follow_data)
+        self.queryset = followed_list
         self.http_method_names = ['get', 'head', 'options', ]
+        page = self.paginate_queryset(followed_list)
+        if page is not None:
+            return self.get_paginated_response(followed_list)
         return Response(BasicUserProfileSerializer(followers, many=True).data)
+
 
     @action(detail=False)
     def following(self, request):
         """
         Returns a list of users the given user follows
         """
-        following = Follow.objects.following(user=request.user)
-        self.queryset = following
+        username = self.request.query_params.get('username')
+        if not username:
+            user = request.user
+            following = Follow.objects.following(user=user)
+        else:
+            user = get_object_or_404(User, username=username)
+            following = Follow.objects.following(user=user)
+        following_list = []
+        for follow in following:
+            # print(follow)
+            follow_data = {
+                "is_friend": user.is_friend(request.user, follow),
+                "follow": user.follow(request.user, follow),
+                "request_friendship_sent": user.request_friendship_sent(request.user, follow)
+            }
+            follow_data.update(BasicUserProfileSerializer(follow, context=follow_data).data)
+            following_list.append(follow_data)
+        self.queryset = following_list
         self.http_method_names = ['get', 'head', 'options', ]
+        page = self.paginate_queryset(following_list)
+        if page is not None:
+            return self.get_paginated_response(following_list)
         return Response(BasicUserProfileSerializer(following, many=True).data)
 
     @action(detail=False, serializer_class=BlockSerializer, methods=['post'])
