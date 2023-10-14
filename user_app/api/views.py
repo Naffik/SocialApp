@@ -362,9 +362,9 @@ class FriendViewSet(viewsets.ModelViewSet):
         friend_requests_list = []
         for request in friend_requests:
             request_data = {
-                "avatar_url": request.to_user.avatar.url,
-                "username": request.to_user.username,
-                "display_name": request.to_user.display_name,
+                "avatar_url": request.from_user.avatar.url,
+                "username": request.from_user.username,
+                "display_name": request.from_user.display_name,
             }
             request_data.update(FriendshipRequestSerializer(request, context=request_data).data)
             friend_requests_list.append(request_data)
