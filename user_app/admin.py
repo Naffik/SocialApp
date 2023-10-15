@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from user_app.models import User, OnlineUser, Action
+from user_app.models import User, Action
 
 fields = list(UserAdmin.fieldsets)
 fields[0] = ('Login info', {'fields': ('email', 'password',)})
@@ -16,4 +16,3 @@ class ActionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(OnlineUser)

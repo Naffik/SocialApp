@@ -57,13 +57,6 @@ class User(AbstractUser):
     #     super().save(*args, **kwargs)
 
 
-class OnlineUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.user.username
-
-
 class Action(models.Model):
     user = models.ForeignKey(User, related_name='actions', db_index=True, on_delete=models.CASCADE)
     verb = models.CharField(max_length=255)
