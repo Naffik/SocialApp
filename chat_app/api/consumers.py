@@ -1,4 +1,5 @@
 import json
+import redis
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from rest_framework.generics import get_object_or_404
@@ -6,7 +7,6 @@ from rest_framework.generics import get_object_or_404
 from user_app.models import User, OnlineUser
 from chat_app.models import ChatRoom, ChatMessage
 from friendship.models import Friend
-
 
 class ChatConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
