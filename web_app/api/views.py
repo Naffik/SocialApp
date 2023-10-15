@@ -132,16 +132,16 @@ class PostFavAddView(APIView):
     permission_classes = [IsAuthenticated]
     bad_request_message = 'An error has occurred'
 
-    def post(self, request):
-        post = get_object_or_404(Post, pk=request.data.get('pk'))
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         user = self.request.user
         if user not in post.favorites.all():
             post.favorites.add(user)
             return Response({'detail': 'User added to post'}, status=status.HTTP_200_OK)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
-        post = get_object_or_404(Post, pk=request.data.get('pk'))
+    def delete(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         user = self.request.user
         if user in post.favorites.all():
             post.favorites.remove(user)
@@ -156,8 +156,8 @@ class PostLikeAddView(APIView):
     permission_classes = [IsAuthenticated]
     bad_request_message = 'An error has occurred'
 
-    def post(self, request):
-        post = get_object_or_404(Post, pk=request.data.get('pk'))
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         user = self.request.user
         like = Like.objects.get(post=post)
         if not like.users.filter(username=user):
@@ -165,8 +165,8 @@ class PostLikeAddView(APIView):
             return Response({'detail': 'User added like'}, status=status.HTTP_200_OK)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
-        post = get_object_or_404(Post, pk=request.data.get('pk'))
+    def delete(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         user = self.request.user
         like = Like.objects.get(post=post)
         if like.users.filter(username=user):

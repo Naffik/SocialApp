@@ -44,4 +44,4 @@ class Comment(models.Model):
         return str(self.comment_author)
 
     class Meta:
-        ordering = ['created']
+        ordering = ['-created']
