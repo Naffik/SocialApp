@@ -1,11 +1,19 @@
 import json
+import logging
+
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.core.cache import cache
 from rest_framework.generics import get_object_or_404
 
-from user_app.models import User, OnlineUser
+from chat_app.api.redis_utils import add_online_user, remove_online_user, get_online_users
+from user_app.models import User
 from chat_app.models import ChatRoom, ChatMessage
 from friendship.models import Friend
+
+CHAT_MESSAGE_TYPE = 'chat.message'
+DEFAULT_PAGINATION = {"start": "0", "end": "50"}
+logger = logging.getLogger('django')
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -14,8 +22,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.is_member = None
         self.chat_uuid = None
         self.user_room = None
-        self.user_pk = None
         self.user = None
+
+    def get_from_cache_or_db(self, cache_key, db_query_method, *args, **kwargs):
+        try:
+            cached_data = cache.get(cache_key)
+        except Exception as e:
+            logger.error(f"Failed to fetch from cache: {e}")
+            cached_data = None
+        if not cached_data:
+            try:
+                cached_data = db_query_method(*args, **kwargs)
+            except Exception as e:
+                logger.error(f"Database error {e}")
+                return None
+            try:
+                cache.set(cache_key, cached_data)
+            except Exception as e:
+                logger.error(f"Failed to set cache key {e}")
+        return cached_data
 
     def is_user_in_chat_room(self, chat_uuid, user_pk):
         return ChatRoom.objects.filter(member=user_pk).filter(chat_uuid=chat_uuid).exists()
@@ -29,30 +54,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
         chats = ChatRoom.objects.filter(member=self.user.pk)
         return [chat.chat_uuid for chat in chats]
 
-    def get_online_users(self):
-        online_users = OnlineUser.objects.all()
-        return [online_user.user.pk for online_user in online_users]
-
     def get_online_friends(self):
-        friends = list(Friend.objects.filter(from_user=self.user).values_list('to_user', flat=True))
-        if len(friends) > 0:
-            online_friends = OnlineUser.objects.filter(user__in=friends)
-            return [online_friend.user.pk for online_friend in online_friends]
-        else:
-            return 'None'
-
-    def add_online_user(self, user):
-        try:
-            OnlineUser.objects.create(user=user)
-        except:
-            pass
-
-    def delete_online_user(self, user):
-        get_object_or_404(OnlineUser, user=user).delete()
+        online_users = list(map(int, get_online_users()))
+        friends = list(Friend.objects.filter(from_user=self.user).filter(to_user__in=online_users)
+                       .values_list('to_user', flat=True))
+        return friends
 
     def save_message(self, message, user_pk, chat_uuid):
-        user_obj = User.objects.get(pk=user_pk)
-        chat_obj = ChatRoom.objects.get(chat_uuid=chat_uuid)
+        user_obj = self.get_from_cache_or_db(f"user_{user_pk}", User.objects.get, pk=user_pk)
+        chat_obj = self.get_from_cache_or_db(f"chat_{chat_uuid}", ChatRoom.objects.get, chat_uuid=chat_uuid)
+
         message_obj = ChatMessage.objects.create(chat=chat_obj, user=user_obj, message=message)
         return {
             'pk': message_obj.pk,
@@ -87,23 +98,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def messages_to_json(self, messages):
         result = []
         for message in messages:
+            message_data = {
+                'pk': str(message.pk),
+                'user': message.user.username,
+                'avatar': message.user.avatar.url,
+                'message': message.message,
+                'timestamp': str(message.timestamp)
+            }
             if message.image:
-                result.append({
-                    'pk': str(message.pk),
-                    'user': message.user.username,
-                    'avatar': message.user.avatar.url,
-                    'message': message.message,
-                    'image': message.image.url,
-                    'timestamp': str(message.timestamp)
-                })
-            else:
-                result.append({
-                    'pk': str(message.pk),
-                    'user': message.user.username,
-                    'avatar': message.user.avatar.url,
-                    'message': message.message,
-                    'timestamp': str(message.timestamp)
-                })
+                message_data['image'] = message.image.url
+            result.append(message_data)
         return result
 
     async def send_chats_list(self):
@@ -118,7 +122,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.send(self.channel_name, chat_message)
 
     async def send_online_user_list(self):
-        online_user_list = await database_sync_to_async(self.get_online_users)()
+        online_user_list = list(map(int, get_online_users()))
         chat_message = {
             'type': 'chat.message',
             'message': {
@@ -143,34 +147,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.user = self.scope['user']
         self.chat_uuid = self.scope["url_route"]["kwargs"]["chat_uuid"]
         self.user_room = await database_sync_to_async(list)(ChatRoom.objects.filter(member=self.user.pk))
-        self.user_pk = await database_sync_to_async(self.get_user_pk)(self.user)
-        self.is_member = await database_sync_to_async(self.is_user_in_chat_room)(self.chat_uuid, self.user_pk)
+        self.is_member = await database_sync_to_async(self.is_user_in_chat_room)(self.chat_uuid, self.user.pk)
 
         for room in self.user_room:
-            await self.channel_layer.group_add(
-                room.chat_uuid,
-                self.channel_name
-            )
+            await self.channel_layer.group_add(room.chat_uuid, self.channel_name)
 
         await self.channel_layer.group_add('online_user', self.channel_name)
         await self.channel_layer.group_add('online_friends', self.channel_name)
-        await database_sync_to_async(self.add_online_user)(self.user)
+        add_online_user(self.user.pk)
         await self.send_online_friends_list()
 
         if self.is_member:
+            previous_messages = await database_sync_to_async(self.get_previous_messages)(json.dumps(DEFAULT_PAGINATION))
             await self.channel_layer.send(
                 self.channel_name,
                 {
-                    'type': 'chat.message',
-                    'message': await database_sync_to_async(self.get_previous_messages)
-                    (json.dumps({"start": "0", "end": "50"}))
+                    'type': CHAT_MESSAGE_TYPE,
+                    'message': previous_messages
                 }
             )
         else:
             await self.channel_layer.send(
                 self.channel_name,
                 {
-                    'type': 'chat.message',
+                    'type': CHAT_MESSAGE_TYPE,
                     'message': {
                         'detail': 'User is not a member of the chat.'
                     }
@@ -180,7 +180,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        await database_sync_to_async(self.delete_online_user)(self.user)
+        remove_online_user(self.user.pk)
         await self.send_online_friends_list()
         for room in self.user_room:
             await self.channel_layer.group_discard(
@@ -197,7 +197,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 message = text_data_json['message']
                 chat_message = await database_sync_to_async(
                     self.save_message
-                )(message, self.user_pk, self.chat_uuid)
+                )(message, self.user.pk, self.chat_uuid)
             elif action == 'typing':
                 chat_message = text_data_json
             elif action == 'previous':

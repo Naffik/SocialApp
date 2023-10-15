@@ -18,7 +18,6 @@ def get_user(validated_token):
     try:
         user = get_user_model().objects.get(id=validated_token["user_id"])
         # return get_user_model().objects.get(id=toke_id)
-        print(f"{user}")
         return user
 
     except User.DoesNotExist:
