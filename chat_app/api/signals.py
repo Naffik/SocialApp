@@ -3,6 +3,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
+from friendship.models import Friend
+
 from chat_app.models import ChatRoom, ChatMessage
 from user_app.models import Action
 
@@ -86,3 +88,19 @@ def channel_notification_signal(sender, instance,  created, **kwargs):
         )
     except Exception as e:
         raise Exception(f"Something went wrong in channel_list signal {e}")
+
+
+@receiver(post_save, sender=Friend)
+def create_chat_room_signal(sender, instance,  created, **kwargs):
+    """
+    Create chat room when user accept request.
+    """
+    if created:
+        user_1 = instance.to_user
+        user_2 = instance.from_user
+        sorted_usernames = sorted([user_1.username, user_2.username])
+        chat_name = "_and_".join(sorted_usernames)
+        chat_room, created = ChatRoom.objects.get_or_create(name=chat_name)
+
+        if created:
+            chat_room.member.add(user_1, user_2)

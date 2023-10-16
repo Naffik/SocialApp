@@ -4,6 +4,7 @@ import logging
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.cache import cache
+from django.utils import timezone
 from rest_framework.generics import get_object_or_404
 
 from chat_app.api.redis_utils import add_online_user, remove_online_user, get_online_users
@@ -54,12 +55,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         chats = ChatRoom.objects.filter(member=self.user.pk)
         return [chat.chat_uuid for chat in chats]
 
-    def get_online_friends(self):
-        online_users = list(map(int, get_online_users()))
-        friends = list(Friend.objects.filter(from_user=self.user).filter(to_user__in=online_users)
-                       .values_list('to_user', flat=True))
-        return friends
-
     def save_message(self, message, user_pk, chat_uuid):
         user_obj = self.get_from_cache_or_db(f"user_{user_pk}", User.objects.get, pk=user_pk)
         chat_obj = self.get_from_cache_or_db(f"chat_{chat_uuid}", ChatRoom.objects.get, chat_uuid=chat_uuid)
@@ -71,6 +66,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'avatar': user_obj.avatar.url,
             'message': message,
             'username': user_obj.username,
+            'read': message_obj.read,
+            'delivered': message_obj.delivered,
             'timestamp': str(message_obj.timestamp)
         }
 
@@ -103,6 +100,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'user': message.user.username,
                 'avatar': message.user.avatar.url,
                 'message': message.message,
+                'read': False,
+                "delivered": False,
                 'timestamp': str(message.timestamp)
             }
             if message.image:
@@ -121,27 +120,32 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }
         await self.channel_layer.send(self.channel_name, chat_message)
 
-    async def send_online_user_list(self):
-        online_user_list = list(map(int, get_online_users()))
-        chat_message = {
-            'type': 'chat.message',
-            'message': {
-                'action': 'online_user',
-                'user_list': online_user_list
-            }
-        }
-        await self.channel_layer.group_send('online_user', chat_message)
+    async def mark_message_as_read(self, message_id):
+        message_obj = await database_sync_to_async(ChatMessage.objects.get)(pk=message_id)
+        if not message_obj.read:
+            message_obj.read = True
+            message_obj.read_timestamp = timezone.now()
+            await database_sync_to_async(message_obj.save)()
 
-    async def send_online_friends_list(self):
-        online_friends_list = await database_sync_to_async(self.get_online_friends)()
-        chat_message = {
-            'type': 'chat.message',
-            'message': {
-                'action': 'online_friends',
-                'friend_list': online_friends_list
-            }
-        }
-        await self.channel_layer.group_send('online_friends', chat_message)
+    # async def send_online_user_list(self):
+    #     online_user_list = list(map(int, get_online_users()))
+    #     chat_message = {
+    #         'type': 'chat.message',
+    #         'message': {
+    #             'action': 'online_user',
+    #             'user_list': online_user_list
+    #         }
+    #     }
+    #     await self.channel_layer.group_send('online_user', chat_message)
+    async def notify_user_online_status(self, is_online):
+        online_users = list(map(int, get_online_users()))
+        for user_pk in online_users:
+            group_name = f"online_friends_{user_pk}"
+            await self.channel_layer.group_send(group_name, {
+                'type': 'user.online.status',
+                'user_id': self.user.pk,
+                'is_online': is_online
+            })
 
     async def connect(self):
         self.user = self.scope['user']
@@ -154,8 +158,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add('online_user', self.channel_name)
         await self.channel_layer.group_add('online_friends', self.channel_name)
-        add_online_user(self.user.pk)
-        await self.send_online_friends_list()
+        await self.notify_user_online_status(True)
 
         if self.is_member:
             previous_messages = await database_sync_to_async(self.get_previous_messages)(json.dumps(DEFAULT_PAGINATION))
@@ -180,8 +183,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        remove_online_user(self.user.pk)
-        await self.send_online_friends_list()
+        await self.notify_user_online_status(False)
         for room in self.user_room:
             await self.channel_layer.group_discard(
                 room.chat_uuid,
@@ -198,7 +200,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 chat_message = await database_sync_to_async(
                     self.save_message
                 )(message, self.user.pk, self.chat_uuid)
+                print(chat_message)
             elif action == 'typing':
+                chat_message = text_data_json
+            elif action == 'stop_typing':
                 chat_message = text_data_json
             elif action == 'previous':
                 chat_message = await database_sync_to_async(
@@ -211,6 +216,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'message': chat_message
                     }
                 )
+            elif action == 'mark_as_read':
+                message_id = text_data_json['message_id']
+                chat_message = text_data_json
+                await self.mark_message_as_read(message_id)
             await self.channel_layer.group_send(
                 self.chat_uuid,
                 {
@@ -231,6 +240,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         message = event['message']
+        if 'message' in message:
+            if type(message['message']) is list:
+                message_obj = await database_sync_to_async(ChatMessage.objects.get)(pk=message['message'][-1]['pk'])
+            else:
+                message_obj = await database_sync_to_async(ChatMessage.objects.get)(pk=message['pk'])
+            if not message_obj.delivered:
+                message_obj.delivered = True
+                message_obj.delivered_timestamp = timezone.now()
+                await database_sync_to_async(message_obj.save)()
         await self.send(text_data=json.dumps(message))
 
 
@@ -264,3 +282,61 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'notification_content': notification_content
         }))
+
+
+class OnlineFriendConsumer(AsyncWebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.user = None
+        self.room_group_name = None
+        self.room_name = None
+
+    async def connect(self):
+        self.user = self.scope['user']
+        self.room_name = self.scope['user'].pk
+        self.room_group_name = f'online_friends_{self.room_name}'
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def user_online_status(self, event):
+        user_id = event['user_id']
+        is_online = event['is_online']
+
+        if is_online:
+            add_online_user(user_id)
+        else:
+            remove_online_user(user_id)
+
+        await self.send_online_friends_list()
+
+    def get_online_friends(self):
+        online_users = list(map(int, get_online_users()))
+        friends = list(Friend.objects.filter(from_user=self.user).filter(to_user__in=online_users)
+                       .values_list('to_user', flat=True))
+        return friends
+
+    async def send_online_friends_list(self):
+        online_friends_list = await database_sync_to_async(self.get_online_friends)()
+        chat_message = {
+            'type': 'online.friend.message',
+            'message': {
+                'action': 'online_friends',
+                'friend_list': online_friends_list
+            }
+        }
+        await self.channel_layer.group_send(self.room_group_name, chat_message)
+
+    async def online_friend_message(self, event):
+        message = event['message']
+        await self.send(text_data=json.dumps(message))
