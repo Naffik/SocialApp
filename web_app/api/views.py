@@ -289,8 +289,10 @@ class PostCommentListView(generics.ListAPIView):
         pk = self.kwargs.get('pk')
         user = self.request.user
         if user.is_authenticated:
-            blocked = Block.objects.blocking(user=user)
-            comments = Comment.objects.exclude(comment_author__in=blocked).filter(post=pk)
+            blocked = Block.objects.blocked(user=user)
+            blocking = Block.objects.blocking(user=user)
+            comments = Comment.objects.exclude(comment_author__in=blocked).exclude(comment_author__in=blocking)\
+                .filter(post=pk)
         else:
             comments = Comment.objects.filter(post=pk)
         return comments
