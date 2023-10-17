@@ -128,8 +128,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar_url',
-                  'friends_count', 'followers_count', 'follows_count')
+        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'date_joined', 'bio',
+                  'avatar_url', 'friends_count', 'followers_count', 'follows_count')
 
     def get_avatar_url(self, obj):
         return obj.avatar.url
@@ -176,6 +176,29 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
             representation['follow'] = instance.follow
         if type(instance.request_friendship_sent) == bool:
             representation['request_friendship_sent'] = instance.request_friendship_sent
+        return representation
+
+
+class BlockUserSerializer(BasicUserProfileSerializer):
+    is_blocked = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('username', 'display_name', 'bio', 'avatar_url', 'is_blocked')
+
+    def get_is_blocked(self, obj):
+        return self.context.get('is_blocked', False)
+
+    def get_avatar_url(self, obj):
+        if isinstance(obj, dict):
+            return obj.get('avatar_url')
+        else:
+            return obj.avatar.url
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if not representation['is_blocked']:
+            representation.pop('is_blocked')
         return representation
 
 
