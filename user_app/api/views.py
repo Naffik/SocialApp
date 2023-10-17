@@ -235,10 +235,18 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
                 return user
             blocked = Block.objects.blocked(user=request_user)
             if user in blocked:
-                raise PermissionDenied({'message': 'You have been blocked by this user'})
+                raise PermissionDenied({'message': 'You have been blocked by this user',
+                                        'username': user.username,
+                                        'display_name': user.display_name,
+                                        'avatar': user.avatar.url
+                                        })
             blocking = Block.objects.blocking(user=request_user)
             if user in blocking:
-                raise PermissionDenied({'message': 'You have blocked this user'})
+                raise PermissionDenied({'message': 'You have blocked this user',
+                                        'username': user.username,
+                                        'display_name': user.display_name,
+                                        'avatar': user.avatar.url
+                                        })
             user.is_friend = user.is_friend(request_user, user)
             user.follow = user.follow(request_user, user)
             user.request_friendship_sent = user.request_friendship_sent(request_user, user)
