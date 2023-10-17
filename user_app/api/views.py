@@ -18,6 +18,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 import jwt
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth.hashers import check_password
 from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse
@@ -108,6 +109,19 @@ class CheckEmailView(APIView):
         if not User.objects.filter(email__exact=email).exists():
             return Response({'message': 'Email is available'})
         return Response({'message': 'Email is already used'})
+
+
+class CheckPasswordView(APIView):
+    """
+    Check whether a password is correct
+    """
+
+    def post(self, request, *args, **kwargs):
+        password = request.data.get('password')
+        if check_password(password, request.user.password):
+            return Response({'message': True})
+        else:
+            return Response({'message': False})
 
 
 class VerifyEmail(APIView):
