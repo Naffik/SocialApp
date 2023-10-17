@@ -39,15 +39,16 @@ class PostListView(generics.ListAPIView):
             return cached_data
         else:
             if user.is_authenticated:
-                blocked = Block.objects.blocking(user=user)
-                posts = Post.objects.exclude(post_author__in=blocked)\
+                blocked = Block.objects.blocked(user=user)
+                blocking = Block.objects.blocking(user=user)
+                posts = Post.objects.exclude(post_author__in=blocked).exclude(post_author__in=blocking)\
                     .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
                               is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
             else:
                 posts = Post.objects.all().order_by('-created')
 
-            cache.set(cache_key, posts, 1)
-            return posts
+        cache.set(cache_key, posts, 1)
+        return posts
 
 
 class PostCreateView(generics.CreateAPIView):
