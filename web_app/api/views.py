@@ -27,7 +27,7 @@ class PostListView(generics.ListAPIView):
     List view for post model
     """
     serializer_class = PostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     pagination_class = PostPagination
 
     def get_queryset(self):
@@ -105,7 +105,7 @@ class PostSearchView(generics.ListAPIView):
     Search list of post model
     """
     serializer_class = PostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     pagination_class = PostPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['post_author__username', 'title', 'content']

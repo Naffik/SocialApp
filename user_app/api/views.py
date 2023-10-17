@@ -13,7 +13,7 @@ from user_app.models import User, Action
 from user_app.api.serializers import (RegistrationSerializer, RequestPasswordResetSerializer, SetNewPasswordSerializer,
                                       UserProfileSerializer, BasicUserProfileSerializer, FollowSerializer,
                                       UserSerializer, BlockSerializer, FriendSerializer,
-                                      CustomTokenObtainPairSerializer, ActionSerializer)
+                                      CustomTokenObtainPairSerializer, ActionSerializer, BlockUserSerializer)
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 import jwt
@@ -631,7 +631,11 @@ class FriendViewSet(viewsets.ModelViewSet):
         blocked = Block.objects.blocked(user=request.user)
         self.queryset = blocked
         self.http_method_names = ['get', 'head', 'options', ]
-        return Response(BasicUserProfileSerializer(blocked, many=True).data)
+        page = self.paginate_queryset(blocked)
+        if page is not None:
+            serializer = BlockUserSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        return Response(BlockUserSerializer(blocked, many=True).data)
 
     @action(detail=False)
     def blocking(self, request):
@@ -641,4 +645,14 @@ class FriendViewSet(viewsets.ModelViewSet):
         blocking = Block.objects.blocking(user=request.user)
         self.queryset = blocking
         self.http_method_names = ['get', 'head', 'options', ]
-        return Response(BasicUserProfileSerializer(blocking, many=True).data)
+        page = self.paginate_queryset(blocking)
+        blocked_list = []
+        for blocked in blocking:
+            block_data = {
+                "is_blocked": True,
+            }
+            block_data.update(BlockUserSerializer(blocked, context=block_data).data)
+            blocked_list.append(block_data)
+        if page is not None:
+            return self.get_paginated_response(blocked_list)
+        return Response(BlockUserSerializer(blocking, many=True).data)

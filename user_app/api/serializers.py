@@ -179,6 +179,29 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
         return representation
 
 
+class BlockUserSerializer(BasicUserProfileSerializer):
+    is_blocked = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('username', 'display_name', 'bio', 'avatar_url', 'is_blocked')
+
+    def get_is_blocked(self, obj):
+        return self.context.get('is_blocked', False)
+
+    def get_avatar_url(self, obj):
+        if isinstance(obj, dict):
+            return obj.get('avatar_url')
+        else:
+            return obj.avatar.url
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if not representation['is_blocked']:
+            representation.pop('is_blocked')
+        return representation
+
+
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
