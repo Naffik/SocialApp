@@ -128,8 +128,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'bio', 'avatar_url',
-                  'friends_count', 'followers_count', 'follows_count')
+        fields = ('username', 'display_name', 'email', 'first_name', 'last_name', 'date_of_birth', 'date_joined', 'bio',
+                  'avatar_url', 'friends_count', 'followers_count', 'follows_count')
 
     def get_avatar_url(self, obj):
         return obj.avatar.url
