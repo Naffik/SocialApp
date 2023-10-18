@@ -13,7 +13,8 @@ from user_app.models import User, Action
 from user_app.api.serializers import (RegistrationSerializer, RequestPasswordResetSerializer, SetNewPasswordSerializer,
                                       UserProfileSerializer, BasicUserProfileSerializer, FollowSerializer,
                                       UserSerializer, BlockSerializer, FriendSerializer,
-                                      CustomTokenObtainPairSerializer, ActionSerializer, BlockUserSerializer)
+                                      CustomTokenObtainPairSerializer, ActionSerializer, BlockUserSerializer,
+                                      FriendUserProfileSerializer)
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 import jwt
@@ -222,30 +223,36 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'username'
 
     def get_serializer_class(self):
-        if self.request is not None and self.request.user.username == self.kwargs.get('username'):
+        username = self.kwargs.get('username')
+        if self.request is not None and self.request.user.username == username:
             return UserProfileSerializer
+        if Friend.objects.are_friends(self.request.user, User.objects.get(username=username)):
+            return FriendUserProfileSerializer
         return BasicUserProfileSerializer
 
     def get_object(self, *args, **kwargs):
         request_user = self.request.user
         username = self.kwargs.get('username')
+        print(username)
         try:
             user = User.objects.get(username=username)
             if not request_user.is_authenticated or request_user.username == username:
                 return user
             blocked = Block.objects.blocked(user=request_user)
+            print(blocked)
             if user in blocked:
                 raise PermissionDenied({'message': 'You have been blocked by this user',
                                         'username': user.username,
                                         'display_name': user.display_name,
-                                        'avatar': user.avatar.url
+                                        'avatar_url': user.avatar.url
                                         })
             blocking = Block.objects.blocking(user=request_user)
+            print(blocking)
             if user in blocking:
                 raise PermissionDenied({'message': 'You have blocked this user',
                                         'username': user.username,
                                         'display_name': user.display_name,
-                                        'avatar': user.avatar.url
+                                        'avatar_url': user.avatar.url
                                         })
             user.is_friend = user.is_friend(request_user, user)
             user.follow = user.follow(request_user, user)

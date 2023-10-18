@@ -179,6 +179,14 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
         return representation
 
 
+class FriendUserProfileSerializer(BasicUserProfileSerializer):
+
+    class Meta:
+        model = User
+        fields = ('username', 'display_name', 'first_name', 'last_name', 'bio', 'avatar_url', 'friends_count',
+                  'followers_count', 'follows_count', 'is_friend', 'follow', 'request_friendship_sent')
+
+
 class BlockUserSerializer(BasicUserProfileSerializer):
     is_blocked = serializers.SerializerMethodField()
 
