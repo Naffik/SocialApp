@@ -55,7 +55,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
         date_of_birth = self.validated_data['date_of_birth']
-        print(date_of_birth)
 
         if password != password2:
             raise ValidationError({'error': 'Password should be same as Password2'})
