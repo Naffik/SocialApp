@@ -190,7 +190,10 @@ class PostFavListView(generics.ListAPIView):
         user = self.request.user
         if user.username != username:
             return Post.objects.none()
-        return Post.objects.filter(favorites=user)
+        posts = Post.objects.filter(favorites=user).\
+            annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                     is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+        return posts
 
     def list(self, request, *args, **kwargs):
         username = self.kwargs.get('username')
@@ -202,7 +205,7 @@ class PostFavListView(generics.ListAPIView):
 
 class PostMediaListView(generics.ListAPIView):
     """
-    List of request user posts added to favorites
+    List of request user posts with media files
     """
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -210,8 +213,28 @@ class PostMediaListView(generics.ListAPIView):
 
     def get_queryset(self, *args, **kwargs):
         username = self.kwargs.get('username')
-        media = Post.objects.filter(post_author__username=username).exclude(image="")
-        return media
+        user = self.request.user
+        posts = Post.objects.filter(post_author__username=username).exclude(image="")\
+            .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                      is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+        return posts
+
+
+class UserPostListView(generics.ListAPIView):
+    """
+    List of request user posts
+    """
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = PostPagination
+
+    def get_queryset(self, *args, **kwargs):
+        username = self.kwargs.get('username')
+        user = self.request.user
+        posts = Post.objects.filter(post_author__username=username)\
+            .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                      is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+        return posts
 
 
 class CommentListView(generics.ListAPIView):

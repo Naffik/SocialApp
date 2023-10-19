@@ -224,10 +224,13 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         username = self.kwargs.get('username')
-        if self.request is not None and self.request.user.username == username:
-            return UserProfileSerializer
-        if Friend.objects.are_friends(self.request.user, User.objects.get(username=username)):
-            return FriendUserProfileSerializer
+        try:
+            if self.request is not None and self.request.user.username == username:
+                return UserProfileSerializer
+            if Friend.objects.are_friends(self.request.user, User.objects.get(username=username)):
+                return FriendUserProfileSerializer
+        except Exception as e:
+            Exception(f"Something went wrong in UserProfileDetailView {e}")
         return BasicUserProfileSerializer
 
     def get_object(self, *args, **kwargs):
