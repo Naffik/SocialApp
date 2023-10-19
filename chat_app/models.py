@@ -2,6 +2,7 @@ from django.db import models
 from user_app.models import User
 from shortuuidfield import ShortUUIDField
 
+
 def chat_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/chat_<uuid>/<filename>/
     return 'chat_{0}/{1}'.format(instance.chat.chat_uuid, filename)
