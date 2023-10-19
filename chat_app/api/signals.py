@@ -75,16 +75,17 @@ def channel_notification_signal(sender, instance,  created, **kwargs):
     """
     Send notification when action was taken.
     """
-    username = instance.user.username
-    notification_content = f'{instance.user.username} {instance.verb} {instance.target.username}'
+    users = [instance.user.username, instance.target.username]
+    notification_content = 'You have been notified'
     try:
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f'notification_{username}',
-            {
-                'type': 'send_notification',
-                'notification_content': notification_content
-            }
+        for username in users:
+            async_to_sync(channel_layer.group_send)(
+                f'notification_{username}',
+                {
+                    'type': 'send_notification',
+                    'notification_content': notification_content
+                }
         )
     except Exception as e:
         raise Exception(f"Something went wrong in channel_list signal {e}")
@@ -103,4 +104,5 @@ def create_chat_room_signal(sender, instance,  created, **kwargs):
         chat_room, created = ChatRoom.objects.get_or_create(name=chat_name)
 
         if created:
-            chat_room.member.add(user_1, user_2)
+            chat_room.member.add(user_1)
+            chat_room.member.add(user_2)

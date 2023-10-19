@@ -655,8 +655,6 @@ class FriendViewSet(viewsets.ModelViewSet):
         Returns a list of all user's blocked users
         """
         blocked = Block.objects.blocked(user=request.user)
-        print(request.user)
-        print(blocked)
         self.queryset = blocked
         self.http_method_names = ['get', 'head', 'options', ]
         page = self.paginate_queryset(blocked)
@@ -671,8 +669,6 @@ class FriendViewSet(viewsets.ModelViewSet):
         Returns a list of users the given user blocks
         """
         blocking = Block.objects.blocking(user=request.user)
-        print(request.user)
-        print(blocking)
         self.queryset = blocking
         self.http_method_names = ['get', 'head', 'options', ]
         page = self.paginate_queryset(blocking)

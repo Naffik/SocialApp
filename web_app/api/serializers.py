@@ -79,7 +79,7 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 class PostCreateSerializer(TaggitSerializer, serializers.ModelSerializer):
     tags = TagListSerializerField()
     post_author = serializers.StringRelatedField(read_only=True)
-    display_name = serializers.StringRelatedField(read_only=True)
+    display_name = serializers.SerializerMethodField(read_only=True)
     post_author_avatar = serializers.SerializerMethodField(read_only=True)
     number_of_favorites = serializers.SerializerMethodField(read_only=True)
     # favorites = serializers.SerializerMethodField(read_only=True)
