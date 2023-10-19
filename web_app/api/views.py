@@ -342,8 +342,12 @@ class PopularTagsView(APIView):
     """
 
     def get(self, request, *args, **kwargs):
-        tags_count = request.query_params.get('tags_count')
-        time_in_hours = request.query_params.get('time_in_hours')
+        try:
+            tags_count = int(request.query_params.get('tags_count'))
+            time_in_hours = int(request.query_params.get('time_in_hours'))
+        except ValueError as e:
+            return Response({"message": "Invalid input. Please provide valid integers for "
+                                        "'tags_count' and 'time_in_hours'."}, status=status.HTTP_400_BAD_REQUEST)
         if not time_in_hours:
             time_in_hours = 1
         time_delta = timezone.now() - timezone.timedelta(days=time_in_hours)
