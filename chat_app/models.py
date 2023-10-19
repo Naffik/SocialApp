@@ -10,7 +10,7 @@ def chat_directory_path(instance, filename):
 class ChatRoom(models.Model):
     chat_uuid = ShortUUIDField()
     member = models.ManyToManyField(User)
-    name = models.CharField(max_length=20, null=True, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return str(self.chat_uuid) + ' -> ' + str(self.name)
