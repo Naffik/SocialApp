@@ -43,7 +43,8 @@ class PostListView(generics.ListAPIView):
                 blocking = Block.objects.blocking(user=user)
                 posts = Post.objects.exclude(post_author__in=blocked).exclude(post_author__in=blocking)\
                     .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                              is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+                              is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk'))))\
+                    .order_by('-created')
             else:
                 posts = Post.objects.all().order_by('-created')
 
@@ -78,7 +79,7 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         if user.is_authenticated:
             post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                                         is_favorite=Exists(Post.objects.filter(favorites=user)))
+                                         is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk'))))
         else:
             post = Post.objects.filter(pk=self.kwargs.get('pk'))
         return post
@@ -192,7 +193,7 @@ class PostFavListView(generics.ListAPIView):
             return Post.objects.none()
         posts = Post.objects.filter(favorites=user).\
             annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                     is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+                     is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk')))).order_by('-created')
         return posts
 
     def list(self, request, *args, **kwargs):
@@ -216,7 +217,7 @@ class PostMediaListView(generics.ListAPIView):
         user = self.request.user
         posts = Post.objects.filter(post_author__username=username).exclude(image="")\
             .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                      is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+                      is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk')))).order_by('-created')
         return posts
 
 
@@ -233,7 +234,7 @@ class UserPostListView(generics.ListAPIView):
         user = self.request.user
         posts = Post.objects.filter(post_author__username=username)\
             .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                      is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+                      is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk')))).order_by('-created')
         return posts
 
 
@@ -272,7 +273,7 @@ class UserCommentListView(generics.ListAPIView):
         if user.is_authenticated:
             comments = Comment.objects.filter(comment_author=user)\
                 .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                          is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+                          is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk')))).order_by('-created')
         else:
             comments = Comment.objects.all()
         return comments
