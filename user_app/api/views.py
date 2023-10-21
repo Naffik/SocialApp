@@ -1,4 +1,5 @@
 from django.http import Http404
+from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.generics import get_object_or_404
@@ -263,9 +264,16 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         user = User.objects.get(username=request.user.username)
-        user.avatar.delete()
-        user.avatar = request.data.get('avatar')
-        user.save()
+        avatar = None
+        try:
+            avatar = request.FILES['avatar']
+        except MultiValueDictKeyError:
+            pass
+        if avatar:
+            if user.avatar:
+                user.avatar.delete()
+                user.avatar = avatar
+            user.save()
         response = super(UserProfileDetailView, self).update(request)
         return response
 
