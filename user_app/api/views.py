@@ -270,8 +270,11 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         except MultiValueDictKeyError:
             pass
         if avatar:
-            if user.avatar:
+            print(user.avatar)
+            if not user.avatar == 'profile_images/default.jpg':
                 user.avatar.delete()
+                user.avatar = avatar
+            else:
                 user.avatar = avatar
             user.save()
         response = super(UserProfileDetailView, self).update(request)
