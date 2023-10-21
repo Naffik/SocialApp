@@ -13,8 +13,8 @@ from friendship.models import Friend, Follow, Block
 class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     display_name = models.CharField(max_length=255, null=True, blank=True)
-    first_name = models.CharField(max_length=32, null=False, blank=False)
-    last_name = models.CharField(max_length=32, null=False, blank=False)
+    first_name = models.CharField(max_length=32, null=False, blank=True)
+    last_name = models.CharField(max_length=32, null=False, blank=True)
     date_of_birth = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     bio = models.CharField(max_length=512, blank=True, null=True)
     avatar = models.ImageField(upload_to='profile_images/', blank=True, default='profile_images/default.jpg')
