@@ -29,7 +29,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
-    date_of_birth = serializers.DateTimeField(write_only=True)
+    date_of_birth = serializers.DateField()
 
     class Meta:
         model = User
@@ -54,7 +54,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def save(self):
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
-        date_of_birth = self.validated_data['date_of_birth']
+        date_of_birth = self.validated_data.get('date_of_birth')
 
         if password != password2:
             raise ValidationError({'error': 'Password should be same as Password2'})

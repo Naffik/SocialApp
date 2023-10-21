@@ -4,7 +4,8 @@ from user_app.models import User, Action
 
 fields = list(UserAdmin.fieldsets)
 fields[0] = ('Login info', {'fields': ('email', 'password',)})
-fields[1] = ('Personal info', {'fields': ('first_name', 'last_name', 'username', 'display_name', 'bio', 'avatar')})
+fields[1] = ('Personal info', {'fields': ('first_name', 'last_name', 'username', 'display_name', 'bio', 'avatar',
+                                          'date_of_birth')})
 UserAdmin.fieldsets = tuple(fields)
 
 
