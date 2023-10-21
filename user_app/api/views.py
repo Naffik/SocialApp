@@ -261,6 +261,14 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         except User.DoesNotExist:
             raise NotFound("User not found")
 
+    def update(self, request, *args, **kwargs):
+        user = User.objects.get(username=request.user.username)
+        user.avatar.delete()
+        user.avatar = request.data.get('avatar')
+        user.save()
+        response = super(UserProfileDetailView, self).update(request)
+        return response
+
     def retrieve(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
