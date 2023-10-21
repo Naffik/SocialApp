@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework.decorators import action
@@ -263,20 +264,32 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
             raise NotFound("User not found")
 
     def update(self, request, *args, **kwargs):
-        user = User.objects.get(username=request.user.username)
+        try:
+            user = User.objects.get(username=request.user.username)
+        except ObjectDoesNotExist:
+            return super(UserProfileDetailView, self).update(request, *args, **kwargs)
+
         avatar = None
+        date_of_birth = None
+
         try:
             avatar = request.FILES['avatar']
         except MultiValueDictKeyError:
             pass
         if avatar:
-            print(user.avatar)
-            if not user.avatar == 'profile_images/default.jpg':
+            if user.avatar != 'profile_images/default.jpg':
                 user.avatar.delete()
-                user.avatar = avatar
-            else:
-                user.avatar = avatar
+            user.avatar = avatar
             user.save()
+
+        try:
+            date_of_birth = request.data.get('date_of_birth')
+        except Exception as e:
+            pass
+        if date_of_birth:
+            user.date_of_birth = date_of_birth
+
+        user.save()
         response = super(UserProfileDetailView, self).update(request)
         return response
 
