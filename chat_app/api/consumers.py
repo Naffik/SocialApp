@@ -149,6 +149,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.user = self.scope['user']
+        print(self.user)
         self.chat_uuid = self.scope["url_route"]["kwargs"]["chat_uuid"]
         self.user_room = await database_sync_to_async(list)(ChatRoom.objects.filter(member=self.user.pk))
         self.is_member = await database_sync_to_async(self.is_user_in_chat_room)(self.chat_uuid, self.user.pk)
@@ -240,7 +241,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         message = event['message']
-        if 'message' in message:
+        if 'message' in message and len(message['message']) > 0:
             if type(message['message']) is list:
                 message_obj = await database_sync_to_async(ChatMessage.objects.get)(pk=message['message'][-1]['pk'])
             else:
