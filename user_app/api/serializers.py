@@ -220,7 +220,7 @@ class ChatUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('display_name', 'username', 'avatar')
+        fields = ('display_name', 'username', 'avatar', 'first_name', 'last_name')
 
 
 class ActionSerializer(serializers.ModelSerializer):
