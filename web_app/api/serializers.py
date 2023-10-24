@@ -12,7 +12,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         # exclude = ('post',)
-        fields = ['post_id', 'comment_author', 'comment_author_avatar', 'display_name', 'created', 'update_time',
+        fields = ['id', 'post_id', 'comment_author', 'comment_author_avatar', 'display_name', 'created', 'update_time',
                   'content', 'hidden']
 
     def get_comment_author_avatar(self, instance):
