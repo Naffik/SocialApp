@@ -3,6 +3,7 @@ from django.utils import timezone
 import redis
 from django.db.models import Exists, OuterRef
 from django.core.cache import cache
+from django.utils.datastructures import MultiValueDictKeyError
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters, status
 from rest_framework.generics import get_object_or_404
@@ -94,7 +95,7 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         return response
 
     def perform_update(self, serializer):
-        post = Post.objects.filter(slug=self.kwargs.get('slug'))
+        post = Post.objects.filter(pk=self.kwargs.get('pk'))
         try:
             post.image.delete()
         except FileNotFoundError:
@@ -331,10 +332,26 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsCommentUserOrReadOnly]
 
     def perform_destroy(self, instance):
-        post = Post.objects.get(pk=instance.post.pk)
-        post.number_of_comments = post.number_of_comments - 1
-        post.save()
+        comment = Comment.objects.get(pk=self.kwargs.get('pk'))
+        comment.image.delete()
         instance.delete()
+
+    def update(self, request, *args, **kwargs):
+        comment = Comment.objects.get(pk=self.kwargs.get('pk'))
+        image = None
+        try:
+            image = request.FILES['image']
+        except MultiValueDictKeyError:
+            pass
+        if image:
+            try:
+                comment.image.delete()
+            except FileNotFoundError:
+                pass
+            comment.image = image
+        comment.save()
+        response = super(CommentDetailView, self).update(request)
+        return response
 
 
 class PopularTagsView(APIView):

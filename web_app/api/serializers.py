@@ -21,6 +21,14 @@ class CommentSerializer(serializers.ModelSerializer):
     def get_display_name(self, instance):
         return instance.comment_author.display_name
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.image:
+            representation['image'] = instance.image.url
+        else:
+            representation.pop('image', None)
+        return representation
+
 
 class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
     # comments = CommentSerializer(many=True, read_only=True)
@@ -74,6 +82,14 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
         else:
             representation.pop('image', None)
         return representation
+
+
+class PostDetailSerializer(PostSerializer):
+    comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Post
+        fields = '__all__'
 
 
 class PostCreateSerializer(TaggitSerializer, serializers.ModelSerializer):
