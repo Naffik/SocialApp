@@ -168,10 +168,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
         if self.is_member:
             previous_messages = await database_sync_to_async(self.get_previous_messages)(json.dumps(DEFAULT_PAGINATION))
-            await self.send(text_data=json.dumps({
-                'type': CHAT_MESSAGE_TYPE,
-                'message': previous_messages
-            }))
+            await self.send(text_data=json.dumps(previous_messages))
         else:
             await self.send(text_data=json.dumps({
                 'type': CHAT_MESSAGE_TYPE,
