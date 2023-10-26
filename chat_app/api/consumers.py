@@ -1,6 +1,5 @@
 import json
 import logging
-import operator
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -86,8 +85,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         start = int(text_data_json['start'])
         end = int(text_data_json['end'])
-        messages = sorted(ChatMessage.objects.filter(chat__chat_uuid=self.chat_uuid).order_by('-timestamp')[start:end],
-                          key=operator.attrgetter('id'))
+        messages = ChatMessage.objects.filter(chat__chat_uuid=self.chat_uuid).order_by('-timestamp')[start:end]
         messages = self.messages_to_json(messages)
         chat_message = {
             'type': 'chat.message',
