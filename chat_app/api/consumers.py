@@ -63,7 +63,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_obj = ChatMessage.objects.create(chat=chat_obj, user=user_obj, message=message)
         return {
             'pk': message_obj.pk,
-            'user': user_pk,
+            'user': message.user.username,
             'avatar': user_obj.avatar.url,
             'message': message,
             'username': user_obj.username,
