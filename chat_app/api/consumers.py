@@ -20,6 +20,7 @@ logger = logging.getLogger('django')
 class ChatConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
+        self.chat_group_name = None
         self.is_member = None
         self.chat_uuid = None
         self.user_room = None
@@ -84,7 +85,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         start = int(text_data_json['start'])
         end = int(text_data_json['end'])
-        messages = ChatMessage.objects.all().order_by('timestamp')[start:end]
+        messages = ChatMessage.objects.filter(chat__chat_uuid=self.chat_uuid).order_by('-timestamp')[start:end]
         messages = self.messages_to_json(messages)
         chat_message = {
             'type': 'chat.message',
@@ -149,13 +150,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.user = self.scope['user']
-        print(self.user)
         self.chat_uuid = self.scope["url_route"]["kwargs"]["chat_uuid"]
         self.user_room = await database_sync_to_async(list)(ChatRoom.objects.filter(member=self.user.pk))
         self.is_member = await database_sync_to_async(self.is_user_in_chat_room)(self.chat_uuid, self.user.pk)
 
-        for room in self.user_room:
-            await self.channel_layer.group_add(room.chat_uuid, self.channel_name)
+        self.chat_group_name = f"chat_{self.chat_uuid}"
+        await self.channel_layer.group_add(self.chat_group_name, self.channel_name)
+        # for room in self.user_room:
+        #     await self.channel_layer.group_add(room.chat_uuid, self.channel_name)
 
         await self.channel_layer.group_add('online_user', self.channel_name)
         await self.channel_layer.group_add('online_friends', self.channel_name)
@@ -163,15 +165,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if self.is_member:
             previous_messages = await database_sync_to_async(self.get_previous_messages)(json.dumps(DEFAULT_PAGINATION))
-            await self.channel_layer.send(
-                self.channel_name,
+            await self.channel_layer.group_send(
+                self.chat_group_name,
                 {
                     'type': CHAT_MESSAGE_TYPE,
                     'message': previous_messages
                 }
             )
         else:
-            await self.channel_layer.send(
+            await self.channel_layer.group_send(
                 self.channel_name,
                 {
                     'type': CHAT_MESSAGE_TYPE,
@@ -185,11 +187,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await self.notify_user_online_status(False)
-        for room in self.user_room:
-            await self.channel_layer.group_discard(
-                room.chat_uuid,
-                self.channel_name
-            )
+        await self.channel_layer.group_discard(self.chat_group_name, self.channel_name)
+        # for room in self.user_room:
+        #     await self.channel_layer.group_discard(
+        #         room.chat_uuid,
+        #         self.channel_name
+        #     )
 
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)

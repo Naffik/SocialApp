@@ -4,6 +4,11 @@ from taggit.serializers import (TagListSerializerField, TaggitSerializer)
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'request' in self.context and self.context['request'].method == 'PUT':
+            self.fields['content'].required = False
+
     comment_author = serializers.StringRelatedField(read_only=True)
     comment_author_avatar = serializers.SerializerMethodField(read_only=True)
     display_name = serializers.SerializerMethodField(read_only=True)
