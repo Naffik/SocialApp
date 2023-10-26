@@ -225,15 +225,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 chat_message = text_data_json
                 await self.mark_message_as_read(message_id)
             await self.channel_layer.group_send(
-                self.chat_uuid,
+                self.chat_group_name,
                 {
                     'type': 'chat.message',
                     'message': chat_message
                 }
             )
         else:
-            await self.channel_layer.send(
-                self.channel_name,
+            await self.channel_layer.group_send(
+                self.chat_group_name,
                 {
                     'type': 'chat.message',
                     'message': {
@@ -254,6 +254,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 message_obj.delivered_timestamp = timezone.now()
                 await database_sync_to_async(message_obj.save)()
         await self.send(text_data=json.dumps(message))
+        # await self.channel_layer.send(self.channel_name, {
+        #     'type': CHAT_MESSAGE_TYPE,
+        #     'message': message
+        # })
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
