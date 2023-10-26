@@ -1,5 +1,6 @@
 import json
 import logging
+import operator
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -85,7 +86,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         start = int(text_data_json['start'])
         end = int(text_data_json['end'])
-        messages = ChatMessage.objects.filter(chat__chat_uuid=self.chat_uuid).order_by('-timestamp')[start:end]
+        messages = sorted(ChatMessage.objects.filter(chat__chat_uuid=self.chat_uuid).order_by('-timestamp')[start:end],
+                          key=operator.attrgetter('id'))
         messages = self.messages_to_json(messages)
         chat_message = {
             'type': 'chat.message',
@@ -163,27 +165,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add('online_friends', self.channel_name)
         await self.notify_user_online_status(True)
 
+        await self.accept()
         if self.is_member:
             previous_messages = await database_sync_to_async(self.get_previous_messages)(json.dumps(DEFAULT_PAGINATION))
-            await self.channel_layer.group_send(
-                self.chat_group_name,
-                {
-                    'type': CHAT_MESSAGE_TYPE,
-                    'message': previous_messages
-                }
-            )
+            await self.send(text_data=json.dumps({
+                'type': CHAT_MESSAGE_TYPE,
+                'message': previous_messages
+            }))
         else:
-            await self.channel_layer.group_send(
-                self.channel_name,
-                {
-                    'type': CHAT_MESSAGE_TYPE,
-                    'message': {
-                        'detail': 'User is not a member of the chat.'
-                    }
+            await self.send(text_data=json.dumps({
+                'type': CHAT_MESSAGE_TYPE,
+                'message': {
+                    'detail': 'User is not a member of the chat.'
                 }
-            )
+            }))
 
-        await self.accept()
+
 
     async def disconnect(self, close_code):
         await self.notify_user_online_status(False)
