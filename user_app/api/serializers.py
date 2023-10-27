@@ -124,6 +124,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     friends_count = serializers.IntegerField(read_only=True)
     followers_count = serializers.IntegerField(read_only=True)
     follows_count = serializers.IntegerField(read_only=True)
+    date_of_birth = serializers.DateField(read_only=True)
 
     class Meta:
         model = User

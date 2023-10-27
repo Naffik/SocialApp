@@ -270,7 +270,7 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
             return super(UserProfileDetailView, self).update(request, *args, **kwargs)
 
         avatar = None
-        date_of_birth = None
+        # date_of_birth = None
 
         try:
             avatar = request.FILES['avatar']
@@ -282,12 +282,12 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
             user.avatar = avatar
             user.save()
 
-        try:
-            date_of_birth = request.data.get('date_of_birth')
-        except Exception as e:
-            pass
-        if date_of_birth:
-            user.date_of_birth = date_of_birth
+        # try:
+        #     date_of_birth = request.data.get('date_of_birth')
+        # except Exception as e:
+        #     pass
+        # if date_of_birth:
+        #     user.date_of_birth = date_of_birth
 
         user.save()
         response = super(UserProfileDetailView, self).update(request)

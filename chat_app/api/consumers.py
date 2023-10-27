@@ -201,9 +201,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             elif action == 'stop_typing':
                 chat_message = text_data_json
             elif action == 'previous':
+                print(text_data)
                 chat_message = await database_sync_to_async(
                     self.get_previous_messages
                 )(text_data)
+                print(chat_message)
                 await self.channel_layer.send(
                     self.channel_name,
                     {
