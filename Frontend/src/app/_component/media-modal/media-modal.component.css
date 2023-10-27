@@ -1,0 +1,91 @@
+.fullscreen-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.fullscreen-modal img {
+    height: 100vh;
+    width: auto;
+    object-fit: contain;
+}
+
+.modal-content {
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgb(129, 10, 175);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.close-btn:hover {
+    background: rgba(197, 14, 14, 0.9);
+    color: rgb(129, 10, 175);
+    transform: scale(1.1);
+}
+
+.close-btn i {
+    color: #fff;
+}
+
+.error-section {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    color: #333;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.error-section button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: rgb(129, 10, 175);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.error-section button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: rgb(129, 10, 175);
+}
+
+.spinner {
+    border: 8px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 8px solid rgb(129, 10, 175);
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

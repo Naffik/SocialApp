@@ -16,10 +16,12 @@ export class LoginComponent implements OnInit{
   loginError: string = '';  
 
 
-  constructor(private authService: AuthService, private alertify: AlertifyService){}
+  constructor(
+    private authService: AuthService, 
+    private alertify: AlertifyService
+  ){}
 
   ngOnInit(): void {
-    
   }
 
 
@@ -35,11 +37,8 @@ export class LoginComponent implements OnInit{
  }
 
   login() {
-    // event.();
     this.authService.login(this.model).subscribe({
-    // next: () => console.log(this.model),
     error: (errorResponse) => {
-      console.log(errorResponse)
       if (errorResponse.error.detail === 'No active account found with the given credentials') {
         this.loginError = 'Podano nieprawidłoy adres email lub hasło.';
         this.alertify.error('Wystąpił błąd logowania');

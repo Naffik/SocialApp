@@ -1,0 +1,491 @@
+.usersList {
+    display: flex; /* Używamy flexboxa do układania elementów w poziomie */
+    align-items: center; /* Wyśrodkowanie elementów w pionie */
+    padding: 15px; /* Odstęp wewnątrz każdego elementu listy */
+    cursor: pointer;
+}
+
+.usersList:hover{
+    border-radius: 5px;
+    background-color: #ddd;
+}
+
+.usersList-header {
+    display: flex; /* Używamy flexboxa do układania elementów w poziomie */
+    width: 100%; /* Pełna szerokość */
+    justify-content: space-between; /* Rozłożenie elementów na całej dostępnej przestrzeni */
+}
+
+.avatar img {
+    width: 50px; /* Szerokość avatara */
+    height: 50px; /* Wysokość avatara */
+    border-radius: 50%; /* Okrągły kształt avatara */
+    object-fit: cover; /* Dopasowanie obrazu do kontenera */
+}
+
+.avatar img:hover{
+    border: #b349dd 2px solid;
+}
+
+.nick {
+    font-size: 14px; /* Rozmiar czcionki dla nicku */
+    color: #777; /* Jasniejszy kolor tekstu dla nicku */
+}
+
+.account-info {
+    width:600px;
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between; /* Rozmieść elementy na krańcach kontenera */
+    align-items: center; /* Wyrównaj elementy w pionie */
+}
+
+.avatar-and-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Wycentrowanie elementów w pionie */
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.avatar-and-button .avatar img {
+    width: 120px; /* Możesz dostosować rozmiar avatara według własnych potrzeb */
+    height: 120px;
+    border-radius: 50%;
+}
+
+.edit-profile-btn {
+    text-decoration: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: #a10ddb;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    align-self: center; 
+}
+
+.edit-profile-btn:hover {
+    background-color: #6a1a8a;
+}
+
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    background-color: black;
+    border-radius: 50%;        
+}
+
+
+
+.default-avatar {
+    width: 50px; /* Dostosuj do swoich potrzeb */
+    height: 50px;
+    background-color: black;
+    border-radius: 50%;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats {
+    color: #555;
+    display: flex;
+    gap: 15px;
+}
+
+.stats strong{
+    color: black;
+}
+
+.stats a{
+    color: black;
+    text-decoration: none;
+}
+
+.stats a:hover{
+    text-decoration: underline;
+}
+
+.display-name{
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.name{   
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.notexist .username, .blocked .username{
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+}
+
+.messages-info{
+    margin-top: 70px;
+    padding-left: 10%;
+}
+
+.message, .message-suggestion {
+    text-align: left; 
+}
+
+.message {
+    display: block;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.message-suggestion {
+    font-size:16px;
+    display: block;
+    color: gray;
+}
+
+.username{
+    font-size: 16px;
+    color: #555;
+}
+
+.avatar-and-details {
+    display: flex;
+    align-items: center; /* Wycentrowanie elementów w pionie */
+    justify-content: space-between; /* Rozłożenie elementów na całej dostępnej przestrzeni */
+    margin-bottom: 20px;
+}
+
+.avatar {
+    display: flex;
+    /* text-align: center; */
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.actions-container {
+    display: flex;
+    gap: 10px; /* Odstęp między przyciskami */
+}
+
+.avatar-and-name {
+    display: flex;
+    align-items: center; /* Wycentrowanie elementów w pionie */
+}
+
+.avatar-and-details .avatar img {
+    min-width: 120px;
+    min-height: 120px;
+    border-radius: 50%;
+}
+
+.full-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.profile-description {
+    margin-top: 10px;
+}
+
+.stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.edit-profile-btn {
+    padding: 10px 15px;
+    background-color: #a10ddb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-profile-btn:hover {
+    background-color: #6a1a8a;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center; /* Wyśrodkowanie poziome */
+}
+
+.tab {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.tab.active {
+    background-color: #a10ddb;
+    color: white;
+}
+
+.error-message{
+    width: 600px;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+.spinner {
+    border: 8px solid rgba(255, 255, 255, 0.3); /* Jasny kolor tła dla obręczy spinnera */
+    border-radius: 50%; /* Nadanie kształtu koła */
+    border-top: 8px solid #a10ddb; /* Ciemny kolor dla górnego segmentu spinnera */
+    width: 50px; /* Szerokość spinnera */
+    height: 50px; /* Wysokość spinnera */
+    animation: spin 1s linear infinite; /* Animacja obracania się spinnera */
+    margin: 0 auto; /* Wyśrodkowanie spinnera w poziomie (jeżeli rodzic ma wyśrodkowanie tekstu lub flex) */
+  }
+  
+  /* Animacja obrotu */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .loading-text {
+    display: inline-block;
+    font-size: 20px;
+  }
+  
+  .dot {
+    animation: blink 1.4s infinite both;
+    font-weight: normal;
+    animation-fill-mode: both;
+    opacity: 0;
+  }
+  
+  .dot:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  
+  .dot:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+  
+  .dot:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+  
+  @keyframes blink {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .token-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .unblock-button {
+    background-color: #ff0000;
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.unblock-button:hover {
+    background-color: #cc0000;
+}
+
+.user-details.blocked .messages-info {
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.user-details.blocked .message-suggestion {
+    margin-top: 10px;
+}
+
+.message{
+    line-height: 30px;
+}
+
+.name-and-username {
+    display: flex;
+    flex-direction: column;
+}
+
+.following-btn, .friend-btn, .not-friend-btn, .not-following-btn, .request-sent-btn{
+    padding: 5px 10px; /* Dostosuj do potrzeb */
+    border: none;
+    border-radius: 5px; /* Zaokrąglone rogi przycisków */
+    cursor: pointer;
+    width: 140px;
+}
+
+.following-btn {
+    background-color: #4CAF50; /* Kolor tła dla przycisku "Obserwujesz" */
+    color: white; /* Kolor tekstu dla przycisku "Obserwujesz" */
+}
+
+.friend-btn {
+    background-color: #FFC107; /* Kolor tła dla przycisku "Znajomy" */
+    color: black; /* Kolor tekstu dla przycisku "Znajomy" */
+}
+
+.friend-btn:hover {
+    background-color: #eeff07; /* Kolor tła dla przycisku "Znajomy" */
+    color: black; /* Kolor tekstu dla przycisku "Znajomy" */
+}
+
+.not-following-btn {
+    background-color: #e7164a; /* Kolor tła dla przycisku "Obserwujesz" */
+    color: white; /* Kolor tekstu dla przycisku "Obserwujesz" */
+}
+
+.not-friend-btn {
+    background-color: #1916cf; /* Kolor tła dla przycisku "Znajomy" */
+    color: black; /* Kolor tekstu dla przycisku "Znajomy" */
+}
+
+.request-sent-btn {
+    background-color: #f5c6cb;
+}
+
+.nav-user-icon{
+    border: 1px solid black;
+    border-radius: 50%;
+    padding: 15px 20px;
+}
+
+.nav-user-icon img{
+    width: 40px;
+    border-radius: 50%;
+  }
+  
+ 
+.user-info {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+  
+.profile-summary, .dropdown-option{
+    padding: 10px;  
+    border-bottom: 1px solid #e0e0e0;  
+}
+
+.profile-summary a, .dropdown-option a{
+    border-radius: 5px;
+}
+
+.profile-avatar {
+    width: 40px;  
+    height: 40px;  
+    margin-right: 10px;  
+    border-radius: 50%;
+}
+
+
+.dropdown-footer {
+    border-top: 1px solid #e0e0e0;  /* Dodaje subtelny separator */
+    text-align: center;  /* Wyśrodkowuje obrazek/link wewnątrz */
+}
+
+.dropdown-footer a:hover {
+    background-color: transparent;  
+    color: inherit;  
+}
+
+.user-avatar {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    background-color: #ccc; /* Kolor zastępczy dla avatara */
+}
+
+@media screen and (max-width: 600px) {
+    .dropdown-content {
+        right: auto;
+        left: 0;
+    }
+}
+
+.context-menu button {
+    padding: 10px;
+    width: 100%;
+    background-color: white;
+    border: none;
+    border-radius: 5px;
+    text-align: left;
+    background-color: inherit;
+}
+
+.context-menu button:hover {
+    background-color: #a1a1a1;
+}
+
+.context-menu {
+    position: absolute;
+    top: 30%;
+    right: 10px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    padding: 5px;
+    min-width: 200px;
+    z-index: 100;
+}
+
+.menu-icon-container {
+    position: relative;    
+}
+
+.menu-icon-container > button {
+    border: none;
+    background-color: inherit;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 50%;
+
+}
+  
+.menu-icon-container > button:hover {
+    background-color: #a1a1a1;
+}

@@ -1,0 +1,24 @@
+<div class="first-section">
+  <p>Znajomi do rozmów</p>
+  <div class="chat-search-bar">
+    <img src="/assets/search.png" />
+    <input type="text" placeholder="Wyszukaj" />
+  </div>
+</div>
+<div class="second-section">
+  <div *ngFor="let chat of chats" (click)="selectChat(chat)" [ngClass]="{'selected': selectedChat === chat}">
+    <div *ngFor="let member of chat.members">
+      <ng-container *ngIf="member.username !== loggedInUsername">
+        <div class="message-contact">
+          <img class="avatar" [src]="member.avatar" alt="Avatar użytkownika" />
+          <div class="user-info"> 
+            <span class="username">{{ member.name }} {{member.lastName}}</span>
+            <span class="nick">@{{ member.username }}</span>
+            </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+

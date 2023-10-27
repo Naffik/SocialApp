@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../_services/auth.service';
-import { Subject, Subscription, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
+import { Subscription,  } from 'rxjs';
+import { FormGroup } from '@angular/forms';
 import { ValidatorsService } from 'src/app/_services/validators.service';
 import { AlertifyService } from 'src/app/_services/alertify.service';
 

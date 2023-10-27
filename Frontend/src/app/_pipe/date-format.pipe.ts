@@ -10,15 +10,19 @@ export class DateFormatPipe implements PipeTransform {
     'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'
   ];
 
-  transform(value: any): any {
+  transform(value: any, includeTime: boolean = true): any {
     const date = new Date(value);
     const day = this.pad(date.getDate());
-    const month = this.months[date.getMonth()]; // Miesiące są indeksowane od 0 do 11
+    const month = this.months[date.getMonth()]; 
     const year = date.getFullYear();
-    const hours = this.pad(date.getHours());
-    const minutes = this.pad(date.getMinutes());
 
-    return `${day} ${month} ${year}, ${hours}:${minutes}`;
+    if (includeTime) {
+      const hours = this.pad(date.getHours());
+      const minutes = this.pad(date.getMinutes());
+      return `${day} ${month} ${year}, ${hours}:${minutes}`;
+    } else {
+      return `${day} ${month} ${year}`;
+    }
   }
 
   pad(number: number): string {

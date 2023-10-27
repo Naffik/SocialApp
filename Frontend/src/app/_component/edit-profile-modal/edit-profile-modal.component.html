@@ -1,0 +1,93 @@
+<div class="modal-header">
+  <h5> Edycja profilu </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+</div>
+<div class="modal-body right-side-content">
+  <div class="form">
+    <form [formGroup]="profileForm">
+      <div class="editProfile-form-content">
+        <!-- Sekcja kadrowania zdjęcia -->
+        <div *ngIf="isCropping">
+          <image-cropper 
+            [imageChangedEvent]="imageChangedEvent" 
+            [maintainAspectRatio]="false" 
+            [aspectRatio]="1"
+            format="png" 
+            cropType="ellipse"
+            (imageCropped)="imageCropped($event)" 
+            (imageLoaded)="imageLoaded()"
+            (cropperReady)="cropperReady()" 
+            (loadImageFailed)="loadImageFailed()">
+          </image-cropper>
+        </div>
+
+        <div class="form-item" *ngIf="!isCropping">
+          <div class="avatar-container text-left">
+            <img [src]="avatarPreview ? avatarPreview : (baseUrl + profileForm.get('avatar_url')?.value)" alt="Avatar"
+              class="rounded-circle img-thumbnail">
+              <div class="camera-icon" (click)="chooseAvatar()">
+                <i class="fa fa-camera"></i>
+              </div>
+            <input type="file" id="avatarInput" style="display: none;" (change)="onAvatarSelected($event)">
+          </div>
+        </div>
+
+        <div class="form-input" *ngIf="!isCropping">
+          <!-- Pole first_name -->
+          <div class="form-group">
+            <label [class.error]="!profileForm.controls['first_name'].valid && profileForm.controls['first_name'].dirty"
+                   class="input-label" for="first_name">Imię</label>
+            <input [class.error-border]="!profileForm.controls['first_name'].valid && profileForm.controls['first_name'].dirty"
+                   type="text" id="first_name" class="form-control custom-input" formControlName="first_name">
+            <span class="character-count">{{profileForm.controls['first_name'].value?.length || 0}}/15</span>
+            <div *ngIf="!profileForm.controls['first_name'].valid && profileForm.controls['first_name'].dirty"
+                 class="error-message">Nieprawidłowe imię</div>
+          </div>
+          
+          <!-- Pole last_name -->
+          <div class="form-group">
+            <label [class.error]="!profileForm.controls['last_name'].valid && profileForm.controls['last_name'].dirty"
+                   class="input-label" for="last_name">Nazwisko</label>
+            <input [class.error-border]="!profileForm.controls['last_name'].valid && profileForm.controls['last_name'].dirty"
+                   type="text" id="last_name" class="form-control custom-input" formControlName="last_name">
+            <span class="character-count">{{profileForm.controls['last_name'].value?.length || 0}}/15</span>
+            <div *ngIf="!profileForm.controls['last_name'].valid && profileForm.controls['last_name'].dirty"
+                 class="error-message">Nieprawidłowe nazwisko</div>
+          </div>
+          
+          <!-- Pole display_name -->
+          <div class="form-group">
+            <label [class.error]="!profileForm.controls['display_name'].valid && profileForm.controls['display_name'].dirty"
+                   class="input-label" for="display_name">Nazwa wyświetlana</label>
+            <input [class.error-border]="!profileForm.controls['display_name'].valid && profileForm.controls['display_name'].dirty"
+                   type="text" id="display_name" class="form-control custom-input" formControlName="display_name">
+            <span class="character-count">{{profileForm.controls['display_name'].value?.length || 0}}/15</span>
+            <div *ngIf="!profileForm.controls['display_name'].valid && profileForm.controls['display_name'].dirty"
+                 class="error-message">Nieprawidłowa nazwa wyświetlana</div>
+          </div>
+          
+          <!-- Pole bio -->
+          <div class="form-group">
+            <label [class.error]="!profileForm.controls['bio'].valid && profileForm.controls['bio'].dirty"
+                   class="input-label" for="bio">Opis profilu</label>
+            <textarea [class.error-border]="!profileForm.controls['bio'].valid && profileForm.controls['bio'].dirty"
+                      id="bio" class="form-control custom-input" formControlName="bio" maxlength="160" rows="4"
+                      style="resize: none;"></textarea>
+            <span class="character-count">{{profileForm.controls['bio'].value?.length || 0}}/160</span>
+          </div>
+        </div>
+        
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal-footer">
+  <div *ngIf="isCropping">
+    <button type="button" class="btn btn-secondary" (click)="cancelCropping()">Anuluj</button>
+    <button type="button" class="btn btn-primary" (click)="applyCroppedImage()">Zastosuj</button>
+  </div>
+  <div *ngIf="!isCropping">
+    <button type="button" class="btn btn-secondary" (click)="closeModal()">Zamknij</button>
+    <button type="button" class="btn btn-primary formButton" (click)="onSave()">Zapisz zmiany</button>
+  </div>
+</div>

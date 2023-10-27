@@ -1,0 +1,31 @@
+
+<div class="loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+</div>
+
+<div *ngIf="!isLoading" class="content-container">
+    <div class="emptyFriendList" *ngIf="!requests.length">
+        <img src="/assets/friendship.png" alt="friendship image">
+        <h1>Brak nowych zaproszeń.</h1>
+    </div>
+    <div *ngIf="requests.length">
+        <h2>Zaproszenia do znajomych:</h2>
+        <ul class="friend-requests-list">
+        <li *ngFor="let request of requests">
+            <div class="request-info">
+                <span class="avatar">
+                    <img [src]="baseUrl + request.avatar_url" alt="Avatar użytkownika">
+                </span>
+                <span class="sender-name">{{ request.from_user }}</span> chce zostać Twoim znajomym.
+                <span class="request-date">{{ request.created | date:'short' }}</span>
+            </div>
+            <div class="request-actions">
+                <button class="accept-btn" (click)="acceptRequest(request.id)">Akceptuj</button>
+                <button class="reject-btn" (click)="rejectRequest(request.id)">Odrzuć</button>
+            </div>
+        </li>
+        </ul>
+    </div>
+</div>
+

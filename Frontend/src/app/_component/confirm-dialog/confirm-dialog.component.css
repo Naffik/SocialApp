@@ -1,0 +1,11 @@
+.btn-primary{
+    background: #FFD1D1;
+    border: 1px #C10D0D solid;
+    color: #C10D0D;
+    min-width: 120px;
+}
+
+
+.btn-secondary{
+    min-width: 70px;
+}

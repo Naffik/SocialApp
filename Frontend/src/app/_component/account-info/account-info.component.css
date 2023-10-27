@@ -1,0 +1,85 @@
+.account-info {
+    padding: 20px;
+    min-width: 700px;
+}
+
+.header {
+    display: flex;
+    align-items: flex-start; 
+    gap: 10px;
+}
+
+.header h2 {
+    text-align: left;
+    margin: 0; 
+}
+
+.info-section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.info-item {
+    margin-bottom: 30px; /* Większa przerwa pomiędzy kolejnymi info-items */
+}
+
+.info-item label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px; /* Mniejsza przerwa pomiędzy <label> i <p> */
+}
+
+.info-item p {
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 0; 
+}
+
+.info-item label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px; 
+}
+
+.info-item p {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 0; 
+}
+
+.header button {
+    background-color: transparent; 
+    border: none;
+    padding: 15px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: none; 
+    border-radius: 50%;
+}
+
+.header button:hover {
+    background-color: #e0e0e0;
+}
+
+.header button i.fa-arrow-left {
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+
+.header {
+    display: flex;
+    align-items: center; /* Wyrównuje elementy do środka w pionie */
+    gap: 10px;
+}
+
+
+

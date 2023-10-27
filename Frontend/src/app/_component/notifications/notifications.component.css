@@ -1,0 +1,148 @@
+.content-container{
+    width: 650px;
+}
+
+.emptyFriendList{
+    display: flex;
+    flex-direction: column;
+    /* align-content: center; */
+    align-items: center;
+}
+
+.emptyFriendList img{
+    width: 250px;
+}
+
+.emptyFriendList h1 {
+    margin: 0; 
+    font-weight: bold;
+    text-align: center;
+}
+.friend-requests-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.friend-requests-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.request-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sender-name {
+    font-weight: bold;
+}
+
+.request-date {
+    font-size: 0.9em;
+    color: #888;
+}
+
+.request-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.avatar img{
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+}
+
+.accept-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.accept-btn:hover {
+    background-color: #45a049;
+}
+
+.reject-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reject-btn:hover {
+    background-color: #d32f2f;
+}
+
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+.spinner {
+    border: 8px solid rgba(255, 255, 255, 0.3); /* Jasny kolor tła dla obręczy spinnera */
+    border-radius: 50%; /* Nadanie kształtu koła */
+    border-top: 8px solid #a10ddb; /* Ciemny kolor dla górnego segmentu spinnera */
+    width: 50px; /* Szerokość spinnera */
+    height: 50px; /* Wysokość spinnera */
+    animation: spin 1s linear infinite; /* Animacja obracania się spinnera */
+    margin: 0 auto; /* Wyśrodkowanie spinnera w poziomie (jeżeli rodzic ma wyśrodkowanie tekstu lub flex) */
+  }
+  
+  /* Animacja obrotu */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .loading-text {
+    display: inline-block;
+    font-size: 20px;
+  }
+  
+  .dot {
+    animation: blink 1.4s infinite both;
+    font-weight: normal;
+    animation-fill-mode: both;
+    opacity: 0;
+  }
+  
+  .dot:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  
+  .dot:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+  
+  .dot:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+  
+  @keyframes blink {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }

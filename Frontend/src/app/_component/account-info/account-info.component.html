@@ -1,0 +1,47 @@
+<div *ngIf="!isLoading" class="account-info">
+    <div class="header">
+        <button (click)="goBack()">
+            <i class="fa fa-arrow-left"></i>
+        </button>
+        <h2>Informacje dotyczące konta</h2>
+    </div>
+    <div class="info-section">
+        <div class="info-item">
+            <label>Imię</label>
+            <p>{{ profileData?.first_name }}</p>
+        </div>
+        <div class="info-item">
+            <label>Nazwisko</label>
+            <p>{{ profileData?.last_name }}</p>
+        </div>
+        <div class="info-item">
+            <label>Username</label>
+            <p>{{ profileData?.username}}</p>
+        </div>
+        <div class="info-item">
+            <label>Display-name</label>
+            <p>{{ profileData?.display_name }}</p>
+        </div>
+        <div class="info-item">
+            <label>Email</label>
+            <p>{{ profileData?.email }}</p>
+        </div>
+        <div class="info-item">
+            <label>Data urodzin</label>
+            <p>{{ profileData?.date_of_birth | dateFormat:false }}</p>
+        </div>
+        <div class="info-item">
+            <label>Data dołączenia</label>
+            <p>{{ profileData?.date_of_birth | dateFormat:false }}</p>
+        </div>
+        <div class="info-item">
+            <label>Wiek</label>
+            <p>{{ getAge(profileData?.date_of_birth) }}</p>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="!isLoading" class="spinner">
+    
+</div>
+

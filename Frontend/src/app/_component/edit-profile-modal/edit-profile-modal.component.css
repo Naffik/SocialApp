@@ -1,0 +1,143 @@
+.modal-header{
+    font-size: 20px;
+}
+
+.avatar-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    float: left;
+}
+
+.img-thumbnail.rounded-circle {
+    width: 100%;
+    height: 100%;
+}
+
+.camera-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    background-color: #a10ddb;
+    padding: 5px 5px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;  /* Dodane przejście dla opacity */
+    opacity: 0.8; /* Ustawienie przezroczystości na 50% */
+}
+
+.camera-icon:hover {
+    background-color: #b53bed; /* Kolor hover dla przycisku */
+}
+
+.custom-input {
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    position: relative;
+    z-index: 1;
+    margin-top: 20px;  
+}
+
+.custom-input:focus {
+    outline: none;
+    border-color: purple;
+}
+
+.form-group {
+    position: relative;  
+}
+
+.input-label {
+	position: absolute;
+	background-color: #ffffff;
+	top: 10px;
+	left: 20px;
+	padding: 0 10px;
+	z-index: 100;
+}
+
+.custom-input:focus {
+    z-index: 2; 
+}
+
+.form-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.editProfile-form-content {
+	display: flex;
+	flex-direction: column;
+}
+
+.character-count {
+    font-size: 12px;
+    color: #888;
+    position: absolute;
+    right: 20px;
+    bottom: 5px;
+}
+
+.error-message {
+    font-size: 12px;
+    color: red;
+    position: absolute;
+    left: 20px;
+    bottom: -20px;
+}
+
+input.form-control {
+    color: gray; /* domyślny kolor inputów */
+}
+  
+input.form-control:focus {
+    color: black; /* kolor inputów po aktywacji (fokusie) */
+}
+  
+.input-label.error {
+    color: red; /* kolor labelki, gdy pole nie jest poprawne */
+}
+
+.btn {
+    margin-right: 10px; /* Dodanie odstępu między przyciskami */
+}
+
+.btn-secondary {
+    background-color: red;
+    border-color: red;
+    transition: background-color 0.3s, border-color 0.3s; /* Dodanie animacji dla efektu hover */
+}
+
+.btn-secondary:hover {
+    background-color: darkred;
+    border-color: darkred;
+}
+
+.btn-primary {
+    background-color: #a10ddb;
+    border-color: #a10ddb;
+    transition: background-color 0.3s, border-color 0.3s; /* Dodanie animacji dla efektu hover */
+}
+
+.btn-primary:hover {
+    background-color: #b53bed;
+    border-color: #b53bed;
+}
+
+.back-button {
+    background-color: transparent;
+    border: none;
+    color: #a10ddb;
+    font-size: 1.5rem; /* Zwiększenie rozmiaru czcionki dla większej ikony */
+    transition: color 0.3s; /* Dodanie animacji dla efektu hover */
+}
+
+.back-button:hover {
+    color: #b53bed; /* Kolor hover dla przycisku strzałki wstecz */
+}
+

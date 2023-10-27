@@ -1,0 +1,60 @@
+.account-settings {
+    padding: 20px;
+}
+
+.account-settings h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+.settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.settings-section a, 
+.settings-section button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    text-align: left;
+    text-decoration: none;
+    color: #333;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.settings-section a:hover, 
+.settings-section button:hover {
+    background-color: #e0e0e0;
+}
+
+.settings-section button {
+    display: block;
+    width: 100%;
+    background-color: #ff4d4d;
+    color: #fff;
+}
+
+.settings-section button:hover {
+    background-color: #e33d3d;
+}
+
+.settings-section a i, 
+.settings-section button i {
+    margin-right: 10px; /* For left icons */
+}
+
+.settings-section a i:last-child, 
+.settings-section button i:last-child {
+    margin-left: 10px; /* For right icons */
+}
+
+.icon-right {
+    float: right;
+}

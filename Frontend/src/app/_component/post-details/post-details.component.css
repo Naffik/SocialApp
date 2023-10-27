@@ -1,0 +1,524 @@
+.content{
+  font-family: Arial, sans-serif;
+  max-width: 700px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.post {
+  position: relative;
+  padding: 16px;
+  width: 550px;
+  margin: 16px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 16px;
+}
+
+.post-info .username,
+.post-info .email,
+.post-info .date {
+  display: block;
+}
+
+a {
+  text-decoration: none; 
+  color: inherit; 
+}
+
+.date{
+  position: relative;
+  cursor: pointer;
+  color:#7e7e7e
+}
+
+.date:hover,
+.username:hover {
+  text-decoration: underline;
+}
+
+.nick{
+  color:#7e7e7e;
+  margin: 0 15px 0 15px;
+}
+
+.post-content {
+  margin-bottom: 16px;
+  margin-left: 67px;
+}
+
+.post-content img{
+  max-width:380px;
+  /* max-width:400px; */
+  object-fit:cover;
+  border-radius:25px;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Domyślne style dla przycisków */
+.like-btn, .comment-btn, .share-btn {
+  background-color: inherit;
+  border: none;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+}
+
+
+/* Domyślny kolor ikony */
+.like-btn i, .comment-btn i, .share-btn i {
+  color: #504f4f;
+  padding: 10px 10px;
+  border-radius: 50%;
+}
+
+/* Domyślny kolor licznika */
+.like-btn .count, .comment-btn .count, .share-btn .count {
+  color: #504f4f; /* lub inny kolor, jeśli chcesz, żeby różnił się od koloru ikony */
+}
+
+.like-btn:hover i, .like-btn:hover .count, 
+.comment-btn:hover i, .comment-btn:hover .count,
+.share-btn:hover i {
+  color: #a10ddb; /* lub inny kolor, jaki chcesz */
+}
+
+
+/* Zmiana tła ikony podczas najechania na przycisk */
+.comment-btn:hover i, .share-btn:hover i{
+  background-color: rgba(170, 16, 221, 0.1);
+}
+
+.like-btn:hover i{
+  background-color: rgba(249, 24, 128, 0.1);
+}
+
+/* Kontener, który utrzymuje przycisk i ikonę razem */
+.btn-container {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Usunięcie domyślnego focus dla przycisku */
+.like-btn:focus, .comment-btn:focus, .share-btn:focus {
+  outline: none;
+}
+
+/* Kolor ikony "polubienia", gdy post jest polubiony */
+.like-btn.liked i, .like-btn .count.liked {
+  color: rgba(161, 13, 219);
+}
+
+
+.preserve-whitespace {
+  white-space: pre-line;
+}
+
+.tooltip {
+  display: flex;
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 12px 25px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: -15px;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  top: 125%;
+  white-space: nowrap;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}
+
+.date:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  align-items: center;
+}
+
+@media (hover: hover) and (max-height: 650px) {
+  .date:hover .tooltip {
+      bottom: unset;
+      top: 125%;
+  }
+
+  .date:hover .tooltip::after {
+      top: unset;
+      bottom: 100%;
+      border-color: transparent transparent black transparent;
+  }
+}
+
+.spinner {
+  border: 8px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 8px solid #a10ddb;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  display: inline-block;
+  font-size: 20px;
+}
+
+.dot {
+  animation: blink 1.4s infinite both;
+  font-weight: normal;
+  animation-fill-mode: both;
+  opacity: 0;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.tags {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tag-container {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.tags > .tag-container > span {
+  background: #E5A6FF;
+  border-radius: 5px;
+  border: 1px #840AB6 solid;
+  color: #840AB6;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.text-gray {
+  color: gray;
+}
+  
+.text-bold {
+  font-weight: bold;
+}
+  
+.textarea-container {
+  position: relative;
+  display: flex;
+}
+
+.error-message {
+  background-color: #8B0000;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-top: 10px;
+  font-size: 14px;
+  margin: 10px 0 10px 0;
+}
+
+textarea {
+  resize: none;
+  overflow: hidden;
+  border: none;
+  outline: none;
+  transition: height 0.2s, margin-bottom 0.2s;
+  width: 100%;
+  font-size: 15px;
+  height: 40px;
+  margin-bottom: 0;
+}
+
+textarea.active {
+  height: 45px;
+  margin-bottom: 40px;
+}
+
+.user-avatar, .comment-avatar{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.publish-btn {
+  background-color: #007BFF;
+  color: #FFF;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+.publish-btn[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.character-count {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  font-size: 12px;
+}
+
+.circle-progress {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2
+}
+
+.custom-popover {
+  position: absolute;
+  border-radius: 25px;
+  border: 1px solid black;
+  padding: 10px;
+  background-color: #f7f7f7;
+  top: 65px;
+  z-index: 1000;
+  min-width: 200px; /* adjust as needed */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.custom-popover span {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.post:hover .custom-popover {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
+.headerPopover {
+  min-width: 250px;
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  justify-content: space-between;
+}
+
+.headerPopover .avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; 
+}
+
+.headerPopover > .inactive {
+  width: auto;
+  background: #E5A6FF;
+  border-radius: 50px;
+  border: 1px #840AB6 solid;
+  color: #840AB6;
+  cursor: pointer;
+  height: 33%;
+}
+
+.headerPopover > .active {
+  width: auto;
+  background: #FFD1D1;
+  border-radius: 50px;
+  border: 1px #C10D0D solid;
+  color: #C10D0D;
+  cursor: pointer;
+  height: 33%;
+}
+
+.headerPopover   > .inactive:hover {
+  background-color: #840AB6;
+  border-color: #E5A6FF;
+  color:#E5A6FF;
+}
+
+.headerPopover   > .active:hover {
+  background-color: #C10D0D;
+  color:#FFD1D1;
+  border-color: #FFD1D1;
+}
+
+.custom-popover .popover-nick {
+  color:#7e7e7e;
+}
+
+.context-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  padding: 5px;
+  min-width: 200px;
+  z-index: 100;
+}
+
+.menu-icon-container > button {
+  border: none;
+  background-color: inherit;
+  padding: 5px 15px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.menu-icon-container > button:hover{
+  background-color: rgba(170, 16, 221, 0.1);
+}
+
+.menu-icon-container > button:hover i{
+  color: #a10ddb;
+}
+
+.menu-icon-container {
+  position: absolute;
+  right: 10px; 
+}
+
+
+.image-preview-container {
+  position: relative;
+  margin-bottom: 60px;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.textarea-header{
+  display: flex;
+}
+
+.textarea-content{
+  display: flex;
+  flex-direction: column;
+}
+
+.remove-image-btn:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+.remove-image-btn:focus {
+  outline: none;
+}
+.context-menu button {
+  padding: 10px;
+  width: 100%;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  text-align: left;
+  background-color: inherit;
+}
+
+.context-menu button:hover {
+  background-color: #a1a1a1;
+}
+
+.deletePost {
+  color: #e74c3c ;
+}
+
+.deletePost:hover {
+  background-color: #c0392b !important;
+  color: white; 
+}
+
+.post-image-preview {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 5px;
+}

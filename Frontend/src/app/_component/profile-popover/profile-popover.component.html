@@ -1,0 +1,60 @@
+<div class="custom-popover">
+  <div *ngIf="user">
+    <div class="headerPopover">
+      <a [routerLink]="['/', user.username]">
+        <img
+          [src]="baseUrl + user.avatar_url"
+          alt="Avatar użytkownika"
+          class="avatar"
+        />
+      </a>
+      <button
+        *ngIf="user.username !== loggedInUsername"
+        [ngClass]="{ active: user.follow, inactive: !user.follow }"
+        (click)="user.follow ? onRemoveFollow() : onFollow()"
+      >
+        {{ user.follow ? "Przestań obserwować" : "Zaobserwuj" }}
+      </button>
+      <button
+        *ngIf="user.username !== loggedInUsername"
+        [ngClass]="{ active: user.is_friend, inactive: !user.is_friend }"
+        (click)="user.is_friend ? onRemoveFriend() : onAddFriend()"
+      >
+        {{
+          user.is_friend
+            ? "Usuń znajomego"
+            : user.request_friendship_sent
+            ? "Zaproszenie wysłane"
+            : "Dodaj do znajomych"
+        }}
+      </button>
+    </div>
+    <div>
+      <a [routerLink]="['/', user.username]">
+        <span class="popover-username"
+          ><strong>{{ user.username }}</strong></span
+        >
+      </a>
+      <a [routerLink]="['/', user.username]">
+        <span class="popover-nick">@{{ user.display_name }}</span>
+      </a>
+    </div>
+    <div>
+      <a [routerLink]="['/', user.username, 'followers']">
+        <span class="stats"
+          >Obserwujących: <strong>{{ user.followers_count }}</strong></span
+        >
+      </a>
+      <a [routerLink]="['/', user.username, 'following']">
+        <span class="stats"
+          >Obserwowanych: <strong>{{ user.follows_count }}</strong></span
+        >
+      </a>
+      <a [routerLink]="['/', user.username, 'friends']">
+        <span class="stats"
+          >Przyjaciół: <strong>{{ user.friends_count }}</strong></span
+        >
+      </a>
+    </div>
+  </div>
+</div>

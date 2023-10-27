@@ -1,0 +1,10 @@
+body{
+    background-color:#efefef;
+    margin-right: 10px;
+
+}
+
+body {
+    /* Dodanie marginesu po prawej stronie, który odpowiada szerokości paska przewijania */
+    margin-right: 10px;
+  }

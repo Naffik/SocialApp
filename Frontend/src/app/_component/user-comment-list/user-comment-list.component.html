@@ -1,0 +1,42 @@
+<app-users></app-users>
+<div *ngIf="!isLoading && !serverError">
+  <hr>
+    <!-- Section with tabs -->
+    <div class="tabs">
+      <a 
+        [routerLink]="['/', username]" 
+        routerLinkActive="active-link" 
+        [routerLinkActiveOptions]="{exact: true}"
+
+        class="tab">
+          Wpisy
+      </a>
+      <a 
+        [routerLink]="['/', username, 'comments']" 
+        [routerLinkActiveOptions]="{exact: true}"
+        routerLinkActive="active-link"
+        class="tab">
+          Komentarze
+      </a>
+      <a 
+        [routerLink]="['/', username, 'media']" 
+        [routerLinkActiveOptions]="{exact: true}"
+        routerLinkActive="active-link"
+        class="tab">
+          Multimedia
+      </a>
+      <a 
+        [routerLink]="['/', username, 'likes']" 
+        [routerLinkActiveOptions]="{exact: true}"
+        routerLinkActive="active-link"
+        class="tab">
+          Polubienia
+      </a>
+    </div>
+    <!-- Divider -->
+    <hr>
+    <!-- Items list (this is a generic representation, you may need to customize based on the type of item) -->
+  <div *ngFor="let item of items" class="itemList">    
+    
+  </div>
+</div>

@@ -1,76 +1,81 @@
 
-<div *ngIf="!loggedIn()">
+<div *ngIf="!authService.loggedIn()">
   <app-authenticator></app-authenticator>
 </div>
-<div *ngIf="loggedIn()" class="home-page">
-  <header>
-    <div class="header-left">
-    <h1 style="color:white;">Media społecznościowe z czatem tekstowym</h1>
-    </div>
-    <div class="header-right">
-        <div class="search-bar">
-            <img src="/assets/search.png">
-            <input type="text" placeholder="Wyszukaj">
-        </div>
-        <button class="header-user-icon">
-            <img [src]="baseUrl + avatarUrl" alt="account pictures">
-            <p> {{ firstName }} {{ lastName }} </p>
-        </button>
-    </div>
-</header>
-<div class="container">
+<div *ngIf="authService.loggedIn()" class="home-page">
     <nav>
-         <!-- <h1> Media społecznościowe z czatem tekstowym </h1> -->
-        <ul>
-            <li><a href=#><img src="/assets/profile-home.png"></a></li>
-            <li><a href=#><img src="/assets/comment.png"></a></li>
-            <li><a href=#><img src="/assets/loves.png"></a></li>
-            <li><a href=#><img src="/assets/friends.png"></a></li>
-            <li><a href=#><img src="/assets/notification.png"></a></li>
-            <li><a href=#><img src="/assets/settings.png"></a></li>
-            <li><a (click)="logout()"><img src="/assets/logout.png"></a></li>
-        </ul>
+        <div class="nav-left">
+            <h1>Media społecznościowe z czatem tekstowym</h1>
+        </div>
+        <div class="nav-mid">
+            <ul>
+                <li routerLinkActive="active-link">
+                    <a [routerLink]="['/home']" (click)="onHomeIconClick()"><img src="/assets/home.png"></a>
+                </li>
+                <li routerLinkActive="active-link">
+                    <a [routerLink]="['/chat']"><img src="/assets/chat.png"></a>
+                </li>
+                <li class="button-menu">
+                    <button class="add-post-btn" (click)="openCreatePostModal()">
+                        <i class="fa fa-plus"></i>                
+                      </button>                
+                </li>
+                <li routerLinkActive="active-link">
+                    <a [routerLink]="['/', authService.decodedToken?.username]"><img src="/assets/profile.png"></a>
+                </li>
+               
+                <li routerLinkActive="active-link">
+                    <a [routerLink]="['/notifications']"><img src="/assets/notifications-before.png"></a>
+                </li>
+            </ul>
+        </div>      
+
+        <div class="nav-right">
+            <div class="search-box" *ngIf="window.innerWidth > 1396">
+                <img src="/assets/search.png">
+                <input type="text" placeholder="Wyszukaj">
+            </div>
+             <button class="search-button" *ngIf="window.innerWidth <= 1396" (click)="redirectToSearch()">
+            <img src="/assets/search-solid.png">
+    </button>
+            <div class="nav-user-icon" (click)="toggleDropdown($event)">
+                <div class="user-info" *ngIf="currentUserData$">
+                    <img [src]="baseUrl + currentUserData?.avatar" alt="account picture" class="avatarButton">
+                </div>
+                <div class="dropdown-content" *ngIf="showDropdown">
+                    <div class="profile-summary">
+                        <a [routerLink]="['/', currentUserData?.username]">
+                            <img [src]="baseUrl + currentUserData?.avatar" alt="account picture" class="profile-avatar">
+                            <span> <strong> {{ currentUserData?.username }} </strong> </span> 
+                        </a>
+                    </div>
+                    <div class="dropdown-option">
+                        <a [routerLink]="['/account']">
+                            <img src="/assets/settings.png" class="menu-icon"> Ustawienia konta
+                        </a>
+                        <a (click)="logout()">
+                            <img src="/assets/logout.png" class="menu-icon"> Wyloguj się
+                        </a>
+                    </div>
+                    <div class="dropdown-footer">
+                        <a href="https://github.com/Naffik/SocialApp/"><img src="/assets/git.png"/></a>
+                    </div>
+                </div>
+            </div>            
+        </div>
     </nav>
 
-    <div class="chat">
-      <div class="first-section">
-          <div class="chat-search-bar">
-              <img src="/assets/search.png">
-              <input type="text" placeholder="Wyszukaj">
-          </div>
-          <button class="new-message"><img src="/assets/add.png"> Nowa wiadomość</button>
-      </div>
-      <div class="second-section">
-        <div class="message-contact">
-            <img src="/assets/profile-pic.png" alt="Avatar icon">
-            <p> Imie Nazwisko </p>
+    <div class="container">
+        <div class="chat">
+            <app-chat></app-chat>
         </div>
-      </div>
-    </div>
-
-    <div class="main-content">
-        <div class="posts">
-          <app-content></app-content>
-        </div>
-    </div>
-
-    <div class="right-sidebar">
-        <div class="content-right-sidebar">
-          <button class="add-post-btn" >
-            <i class="fas fa-plus"></i> Dodaj post
-          </button>
-            <div class="trends">
-                <div class="first-section">
-                    <p>Trendy</p>
-                </div>
-                <div class="second-section">
-
-                </div>
+        <div class="main-content">
+            <div class="content">
+                <router-outlet></router-outlet>
             </div>
-            <footer>
-                <a href="#"><img src="/assets/git.png"/></a>
-            </footer>
+        </div>
+        <div class="right-sidebar">
+            <app-trends></app-trends>
         </div>
     </div>
-</div>
 </div>

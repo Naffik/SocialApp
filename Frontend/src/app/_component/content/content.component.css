@@ -1,24 +1,21 @@
-.content{
-  display: flex;
-  width: 100%;
-  height: 100%;
-  flex-direction: column;
-  align-items: center;
-}
 
 .post {
   position: relative;
-  border: 1px solid black;
   padding: 16px;
-  width: 650px;
+  width: 550px;
   margin: 16px 0;
   border-radius: 8px;
+  cursor: pointer;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .post-header {
+  position: relative; /* Upewnij się, że ten styl jest dodany */
+
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   margin-bottom: 16px;
 }
 
@@ -35,17 +32,26 @@
   display: block;
 }
 
+.post-header a{
+  text-decoration: none; 
+  color: inherit; 
+}
+
+.post-link {
+    text-decoration: none; 
+    color:inherit;
+}
+
 .date{
   position: relative;
   cursor: pointer;
   color:#7e7e7e
 }
 
-.username {
-}
-
 .date:hover,
-.username:hover {
+.username:hover,
+.popover-username:hover,
+.stats:hover {
   text-decoration: underline;
 }
 
@@ -62,23 +68,67 @@
 .post-actions {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
-.like-btn {
-  background-color: #a10ddb;
-  color: white;
+/* Domyślne style dla przycisków */
+.like-btn, .comment-btn, .share-btn {
+  background-color: inherit;
   border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
 }
 
-.like-btn:focus {
+
+/* Domyślny kolor ikony */
+.like-btn i, .comment-btn i, .share-btn i {
+  color: #504f4f;
+  padding: 10px 10px;
+  border-radius: 50%;
+}
+
+/* Domyślny kolor licznika */
+.like-btn .count, .comment-btn .count, .share-btn .count {
+  color: #504f4f; /* lub inny kolor, jeśli chcesz, żeby różnił się od koloru ikony */
+}
+
+.like-btn:hover i, .like-btn:hover .count, 
+.comment-btn:hover i, .comment-btn:hover .count,
+.share-btn:hover i {
+  color: #a10ddb; /* lub inny kolor, jaki chcesz */
+}
+
+
+/* Zmiana tła ikony podczas najechania na przycisk */
+.comment-btn:hover i, .share-btn:hover i{
+  background-color: rgba(170, 16, 221, 0.1);
+}
+
+.like-btn:hover i{
+  background-color: rgba(249, 24, 128, 0.1);
+}
+
+/* Kontener, który utrzymuje przycisk i ikonę razem */
+.btn-container {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Usunięcie domyślnego focus dla przycisku */
+.like-btn:focus, .comment-btn:focus, .share-btn:focus {
   outline: none;
 }
 
+/* Kolor ikony "polubienia", gdy post jest polubiony */
+.like-btn.liked i, .like-btn .count.liked {
+  color: rgba(161, 13, 219);
+}
+
+
 .post-content img{
-  max-width:480px;
+  max-width:380px;
+  /* max-width:400px; */
   object-fit:cover;
   border-radius:25px;
 }
@@ -86,6 +136,10 @@
   display: flex;
   justify-content: center;
 } */
+
+.preserve-whitespace {
+  white-space: pre-line;
+}
 
 .tooltip {
   display: flex;
@@ -135,6 +189,14 @@
       bottom: 100%;
       border-color: transparent transparent black transparent;
   }
+}
+
+.loading-bar{
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
+  gap: 10px;
 }
 
 .spinner {
@@ -191,7 +253,6 @@
 
 .profile-info {
   position: absolute;
-  background-color: red;
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 5px;
@@ -226,15 +287,196 @@
   border-radius: 25px;
   border: 1px solid black;
   padding: 10px;
-  background-color: #efefef;
+  background-color: #f7f7f7;
   top: 65px;
-  left: 20px;
   z-index: 1000;
-  width: 200px; /* adjust as needed */
+  min-width: 200px; /* adjust as needed */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s, transform 0.3s;
 }
 
 .custom-popover span {
   display: block;
   margin-bottom: 5px;
+}
+
+.post:hover .custom-popover {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
+.headerPopover {
+  min-width: 250px;
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  justify-content: space-between;
+}
+
+.headerPopover .avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; 
+}
+
+.headerPopover > .inactive {
+  width: auto;
+  background: #E5A6FF;
+  border-radius: 50px;
+  border: 1px #840AB6 solid;
+  color: #840AB6;
+  cursor: pointer;
+  height: 33%;
+}
+
+.headerPopover > .active {
+  width: auto;
+  background: #FFD1D1;
+  border-radius: 50px;
+  border: 1px #C10D0D solid;
+  color: #C10D0D;
+  cursor: pointer;
+  height: 33%;
+}
+
+.headerPopover   > .inactive:hover {
+  background-color: #840AB6;
+  border-color: #E5A6FF;
+  color:#E5A6FF;
+}
+
+.headerPopover   > .active:hover {
+  background-color: #C10D0D;
+  color:#FFD1D1;
+  border-color: #FFD1D1;
+}
+.custom-popover .popover-nick{
+  color:#7e7e7e
+}
+.text-gray {
+  color: gray;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.token-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  margin: 10px 0;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-post-btn {
+  position: fixed;
+  bottom: 1vh;
+  right: 5vw;  
+  background-color: #b621f3;
+  color: white;  
+  border-radius: 50%;  
+  width: 60px;  
+  height: 60px;  
+  border: none;  
+  font-size: 24px;  
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: 100;
+}
+
+.add-post-btn:hover {
+  background-color: #6a1a8a;
+}
+
+.menu-icon-container {
+  position: absolute;
+  right: 10px; 
+}
+
+.context-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  padding: 5px;
+  min-width: 200px;
+  z-index: 100;
+}
+
+.menu-icon-container > button {
+  border: none;
+  background-color: inherit;
+  padding: 5px 15px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.menu-icon-container > button:hover{
+  background-color: rgba(170, 16, 221, 0.1);
+}
+
+.menu-icon-container > button:hover i{
+  color: #a10ddb;
+}
+
+
+.context-menu button {
+  padding: 10px;
+  width: 100%;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  text-align: left;
+  background-color: inherit;
+}
+
+.context-menu button:hover {
+  background-color: #a1a1a1;
+}
+
+.deletePost {
+  color: #e74c3c ;
+}
+
+.deletePost:hover {
+  background-color: #c0392b !important;
+  color: white; 
+}
+
+.image-upload-label {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 50%;
+  background-color: rgba(170, 16, 221, 0.1);
+  cursor: pointer;
+}
+
+.image-upload-label i {
+  color: rgba(170, 16, 221, 0.7);  /* Ustawiłem kolor ikony, aby pasował do tła */
+  font-size: 20px;
+}
+
+.image-upload-label:hover {
+  background-color: rgba(170, 16, 221, 0.2);  /* Jasniejszy kolor podczas najechania */
+}
+
+.image-upload-label:hover i {
+  color: rgba(170, 16, 221, 0.9);  /* Ciemniejszy kolor ikony podczas najechania */
+}
+
+.btn-primary:hover {
+  background: rgba(170, 16, 221, 0.2);
+  border: 1px rgba(170, 16, 221, 0.7) solid;
+  color: rgba(170, 16, 221, 0.9);
 }

@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { AbstractControl, ValidationErrors, FormGroup, ValidatorFn, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../_services/auth.service';
 import { Observable, Subject, of } from 'rxjs';
-import { debounceTime, switchMap, map, distinctUntilChanged, filter, catchError, tap } from 'rxjs/operators';
-import { RegisterComponent } from '../_component/register/register.component';
+import { debounceTime, switchMap, map, distinctUntilChanged, catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +31,7 @@ export class ValidatorsService {
         username: ['', [Validators.required],[this.usernameAsyncValidator.bind(this)]],
         first_name: ['', Validators.required],
         last_name: ['', Validators.required],
-        date_of_birth: ['', [Validators.required]]
+        date_of_birth: ['', [Validators.required],]
       })
     });
   }
@@ -40,9 +39,6 @@ export class ValidatorsService {
 passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
     const value: string = control.value || '';
     let requirements: string[] = [];
-
-    // console.log('Password value:', value);
-    // console.log('Requirements:', requirements);
 
     if (!value || value.length < 8) {
       requirements.push(`${8 - value.length} znaków`);

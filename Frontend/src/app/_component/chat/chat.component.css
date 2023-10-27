@@ -1,0 +1,173 @@
+.first-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: black solid 1px;
+    padding-bottom: 25px;
+    z-index: 1;
+}
+  
+.second-section {
+    flex-direction: column;
+    overflow-y: auto;
+    justify-content: space-between;
+    padding-top: 20px;
+    display: flex;
+}
+  
+.chat-search-bar{
+    margin-top: 20px;
+    background: white;
+    width: 253px;
+    border-radius: 3vh;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.first-section p{
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+}
+  
+.first-section img{
+    width: 18px;
+}
+  
+.chat-search-bar input{
+    width: 100%;
+    background: transparent;
+    padding: 10px;
+    outline: none;
+    border: 0;
+}
+
+.second-section::-webkit-scrollbar{
+    display: none;
+}
+  
+.avatar{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 16px;
+}
+  
+  
+.message-contact{
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+}
+  
+.message-contact:hover{
+    background-color: rgba(170, 16, 221, 0.1);;;
+    border-radius: 10px;
+}
+
+.chat-panel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 70%; 
+    background-color: white;
+    border-left: 1px solid #ccc;
+    transition: transform 0.3s;
+    transform: translateX(100%);
+    z-index: 2;
+  }
+  
+  .chat-panel.show {
+    transform: translateX(0);
+  }
+  
+  .usersList {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px; 
+    border: 1px solid #e5e5e5; 
+    border-radius: 5px; 
+    margin: 10px 0; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+}
+
+.usersList:hover {
+    background-color: rgba(170, 16, 221, 0.1);
+}
+
+.left-section {
+    display: flex;
+    align-items: center;
+    width: 100%; 
+}
+
+.avatar {
+    width: 50px;
+    height: 50px; 
+    border-radius: 50%; 
+    margin-right: 15px; 
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.username {
+    font-size: 1.2em;
+    color: #333;
+}
+
+.nick {
+    font-size: 1.1em;
+    color: #555;
+}
+
+.username {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.nick {
+    font-size: 0.9em; 
+    color: #777; 
+}
+
+.selected {
+    border-radius: 10px; 
+    background-color: rgba(170, 16, 221, 0.3);  
+}
+
+.message-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 300px; 
+    background-color: #f5f5f5;
+    border-left: 1px solid #ddd;
+    overflow-y: auto;
+}
+
+.message-header {
+    padding: 10px;
+    background-color: #ddd;
+    font-weight: bold;
+}
+
+.message-list {
+    padding: 10px;
+    max-height: calc(100% - 60px); 
+    overflow-y: auto;
+}
+
+.message-input {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}

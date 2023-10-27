@@ -1,0 +1,192 @@
+.account-info {
+    padding: 20px;
+    width: 700px;
+}
+
+.header h2 {
+    text-align: left;
+    margin: 0; 
+}
+
+.info-section {
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    transition: background-color 0.3s; /* Efekt przejścia dla koloru tła */
+    cursor: pointer;
+    padding: 15px;
+}
+
+.no-hover{
+    cursor: default;
+}
+
+.no-hover{
+    background-color: inherit;
+}
+
+
+
+.info-item p {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    text-align: left;
+    color: #777;
+    background-color: #f5f5f5;
+}
+
+.info-item p i {
+    margin-right: 10px;
+}
+
+.info-item:hover {
+    background-color: #ddd;
+    border-radius: 5px;
+}
+.info-item label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px; 
+}
+
+.no-hover:hover {
+    background-color: inherit; 
+}
+
+.info-item p {
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 0; 
+}
+
+.info-item label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px; 
+}
+
+.info-item p {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 0; 
+}
+
+.header button {
+    color:black;
+    background-color: transparent; 
+    border: none;
+    padding: 15px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: none; 
+    border-radius: 50%;
+}
+
+.header button:hover {
+    background-color: #a10ddb;
+}
+
+.header button i.fa-arrow-left {
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+/* Style dla przycisków */
+button {
+    background-color: #007BFF; /* Niebieski kolor tła */
+    color: white; /* Biały kolor tekstu */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Efekt przejścia dla koloru tła */
+}
+
+button:hover {
+    background-color: #0056b3; /* Ciemniejszy odcień niebieskiego na hover */
+}
+
+
+.header {
+    display: flex;
+    align-items: center; /* Wyrównuje elementy do środka w pionie */
+    gap: 10px;
+}
+
+.username {
+    color: rgb(178, 172, 162);
+}
+
+.displayname {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px; 
+    margin-right: 20px; 
+}
+
+
+.usersList {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px; 
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.usersList:hover {
+    background-color: #ddd;
+}
+
+.left-section {
+    display: flex;
+    align-items: center;
+}
+
+.avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.right-section {
+    display: flex;
+    gap: 10px;
+}
+
+.user-link {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    text-decoration: none;    
+    color: inherit; /* spowoduje, że kolor tekstu linku będzie taki sam jak kolor tekstu otaczającego go elementu */
+
+}
