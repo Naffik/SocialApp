@@ -149,6 +149,32 @@ class PostCreateSerializer(TaggitSerializer, serializers.ModelSerializer):
         return representation
 
 
+class CommentCreateSerializer(serializers.ModelSerializer):
+    comment_author = serializers.StringRelatedField(read_only=True)
+    comment_author_avatar = serializers.SerializerMethodField(read_only=True)
+    display_name = serializers.SerializerMethodField(read_only=True)
+    post_id = serializers.StringRelatedField(source='post.id')
+
+    class Meta:
+        model = Comment
+        # exclude = ('post',)
+        fields = ['id', 'post_id', 'comment_author', 'comment_author_avatar', 'display_name', 'created', 'update_time',
+                  'content', 'hidden', 'image']
+
+    def get_comment_author_avatar(self, instance):
+        return instance.comment_author.avatar.url
+
+    def get_display_name(self, instance):
+        return instance.comment_author.display_name
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.image:
+            representation['image'] = instance.image.url
+        else:
+            representation.pop('image', None)
+        return representation
+
 class PostFavSerializer(PostSerializer):
 
     class Meta:

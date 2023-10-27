@@ -15,7 +15,8 @@ from taggit.serializers import TaggitSerializer
 from user_app.models import User
 from web_app.api.pagination import PostPagination
 from web_app.api.permissions import IsPostUserOrReadOnly, IsCommentUserOrReadOnly
-from web_app.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer, PostFavSerializer
+from web_app.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer, PostFavSerializer, \
+    CommentCreateSerializer
 from web_app.models import Post, Like, Comment
 from friendship.models import Friend, Follow, Block
 
@@ -286,7 +287,7 @@ class CommentCreateView(generics.CreateAPIView):
 
     - id
     """
-    serializer_class = CommentSerializer
+    serializer_class = CommentCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -332,8 +333,10 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsCommentUserOrReadOnly]
 
     def perform_destroy(self, instance):
-        comment = Comment.objects.get(pk=self.kwargs.get('pk'))
-        comment.image.delete()
+        if instance.image:
+            instance.image.delete()
+        post = Post.objects.get(pk=instance.post.id)
+        post.number_of_comments = post.number_of_comments - 1
         instance.delete()
 
     def update(self, request, *args, **kwargs):
