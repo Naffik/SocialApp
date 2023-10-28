@@ -92,6 +92,45 @@ a {
   z-index: 1;
 }
 
+.header {
+  position: sticky;
+  top: 60px;
+  background-color: #f7f7f7;  /* Przykładowe tło, dostosuj według własnych potrzeb */
+  z-index: 100;  /* Upewnij się, że nagłówek jest zawsze na wierzchu */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+
+.header h2 {
+  text-align: left;
+  margin: 0; 
+}
+
+.header button {
+  color:black;
+  background-color: transparent; 
+  border: none;
+  padding: 15px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: none; 
+  border-radius: 50%;
+}
+
+.header button:hover {
+  background-color: #a10ddb;
+}
+
+.header button i.fa-arrow-left {
+  font-size: 16px;
+  margin-right: 5px;
+}
 
 /* Domyślny kolor ikony */
 .like-btn i, .comment-btn i, .share-btn i {

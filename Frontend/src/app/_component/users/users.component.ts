@@ -9,6 +9,8 @@ import { ModalCommunicationService } from 'src/app/_services/modal-communication
 import { AlertifyService } from 'src/app/_services/alertify.service';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/_models/User';
+import { Location } from '@angular/common';
+
 
 
 
@@ -41,6 +43,7 @@ export class UsersComponent {
     private modalService: NgbModal,
     private modalCommService: ModalCommunicationService,
     private alertify: AlertifyService,
+    private location: Location,
   ) { }
 
   ngOnInit() {
@@ -181,6 +184,10 @@ export class UsersComponent {
     }
   }
 
+
+  goBack(): void {
+    this.location.back();
+  }
   closeImageModal() {
     // this.router.navigate(['post', postId]);
     this.modalCommService.closeMediaModal();

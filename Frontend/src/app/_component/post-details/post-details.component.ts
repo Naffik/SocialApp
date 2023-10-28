@@ -6,11 +6,12 @@ import { AuthService } from 'src/app/_services/auth.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { AlertifyService } from 'src/app/_services/alertify.service';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { PostService } from 'src/app/_services/post-service.service';
 import { User } from 'src/app/_models/User';
 import { ModalCommunicationService } from 'src/app/_services/modal-communication-service.service';
 import { DropdownService } from 'src/app/_services/dropdown-service.service';
 import { Post } from 'src/app/_models/Post';
+import { Location } from '@angular/common';
+
 
 
 @Component({
@@ -81,7 +82,9 @@ export class PostDetailsComponent implements OnInit {
     private modalCommService: ModalCommunicationService,
     private cdRef: ChangeDetectorRef, 
     private dropdownService: DropdownService,
-    private router: Router
+    private router: Router,
+    private location: Location,
+
   ) { 
       this.currentUserData$ = this.authService.userData$;
   }
@@ -156,6 +159,11 @@ export class PostDetailsComponent implements OnInit {
       // obsługa błędów
       this.isLoading = false;
     });
+  }
+  
+
+  goBack(): void {
+    this.location.back();
   }
   
   removeImage() {
@@ -433,13 +441,14 @@ export class PostDetailsComponent implements OnInit {
   }
 
   private handleCommentPublishSuccess(response: any) {
-      this.isPostSending = false;
-      this.isPostError = false;
-      this.postText = ''; 
-      this.updateCharacterCount();
-      this.post.number_of_comments++;
-      this.comments.unshift(response);
-      this.alertify.success('Komentarz dodany!');
+    this.removeImage();
+    this.isPostSending = false;
+    this.isPostError = false;
+    this.postText = ''; 
+    this.updateCharacterCount();
+    this.post.number_of_comments++;
+    this.comments.unshift(response);
+    this.alertify.success('Komentarz dodany!');
   }
 
   private handleCommentPublishError(error: any) {

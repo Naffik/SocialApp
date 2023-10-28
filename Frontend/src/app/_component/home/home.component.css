@@ -65,6 +65,10 @@ nav{
   border-bottom: 5px solid rgb(250, 0, 187); 
 }
 
+.nav-left a{
+  text-decoration: none;
+}
+
 .nav-left, .nav-right{
   display: flex;
   align-items: center;

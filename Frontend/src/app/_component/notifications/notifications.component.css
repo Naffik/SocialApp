@@ -1,148 +1,201 @@
-.content-container{
-    width: 650px;
+.content-container {
+  width: 650px;
 }
 
-.emptyFriendList{
-    display: flex;
-    flex-direction: column;
-    /* align-content: center; */
-    align-items: center;
+.emptyFriendList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.emptyFriendList img{
-    width: 250px;
+.emptyFriendList img {
+  width: 250px;
 }
 
 .emptyFriendList h1 {
-    margin: 0; 
-    font-weight: bold;
-    text-align: center;
+  margin: 0;
+  font-weight: bold;
+  text-align: center;
 }
+
 .friend-requests-list {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 .friend-requests-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    margin-bottom: 10px;
-    border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 10px;
+  border-radius: 5px;
 }
 
 .request-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  margin-right: 10px;
+}
+
+.avatar img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .sender-name {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .request-date {
-    font-size: 0.9em;
-    color: #888;
+  font-size: 0.9em;
+  color: #888;
 }
 
 .request-actions {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-}
-
-.avatar img{
-    width: 50px; 
-    height: 50px; 
-    border-radius: 50%; 
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 .accept-btn {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .accept-btn:hover {
-    background-color: #45a049;
+  background-color: #45a049;
 }
 
 .reject-btn {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .reject-btn:hover {
-    background-color: #d32f2f;
+  background-color: #d32f2f;
 }
-
 
 .loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-  
+
 .spinner {
-    border: 8px solid rgba(255, 255, 255, 0.3); /* Jasny kolor tła dla obręczy spinnera */
-    border-radius: 50%; /* Nadanie kształtu koła */
-    border-top: 8px solid #a10ddb; /* Ciemny kolor dla górnego segmentu spinnera */
-    width: 50px; /* Szerokość spinnera */
-    height: 50px; /* Wysokość spinnera */
-    animation: spin 1s linear infinite; /* Animacja obracania się spinnera */
-    margin: 0 auto; /* Wyśrodkowanie spinnera w poziomie (jeżeli rodzic ma wyśrodkowanie tekstu lub flex) */
-  }
-  
-  /* Animacja obrotu */
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  .loading-text {
-    display: inline-block;
-    font-size: 20px;
-  }
-  
-  .dot {
-    animation: blink 1.4s infinite both;
-    font-weight: normal;
-    animation-fill-mode: both;
+  border: 8px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 8px solid #a10ddb;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  display: inline-block;
+  font-size: 20px;
+}
+
+.dot {
+  animation: blink 1.4s infinite both;
+  font-weight: normal;
+  animation-fill-mode: both;
+  opacity: 0;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.nav-label {
+  padding: 15px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.header {
+  position: sticky;
+  top: 60px;
+  background-color: #f7f7f7;  /* Przykładowe tło, dostosuj według własnych potrzeb */
+  z-index: 100;  /* Upewnij się, że nagłówek jest zawsze na wierzchu */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+
+.header h2 {
+  text-align: left;
+  margin: 0; 
+}
+
+.header button {
+  color:black;
+  background-color: transparent; 
+  border: none;
+  padding: 15px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: none; 
+  border-radius: 50%;
+}
+
+.header button:hover {
+  background-color: #a10ddb;
+}
+
+.header button i.fa-arrow-left {
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+@keyframes blink {
+  0% {
     opacity: 0;
   }
-  
-  .dot:nth-child(1) {
-    animation-delay: 0.2s;
+  50% {
+    opacity: 1;
   }
-  
-  .dot:nth-child(2) {
-    animation-delay: 0.4s;
+  100% {
+    opacity: 0;
   }
-  
-  .dot:nth-child(3) {
-    animation-delay: 0.6s;
-  }
-  
-  @keyframes blink {
-    0% {
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
+}

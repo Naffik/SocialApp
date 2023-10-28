@@ -32,6 +32,10 @@
   display: block;
 }
 
+.bio{
+  padding: 20px 0px;
+}
+
 .post-header a{
   text-decoration: none; 
   color: inherit; 

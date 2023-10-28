@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { DataService } from 'src/app/_services/data.service';
 import { environment } from 'src/environments/environment.development';
+import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-notifications',
@@ -16,7 +18,11 @@ export class NotificationsComponent {
 
 
 
-  constructor(private dataService: DataService) { }
+  constructor(
+    private dataService: DataService,
+    private location: Location,
+
+    ) { }
 
   ngOnInit(): void {
     this.nextUrl = `${this.baseUrl}/account/friends/requests/?page=1&size=10`; 
@@ -43,6 +49,10 @@ export class NotificationsComponent {
     console.error("Wystąpił błąd podczas ładowania postów:", error);
     this.isLoading = false;
   });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
   
   acceptRequest(requestId: number): void {

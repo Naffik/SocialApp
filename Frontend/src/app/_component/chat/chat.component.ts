@@ -21,6 +21,7 @@ export class ChatComponent {
   isLoading: boolean = false;
   error = false;
   serverError = false;
+  private nextUrl: string = '';
   loggedInUsername: string = '';
 
   constructor(
@@ -38,16 +39,13 @@ export class ChatComponent {
 
   loadFirends() {
     this.dataService.getData(`${this.baseUrl}/chat/`).subscribe(data => {
-      console.log(data);
       this.chats = data.map((chatData: any) => new Chat(chatData));
     });
   }
 
   selectChat(chat: Chat): void {
+    this.websocketService.resetMessages();  
     this.chatService.setCurrentChat(chat);
-    this.chatService.resetMessages();
-
-
     if (this.selectedChat && this.selectedChat === chat) {
       if (this.websocketService.isConnected()) {
         this.websocketService.disconnect();

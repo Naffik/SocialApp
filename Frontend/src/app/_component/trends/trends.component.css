@@ -2,7 +2,13 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-  }
+
+}
+  
+.first-section{
+    width: 100%;
+}
+
 
 .content-right-sidebar .first-section, .trends .second-section {
     padding: 15px;

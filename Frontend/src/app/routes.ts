@@ -10,6 +10,7 @@ import { UsersBlockedComponent } from "./_component/users-blocked/users-blocked.
 import { UserCommentListComponent } from "./_component/user-comment-list/user-comment-list.component";
 import { UsersCombinedComponentComponent } from "./_component/users-combined-component/users-combined-component.component";
 import { ChatViewComponent } from "./_component/chat-view/chat-view.component";
+import { SearchComponent } from "./_component/search/search.component";
 
 export const appRoutes: Routes = [
     {
@@ -22,7 +23,8 @@ export const appRoutes: Routes = [
             { path: 'notifications', component: NotificationsComponent},
             { path: 'account-info', component: AccountInfoComponent},
             { path: 'blocked', component: UsersBlockedComponent},
-            {path: 'chat', component: ChatViewComponent},
+            { path: 'chat', component: ChatViewComponent},
+            { path: 'search', component: SearchComponent},
             { path: ':username/followers', component: UsersCombinedComponentComponent},
             { path: ':username/following', component: UsersCombinedComponentComponent},
             { path: ':username/friends', component: UsersCombinedComponentComponent},

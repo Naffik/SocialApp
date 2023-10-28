@@ -37,9 +37,7 @@ export class ChatViewComponent {
     private websocketService: WebsocketService,
     private chatService: ChatService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef,
-    private location: Location
-
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -61,17 +59,9 @@ export class ChatViewComponent {
       this.selectedChat = chat;
     });
 
-    this.messagesSubscription = this.websocketService.messagesData$.subscribe((data: any) => {
+    this.messagesSubscription = this.websocketService.messagesData$.subscribe((messages: any[]) => {
       this.cdr.detectChanges();
-
-      if (data.history && Array.isArray(data.history)) {
-        const previousMessages = data.history.map(this.mapMessageData.bind(this));
-        this.selectedUser.messages = [...previousMessages, ...this.selectedUser.messages];
-      }
-
-      if (data.soloMessage) {
-        this.selectedUser.messages.push(this.mapMessageData(data.soloMessage));
-      }
+      this.selectedUser.messages = messages.map(this.mapMessageData.bind(this));
     });
 
     this.chatService.resetMessages$.subscribe(shouldReset => {
@@ -96,20 +86,20 @@ export class ChatViewComponent {
   }  
 
   ngOnDestroy(): void {
-    if (this.messagesSubscription) {
+    if(this.messagesSubscription) {
       this.messagesSubscription.unsubscribe();
     }
   }
 
   sendMessage() {
-    if (!this.websocketService.isConnected()) {
+    if(!this.websocketService.isConnected()) {
         this.errorMessage = "Nie jesteś połączony z serwerem. Spróbuj ponownie później.";
         return; 
     }
 
     if (this.newMessage.trim()) {
         const newMsg = { id: Date.now(), sender: this.loggedInUsername, text: this.newMessage.trim() };  // Przykładowe ID to timestamp
-        this.selectedUser.messages.unshift(newMsg);
+        this.selectedUser.messages.push(newMsg);
         const textMessage = {
           action: "message",
           message: this.newMessage.trim()
@@ -131,17 +121,6 @@ export class ChatViewComponent {
   addImage() {
   }
 
-  selectUser(user: any) {
-    this.websocketService.clearMessages();
-
-    this.selectedUser.messages = [];  
-    console.log("asdasdas0",this.selectedUser.messages);
-    if (this.selectedUser && this.selectedUser === user) {
-      this.selectedUser = null;
-    } else {
-      this.selectedUser = user;
-    }
-  }
 
   // adjustTextareaHeight(event: any) {
   //   const textarea = event.target as HTMLTextAreaElement;
@@ -161,8 +140,6 @@ export class ChatViewComponent {
   }
 
   public loadPreviousMessages(): void {
-    console.log('loadPreviousMessages function has been called!');  // Dodaj tę linię
-
     const previousMessageRequest = {
         "action": "previous",
         start: 10,

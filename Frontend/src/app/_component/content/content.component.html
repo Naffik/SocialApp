@@ -90,6 +90,7 @@
             <a [routerLink]="['/', post.post_author]">
               <span class="popover-nick">@{{ user.display_name }}</span>
             </a>
+            <span class="bio">{{ user.bio }}</span>
           </div>
           <div>
             <a [routerLink]="['/', post.post_author,'followers']">

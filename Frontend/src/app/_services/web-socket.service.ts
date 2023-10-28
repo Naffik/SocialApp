@@ -8,49 +8,49 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 export class WebsocketService {
   private socket$: WebSocketSubject<any> | null = null;
   
-  private messagesDataSubject = new BehaviorSubject<{ history: any[], soloMessage: any }>({
-    history: [],
-    soloMessage: null
-  });
+  private messagesDataSubject = new BehaviorSubject<any[]>([]);
   public messagesData$ = this.messagesDataSubject.asObservable();
+  
 
   public connect(chatUuid: string, loggedInUsername: string): void {
-    this.clearMessages();
+    // this.clearMessages();
 
+    if (!this.socket$ || this.socket$.closed) {
+      const token = localStorage.getItem('access'); 
+      const url = `ws://127.0.0.1:8000/c/${chatUuid}/?authorization=${token}`;
 
-  if (!this.socket$ || this.socket$.closed) {
-    const token = localStorage.getItem('access'); 
-    const url = `ws://127.0.0.1:8000/c/${chatUuid}/?authorization=${token}`;
-
-    this.socket$ = webSocket(url);
-    this.socket$.subscribe(
-      msg => {
-          console.log('Received raw message: ', msg); 
-          const currentData = this.messagesDataSubject.value;
+      this.socket$ = webSocket(url);
+      this.socket$.subscribe(
+        msg => {
+          let currentMessages = this.messagesDataSubject.value;
   
           if (Array.isArray(msg.message)) {
-              currentData.history = [...currentData.history, ...msg.message];
+              currentMessages = [...msg.message, ...currentMessages];
           } else {
-              console.log('Processing as single message');
               msg.isCurrentUser = msg.user === loggedInUsername; // Dodajemy flagę isCurrentUser
-              currentData.history.unshift(msg);
+              currentMessages.unshift(msg);
           }
         
-          this.messagesDataSubject.next(currentData);
-          console.log('Updated messages data:', this.messagesDataSubject.value);
-      },
-      
-      err => {
-          console.error('WebSocket error:', err);
-      },
-      () => console.log('WebSocket connection closed')
-    );      
-  }
-}    
+          this.messagesDataSubject.next(currentMessages);
+        },
+        
+        err => {
+            console.error('WebSocket error:', err);
+        }
+      );      
+    }
+  }    
 
-  public clearMessages(): void {
-    this.messagesDataSubject.next({ history: [], soloMessage: null });
+  public resetMessages(): void {
+    console.log(this.messagesDataSubject);
+    this.messagesDataSubject.next([]);
+    console.log(this.messagesDataSubject);
+
   }
+
+  // public clearMessages(): void {
+  //   this.messagesDataSubject.next({ history: [], soloMessage: null });
+  // }
 
   public disconnect(): void {
     if (this.socket$) {

@@ -5,7 +5,9 @@
 <div *ngIf="authService.loggedIn()" class="home-page">
     <nav>
         <div class="nav-left">
-            <h1>Media społecznościowe z czatem tekstowym</h1>
+            <a [routerLink]="['/home']" (click)="onHomeIconClick()">
+                <h1>Media społecznościowe z czatem tekstowym</h1>
+            </a>
         </div>
         <div class="nav-mid">
             <ul>
@@ -33,7 +35,7 @@
         <div class="nav-right">
             <div class="search-box" *ngIf="window.innerWidth > 1396">
                 <img src="/assets/search.png">
-                <input type="text" placeholder="Wyszukaj">
+                <input type="text" placeholder="Wyszukaj" [(ngModel)]="searchQuery" (keyup.enter)="redirectToSearch()">
             </div>
              <button class="search-button" *ngIf="window.innerWidth <= 1396" (click)="redirectToSearch()">
             <img src="/assets/search-solid.png">

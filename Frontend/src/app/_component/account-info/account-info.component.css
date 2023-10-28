@@ -1,13 +1,19 @@
 .account-info {
-    padding: 20px;
     min-width: 700px;
+    padding: 0 20px
 }
 
 .header {
+    position: sticky;
+    top: 60px;
+    background-color: #f7f7f7;  /* Przykładowe tło, dostosuj według własnych potrzeb */
+    z-index: 100;  /* Upewnij się, że nagłówek jest zawsze na wierzchu */
     display: flex;
-    align-items: flex-start; 
+    align-items: center;
     gap: 10px;
-}
+    margin-bottom: 15px;
+  }
+  
 
 .header h2 {
     text-align: left;

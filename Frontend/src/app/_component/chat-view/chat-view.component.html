@@ -1,12 +1,11 @@
 
 <div class="content">
-  <div class="nav">
+  <div class="header">
     <button (click)="goBack()">
-      <i class="fa fa-arrow-left"></i> 
-      <span class="nav-label">Chat</span>
+        <i class="fa fa-arrow-left"></i>
     </button>
+    <h2>Czat</h2>
   </div>
-
 <div *ngIf="!selectedChat"> 
    <app-chat></app-chat>
 </div>
@@ -33,7 +32,7 @@
     <div class="messages-container"
       infiniteScroll
       [infiniteScrollDistance]="10"
-      [infiniteScrollThrottle]="100"
+      [infiniteScrollThrottle]="1000"
       (scrolledUp)="loadPreviousMessages()"
       [scrollWindow]="false">
       <div *ngFor="let message of selectedUser.messages" [ngClass]="{'you': message.sender === this.loggedInUsername, 'them': message.sender !== this.loggedInUsername}" class="message">

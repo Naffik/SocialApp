@@ -45,6 +45,8 @@ export class HomeComponent {
   loggedUsername: string = '';
   loggedAvatar: string = '';
   isOnChatRoute: boolean = false;
+  searchQuery: string = '';
+
 
 
 
@@ -83,14 +85,19 @@ export class HomeComponent {
           sidenav.style.width = "0";
       }
   }
+  
 
   toggleSideMenu() {
     this.showSideMenu = !this.showSideMenu;
   }
 
-  redirectToSearch() {
-    this.router.navigate(['/search']);
-}
+  redirectToSearch(): void {
+    if (this.searchQuery.trim()) {
+      this.router.navigate(['/search'], { queryParams: { query: this.searchQuery } });
+      this.searchQuery = ''; 
+    }
+  }
+
 
   openCreatePostModal() {
     this.modalRef = this.modalService.open(CreatePostModalComponent, {

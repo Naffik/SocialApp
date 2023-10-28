@@ -10,15 +10,24 @@
         <h1>Brak nowych zaproszeń.</h1>
     </div>
     <div *ngIf="requests.length">
-        <h2>Zaproszenia do znajomych:</h2>
+        <div class="header">
+            <button (click)="goBack()">
+                <i class="fa fa-arrow-left"></i>
+            </button>
+            <h2>Zaproszenia do znajomych</h2>
+        </div>
         <ul class="friend-requests-list">
         <li *ngFor="let request of requests">
             <div class="request-info">
                 <span class="avatar">
                     <img [src]="baseUrl + request.avatar_url" alt="Avatar użytkownika">
                 </span>
-                <span class="sender-name">{{ request.from_user }}</span> chce zostać Twoim znajomym.
-                <span class="request-date">{{ request.created | date:'short' }}</span>
+                <div class="user-info">
+                    <span class="sender-name">{{request?.display_name}}</span>
+                    <span class="nick">@{{request?.username}}</span>
+                </div>
+                <span>chce zostać Twoim znajomym.</span>
+                <span class="request-date">{{ request.created | dateFormat }}</span>
             </div>
             <div class="request-actions">
                 <button class="accept-btn" (click)="acceptRequest(request.id)">Akceptuj</button>

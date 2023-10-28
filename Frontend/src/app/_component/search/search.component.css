@@ -1,0 +1,252 @@
+.header {
+    position: sticky;
+    top: 60px;
+    background-color: #f7f7f7;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Rozciągnie elementy na całej szerokości */
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.header button {
+    color: black;
+    background-color: transparent;
+    border: none;
+    padding: 15px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: none;
+    border-radius: 50%;
+}
+
+.header button:hover {
+    background-color: #a10ddb;
+}
+
+.header button i.fa-arrow-left {
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+.search-container {
+    flex: 1; /* Pozwala na rozciągnięcie się i zajmowanie dostępnej przestrzeni */
+    display: flex;
+    justify-content: center; /* Wyśrodkowuje zawartość poziomo */
+}
+
+.content {
+    width: 600px;
+}
+
+.spacer {
+    flex: 1; /* Pozwala na rozciągnięcie się i zajmowanie dostępnej przestrzeni */
+}
+
+.search-box {
+    border: 1px solid black;
+    background: white;
+    width: 100%;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.search-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.search-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.search-box img {
+    width: 18px;
+}
+
+.search-box input {
+    width: 100%;
+    background: transparent;
+    padding: 10px;
+    outline: none;
+    border: 0;
+}
+
+.post-header {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .like-btn, .comment-btn, .share-btn {
+    background-color: inherit;
+    border: none;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .like-btn i, .comment-btn i, .share-btn i {
+    color: #504f4f;
+    padding: 10px 10px;
+    border-radius: 50%;
+  }
+  
+  /* Domyślny kolor licznika */
+  .like-btn .count, .comment-btn .count, .share-btn .count {
+    color: #504f4f; /* lub inny kolor, jeśli chcesz, żeby różnił się od koloru ikony */
+  }
+  
+  .like-btn:hover i, .like-btn:hover .count, 
+  .comment-btn:hover i, .comment-btn:hover .count,
+  .share-btn:hover i {
+    color: #a10ddb; /* lub inny kolor, jaki chcesz */
+  }
+  
+  
+  /* Zmiana tła ikony podczas najechania na przycisk */
+  .comment-btn:hover i, .share-btn:hover i{
+    background-color: rgba(170, 16, 221, 0.1);
+  }
+  
+  .like-btn:hover i{
+    background-color: rgba(249, 24, 128, 0.1);
+  }
+  
+  /* Kontener, który utrzymuje przycisk i ikonę razem */
+  .btn-container {
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  /* Usunięcie domyślnego focus dla przycisku */
+  .like-btn:focus, .comment-btn:focus, .share-btn:focus {
+    outline: none;
+  }
+  
+  /* Kolor ikony "polubienia", gdy post jest polubiony */
+  .like-btn.liked i, .like-btn .count.liked {
+    color: rgba(161, 13, 219);
+  }
+  
+  
+.preserve-whitespace {
+    white-space: pre-line;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 16px;
+  }
+
+.post-info .username,
+.post-info .email,
+.post-info .date {
+    display: block;
+}
+
+
+a {
+    text-decoration: none; 
+    color: inherit; 
+  }
+
+  .date{
+    position: relative;
+    cursor: pointer;
+    color:#7e7e7e
+  }
+  
+  .date:hover,
+  .username:hover {
+    text-decoration: underline;
+  }
+  
+  .nick{
+    color:#7e7e7e;
+    margin: 0 15px 0 15px;
+  }
+  
+  .post-content {
+    margin-bottom: 16px;
+    margin-left: 67px;
+  }
+
+  .post-content img{
+    max-width:380px;
+    /* max-width:400px; */
+    object-fit:cover;
+    border-radius:25px;
+  }
+
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .like-btn, .comment-btn, .share-btn {
+    background-color: inherit;
+    border: none;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .menu-icon-container > button {
+    border: none;
+    background-color: inherit;
+    padding: 5px 15px;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+  
+  .menu-icon-container > button:hover{
+    background-color: rgba(170, 16, 221, 0.1);
+  }
+  
+  .menu-icon-container > button:hover i{
+    color: #a10ddb;
+  }
+  
+  .menu-icon-container {
+    position: absolute;
+    right: 10px; 
+  }
+
+  
+.tags {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .tag-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  
+  .tags > .tag-container > span {
+    background: #E5A6FF;
+    border-radius: 5px;
+    border: 1px #840AB6 solid;
+    color: #840AB6;
+    padding: 4px;
+    cursor: pointer;
+  }
