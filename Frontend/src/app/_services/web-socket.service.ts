@@ -10,34 +10,34 @@ export class WebsocketService {
   
   private messagesDataSubject = new BehaviorSubject<any[]>([]);
   public messagesData$ = this.messagesDataSubject.asObservable();
+
+  private webScoketUrl: string = "ws://127.0.0.1:8000/c/";
   
 
   public connect(chatUuid: string, loggedInUsername: string): void {
-    // this.clearMessages();
-
     if (!this.socket$ || this.socket$.closed) {
       const token = localStorage.getItem('access'); 
-      const url = `ws://127.0.0.1:8000/c/${chatUuid}/?authorization=${token}`;
+      const url = this.webScoketUrl + `${chatUuid}/?authorization=${token}`;
 
       this.socket$ = webSocket(url);
-      this.socket$.subscribe(
-        msg => {
-          let currentMessages = this.messagesDataSubject.value;
-  
+      this.socket$.subscribe({
+        next: (msg) => {
+          const currentMessages = [...this.messagesDataSubject.value];
+          
           if (Array.isArray(msg.message)) {
-              currentMessages = [...msg.message, ...currentMessages];
+              currentMessages.unshift(...msg.message);
           } else {
-              msg.isCurrentUser = msg.user === loggedInUsername; // Dodajemy flagę isCurrentUser
+              msg.isCurrentUser = msg.user === loggedInUsername; 
               currentMessages.unshift(msg);
           }
-        
+          
           this.messagesDataSubject.next(currentMessages);
         },
         
-        err => {
+        error: (err) => {
             console.error('WebSocket error:', err);
         }
-      );      
+      });
     }
   }    
 
@@ -62,11 +62,11 @@ export class WebsocketService {
   public isConnected(): boolean {
     return !!this.socket$ && !this.socket$.closed;
   }
+
   public sendAction(message: any): void {
     if (!this.isConnected()) {
       throw new Error('You are not connected to the channel, cannot send the message.');
     }
     this.socket$!.next(message);
-}
-
+  }
 }

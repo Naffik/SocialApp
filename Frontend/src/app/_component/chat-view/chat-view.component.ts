@@ -60,7 +60,6 @@ export class ChatViewComponent {
     });
 
     this.messagesSubscription = this.websocketService.messagesData$.subscribe((messages: any[]) => {
-      this.cdr.detectChanges();
       this.selectedUser.messages = messages.map(this.mapMessageData.bind(this));
     });
 
@@ -92,28 +91,23 @@ export class ChatViewComponent {
   }
 
   sendMessage() {
-    if(!this.websocketService.isConnected()) {
-        this.errorMessage = "Nie jesteś połączony z serwerem. Spróbuj ponownie później.";
-        return; 
-    }
-
     if (this.newMessage.trim()) {
-        const newMsg = { id: Date.now(), sender: this.loggedInUsername, text: this.newMessage.trim() };  // Przykładowe ID to timestamp
-        this.selectedUser.messages.push(newMsg);
-        const textMessage = {
-          action: "message",
-          message: this.newMessage.trim()
+      const newMsg = { id: Date.now(), sender: this.loggedInUsername, text: this.newMessage.trim() };
+      // this.selectedUser.messages.unshift(newMsg);
+      const textMessage = {
+        action: "message",
+        message: this.newMessage.trim()
       };
       this.websocketService.sendAction(textMessage);
 
-        setTimeout(() => {
-            const chatContentElement = document.querySelector('.chat-content');
-            if (chatContentElement) {
-                chatContentElement.scrollTop = chatContentElement.scrollHeight;
-            }
-        });
+      setTimeout(() => {
+        const chatContentElement = document.querySelector('.chat-content');
+        if (chatContentElement) {
+            chatContentElement.scrollTop = chatContentElement.scrollHeight;
+        }
+      });
 
-        this.newMessage = '';
+      this.newMessage = '';
     }
   }
 
@@ -122,15 +116,6 @@ export class ChatViewComponent {
   }
 
 
-  // adjustTextareaHeight(event: any) {
-  //   const textarea = event.target as HTMLTextAreaElement;
-  //   if (textarea.scrollHeight > 100) {  
-  //     textarea.style.height = '100px';
-  //   } else {
-  //     textarea.style.height = 'auto';
-  //     textarea.style.height = textarea.scrollHeight + 'px';
-  //   }
-  // }
 
   handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
