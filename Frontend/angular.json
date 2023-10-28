@@ -30,9 +30,7 @@
               "src/styles.css"
             ],
             "scripts": [
-              "node_modules/alertifyjs/build/alertify.min.js",
-              "node_modules/mdb-angular-ui-kit/bundles/mdb-angular-ui-kit.umd.js"
-
+              "node_modules/alertifyjs/build/alertify.min.js"
             ]
           },
           "configurations": {
@@ -99,13 +97,10 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/mdb-angular-ui-kit/assets/scss/mdb.scss",
               "@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.css"
             ],
             "scripts": [
-              "node_modules/mdb-angular-ui-kit/bundles/mdb-angular-ui-kit.umd.js"
-
             ]
           }
         }
