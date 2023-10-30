@@ -7,15 +7,20 @@
             <img src="/assets/search.png" alt="search icon">
             <input [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Wyszukaj posty...">
         </div>
-        <div class="spacer"></div> <!-- Dodane, aby zajmować przestrzeń po prawej stronie -->
+        <div class="spacer"></div> 
     </div>
-    <div class="search-results" *ngIf="searchResults.length > 0">
+
+    <div class="loading-bar" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p class="loading-text">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+    </div>
+
+    <div class="search-results" *ngIf="searchResults.length > 0 !isLoading">
         <div infiniteScroll [infiniteScrollDistance]="10" 
             [infiniteScrollThrottle]="50" 
             (scrolled)="loadMoreResults()">
-            <div *ngFor="let result of searchResults" class="comment" @fadeIn>
+            <div *ngFor="let result of searchResults" class="comment">
               <div class="post-header">
-                <!-- Avatar with mouse enter and leave events -->
                 <a [routerLink]="['/', result.post_author]">
                   <img [src]="baseUrl + result?.post_author_avatar"
                        (mouseenter)="showPopover(result.id, result.post_author)" 
@@ -23,8 +28,6 @@
                        alt="Avatar użytkownika piszącego post" 
                        class="avatar">
                 </a>
-            
-                <!-- Display name with mouse enter and leave events -->
                 <a [routerLink]="['/', result.post_author]">
                   <span class="username"
                         (mouseenter)="showPopover(result.id, result.post_author)"
@@ -32,8 +35,6 @@
                     <strong>{{ result?.display_name }}</strong>
                   </span>
                 </a>
-            
-                <!-- Nickname (username) with mouse enter and leave events -->
                 <a [routerLink]="['/', result.post_author]">
                   <span class="nick"
                         (mouseenter)="showPopover(result.id, result.post_author)" 
@@ -44,9 +45,9 @@
                 </a>
                 <span class="date">
                   {{ result?.created | timeSince }}
-                  <!-- <span class="tooltip">
+                  <span class="tooltip">
                     {{ result?.created | dateFormat }}
-                  </span> -->
+                  </span>
                 </span>
                 <div class="menu-icon-container" (click)="stopPropagation($event)">
                   <button (click)="toggleContextMenu(result.id)">
@@ -57,7 +58,6 @@
               </div>
               <div class="post-content">
                 <div class="preserve-whitespace" [innerHTML]="result?.content | linkify : result?.id">
-                  <!-- reszta treści postu -->
                 </div>
                 <div *ngIf="result?.image" class="post-image">
                   <img [src]="baseUrl + result?.image" alt="Image for {{ result?.post }}" style="cursor: pointer" />
@@ -71,21 +71,16 @@
               </div>
               
               <div class="post-actions">
-                <!-- Ikonka polubienia -->
                 <button class="like-btn" [class.liked]="result.is_liked" (click)="stopPropagation($event)">
                   <i class="fa fa-thumbs-up"> </i>
                   <span class="count" [class.liked]="result.is_liked"> 
                     {{result.number_of_likes}}
                   </span>
                 </button>
-            
-                <!-- Ikonka komentarza -->
                 <button class="comment-btn">
                   <i class="fa fa-comment"></i>
                   <span class="count">{{result.number_of_comments}} </span>
                 </button>
-            
-                <!-- Ikonka udostępnienia -->
                 <button class="share-btn" (click)="sharePost(result.id); stopPropagation($event)">
                   <i class="fa fa-share"></i> 
                 </button>
@@ -100,7 +95,13 @@
             </div>
           </div>
     </div>
-    <div class="trends" *ngIf="searchResults.length === 0">
+    <div class="trends" *ngIf="searchResults.length === 0 && !isLoading">
+      <div *ngIf="noResultsFound" class="no-results">
+        Brak wyników dla „{{ searchQuery }}”.
+        <div class="suggestion">
+          Spróbuj wyszukać coś innego lub wybierz aktualne trendy.
+      </div>
+      </div>
         <app-trends></app-trends>
     </div>
 </div>

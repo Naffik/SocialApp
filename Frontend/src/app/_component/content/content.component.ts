@@ -254,9 +254,6 @@ export class ContentComponent implements OnInit {
     });
   }
 
-  // openModalRemoveFriends(user: any) {
-  //   this.modalCommService.openModalRemoveFriends(user);
-  // }
 
 
   goToPostDetails(postId: number, event?: MouseEvent) {
@@ -321,56 +318,6 @@ export class ContentComponent implements OnInit {
         this.dropdownService.closeDropdown();
     }
   }
-
-  // toggleLike(post: Post) {
-  //   if (post.is_liked) {
-  //       this.dataService.removeLike(post.id).subscribe({
-  //           next: () => {
-  //               post.number_of_likes--; 
-  //               post.is_liked = false; 
-  //           },
-  //           error: (e) => {
-  //               console.error("Błąd podczas usuwania polubienia:", e);
-  //           }
-  //       });
-  //   } else {
-  //       this.dataService.addLike(post.id).subscribe({
-  //           next: () => {
-  //               post.number_of_likes++; 
-  //               post.is_liked = true; 
-  //           },
-  //           error: (e) => {
-  //               console.error("Błąd podczas dodawania polubienia:", e);
-  //           }
-  //       });
-  //   }
-  // }
-
-
-  // toggleFavorite(post: Post) {
-  //   if (post.is_favorite) {
-  //       this.dataService.removeFromFavorites(post.id).subscribe({
-  //           next: () => {
-  //               post.is_favorite = false;
-  //               this.alertify.success("Usunięto post z ulubionych.");
-  //           },
-  //           error: (e) => {
-  //               this.alertify.error("Błąd podczas usuwania z ulubionych.");
-  //           }
-  //       });
-  //   } else {
-  //       this.dataService.addToFavorites(post.id).subscribe({
-  //           next: () => {
-  //               post.is_favorite = true;
-  //               this.alertify.success("Dodano post do ulubionych.");
-  //           },t
-  //           error: (e) => {
-  //               this.alertify.error("Błąd podczas dodawania do ulubionych.");
-  //           }
-  //       });
-  //   }
-  // }
-
 
   toggleAction(post: Post, actionType: 'like' | 'favorite') {
     switch (actionType) {

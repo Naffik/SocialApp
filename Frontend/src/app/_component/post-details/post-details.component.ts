@@ -44,7 +44,7 @@ export class PostDetailsComponent implements OnInit {
   private hideTimeoutId: any;
   showContextMenu: any[] = [];
   showTooltip = false;
-  public postImagePreview: string | null = null; // Dodane dla podglądu obrazu
+  public postImagePreview: string | null = null; 
 
 
 
@@ -97,7 +97,6 @@ export class PostDetailsComponent implements OnInit {
         this.loadPostDetails(this.postId);
         this.loadMoreComments();
       } else {
-          // this.error=true;
       }
     });
     this.authService.userData$.subscribe(data => {
@@ -156,7 +155,6 @@ export class PostDetailsComponent implements OnInit {
       this.nextUrl = data.next;
       this.isLoading = false;
     }, error => {
-      // obsługa błędów
       this.isLoading = false;
     });
   }
@@ -179,7 +177,7 @@ export class PostDetailsComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = (e: any) => {
             this.postImagePreview = e.target.result;
-            this.updateCharacterCount();  // Aktualizuj stan przycisku
+            this.updateCharacterCount();  
         };
         reader.readAsDataURL(file);
     }
@@ -398,8 +396,8 @@ export class PostDetailsComponent implements OnInit {
 
   adjustTextareaHeight(event: any) {
     const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto'; // reset height
-    textarea.style.height = textarea.scrollHeight + 'px'; // adjust to content
+    textarea.style.height = 'auto'; 
+    textarea.style.height = textarea.scrollHeight + 'px'; 
   }
 
   remainingCharacters(): number {
@@ -457,34 +455,28 @@ export class PostDetailsComponent implements OnInit {
       this.alertify.error('Wystąpił błąd, spróbuj ponownie później!');
   }
 
-  
-
   toggleLike(post: any) {
     if (post.is_liked) {
-      // Jeśli post jest już polubiony, usuń polubienie
       this.dataService.removeLike(post.id).subscribe(() => {
-        post.number_of_likes--; // Zmniejsz liczbę polubień
-        post.is_liked = false; // Ustaw flagę polubienia na false
+        post.number_of_likes--;
+        post.is_liked = false;
       }, error => {
         console.error("Błąd podczas usuwania polubienia:", error);
       });
     } else {
-      // Jeśli post nie jest polubiony, dodaj polubienie
       this.dataService.addLike(post.id).subscribe(() => {
-        post.number_of_likes++; // Zwiększ liczbę polubień
-        post.is_liked = true; // Ustaw flagę polubienia na true
+        post.number_of_likes++;
+        post.is_liked = true; 
       }, error => {
         console.error("Błąd podczas dodawania polubienia:", error);
       });
     }
   }
-  
 
   expandTextarea() {
     const textarea = document.querySelector('textarea');
     textarea?.classList.add('active');
     this.textareaExpanded = true;
-
   }
 
   updateCharacterCount() {

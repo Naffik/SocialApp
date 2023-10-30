@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { DataService } from 'src/app/_services/data.service';
@@ -18,6 +18,7 @@ import { AlertifyService } from 'src/app/_services/alertify.service';
 export class SearchComponent {
   public searchQuery: string = '';
   public searchResults: any[] = [];
+  noResultsFound: boolean = false;
   public nextUrl: string | null = null;
   public isLoading: boolean = false;
   baseUrl = environment.apiUrl;
@@ -30,12 +31,6 @@ export class SearchComponent {
   userDataLoadError: boolean = false;
   userInfoToShow$: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   showContextMenu: any[] = [];
-
-
-
-
-
-
 
   constructor(
     private route: ActivatedRoute,
@@ -54,12 +49,12 @@ export class SearchComponent {
     this.route.queryParams.subscribe(params => {
       this.searchQuery = params['query'] || '';
       if (this.searchQuery) {
-        // Pobierz wyniki z serwera za pomocą zapytania
-        // Na razie zakładam, że masz tu jakieś dane
-        this.searchResults = []; // Pobierz dane z serwera na podstawie searchQuery
+        this.searchResults = [];
+        this.loadSearchResults();  
       }
     });
   }
+
 
   onSearch(): void {
     if (this.searchQuery.trim() === '') {
@@ -70,14 +65,17 @@ export class SearchComponent {
     }
   }
 
-  loadSearchResults(page: number = 1, size: number = 20): void {
+  loadSearchResults(page: number = 1, size: number = 10): void {
     const url = `/api/post/search/?search=${this.searchQuery}&page=${page}&size=${size}`;
     this.isLoading = true;
     
     this.dataService.getData(this.baseUrl+ url).subscribe(data => {
+
       this.searchResults = [...this.searchResults, ...data.results];
       this.nextUrl = data.next;
       this.isLoading = false;
+
+      this.noResultsFound = data.count === 0;
     }, error => {
       this.isLoading = false;
     });
@@ -87,8 +85,6 @@ export class SearchComponent {
     event.stopPropagation();
   }
 
-  
- 
   sharePost(postId: number) {
     const postUrl = `${window.location.origin}/post/${postId}`;
 
@@ -111,7 +107,6 @@ export class SearchComponent {
     document.execCommand('copy');
     document.body.removeChild(textArea);
   } 
-
 
   toggleContextMenu(postId: number) {
     this.showContextMenu[postId] = !this.showContextMenu[postId];
@@ -176,9 +171,6 @@ export class SearchComponent {
     this.hidePopover();
   }
   
-
-
-
   private addToCache(username: string, data: any): void {
     this.userCache[username] = data;
     setTimeout(() => {
@@ -205,7 +197,31 @@ export class SearchComponent {
     }
   }
 
+  openPostInNewTab(postId: number) {
+    const a = document.createElement('a');
+    a.href = `/post/${postId}`;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
   goBack(): void {
     this.location.back();
+  }
+
+  @HostListener('mouseup', ['$event'])
+  handleMiddleClick(event: MouseEvent) {
+    if (event.button === 1) { 
+      event.preventDefault();
+        const postElement = (event.target as HTMLElement).closest('.post');
+        if (postElement) {
+        const postId = postElement.getAttribute('data-post-id');
+        if (postId) {
+          this.openPostInNewTab(+postId); 
+        }
+      }
+    }
   }
 }

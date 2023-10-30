@@ -78,9 +78,7 @@ export class AuthService{
           localStorage.setItem('access', user.access);
           localStorage.setItem('refresh', user.refresh);
           this.decodedToken = this.jwtHelper.decodeToken(user.access);
-          this.tokenExpiryTime = this.decodedToken.exp * 1000; // token.exp jest w sekundach, więc przelicz na milisekundy
-          // this.scheduleTokenRefresh();
-
+          this.tokenExpiryTime = this.decodedToken.exp * 1000; 
           this.setUserData(this.decodedToken);
         }
       }))
@@ -117,19 +115,15 @@ export class AuthService{
     return this.http.post(this.baseUrl+ "api/token/refresh/", body);
   }
 
-  // setToken(token: any): void {
-  //   this.tokenExpiryTime = token.exp * 1000; // token.exp jest w sekundach, więc przelicz na milisekundy
-  //   this.scheduleTokenRefresh();
-  // }
 
   getUserData(): any {
-    if (!this.userDataSubject.value) {   // <-- Changed to userDataSubject
+    if (!this.userDataSubject.value) {   
       const storedUserData = JSON.parse(localStorage.getItem('userData') || '{}');
       if (storedUserData && storedUserData.username) {
         return storedUserData;
       }
     } else {
-      return this.userDataSubject.value;  // <-- Changed to userDataSubject
+      return this.userDataSubject.value;  
     }
     return null;
   }
@@ -139,44 +133,5 @@ export class AuthService{
     const token = localStorage.getItem("access");
     const isLoggedIn = !!token;
     return isLoggedIn;
-}
-
-  //??//
-  // private scheduleTokenRefresh(): void {
-  //   if (!this.tokenExpiryTime) return;
-
-  //   const now = Date.now();
-  //   const tokenDuration = this.tokenExpiryTime - now;
-  //   const refreshBeforeExpiry = 60000;
-  //   const accessToken = localStorage.getItem('access');
-
-  //   if (accessToken) {
-  //     const expirationDate = this.jwtHelper.getTokenExpirationDate(accessToken);
-  //     if (expirationDate) {
-  //         this.tokenExpiryTime = expirationDate.getTime();
-  //     } else {
-  //         console.error("Unable to get token expiration date.");
-  //         return;
-  //     }
-  //   } else {
-  //       console.error("Access token is null or undefined.");
-  //   }
-  //   if (tokenDuration > refreshBeforeExpiry) {
-  //     setTimeout(() => {
-  //       const refreshToken = localStorage.getItem('refresh');
-  //       if (refreshToken) {
-  //         this.renewToken(refreshToken).subscribe(newToken => {
-  //           localStorage.setItem('access', newToken.access);
-  //           localStorage.setItem('refresh', newToken.refresh);
-  //           this.decodedToken = this.jwtHelper.decodeToken(newToken.access);
-  //           this.scheduleTokenRefresh();
-  //           console.log("XD");
-  //         }, error => {
-  //           console.error("Error renewing the token:", error);
-  //         });
-  //       }
-  //     }, tokenDuration - refreshBeforeExpiry);
-  //   }
-// }
-
+  }
 }

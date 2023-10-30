@@ -20,10 +20,4 @@ export class PostService {
   postAdded(dataPost: any) {
     this._postAddedSource.next(dataPost);
   }
-
-
-
-
-
-
 }

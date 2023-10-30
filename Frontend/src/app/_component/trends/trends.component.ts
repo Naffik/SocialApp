@@ -3,6 +3,7 @@ import { DataService } from 'src/app/_services/data.service';
 import { environment } from 'src/environments/environment.development';
 import { interval, Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-trends',
@@ -15,7 +16,10 @@ export class TrendsComponent implements OnInit, OnDestroy {
   baseUrl = environment.apiUrl;
   private unsubscribe$ = new Subject<void>();
 
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadTrends();
@@ -51,4 +55,9 @@ export class TrendsComponent implements OnInit, OnDestroy {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
+
+  onTrendClick(trend: string): void {
+    this.router.navigate(['/search'], { queryParams: { query: trend } });
+  }
+  
 }

@@ -1,12 +1,10 @@
 <div class="content-right-sidebar">
-    <!-- <div class="trends"> -->
-        <div class="first-section">
-            <p>Najpopularniejsze Trendy</p>
+    <div class="first-section">
+        <p>Najpopularniejsze Trendy</p>
+    </div>
+    <div class="second-section">
+        <div *ngFor="let trend of trends" (click)="onTrendClick(trend)">
+            <span>{{ trend }}</span>
         </div>
-        <div class="second-section">
-            <div *ngFor="let trend of trends">
-                <span>{{ trend }}</span>
-            </div>
-        </div>
-    <!-- </div> -->
+    </div>
 </div>
