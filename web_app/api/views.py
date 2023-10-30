@@ -3,6 +3,7 @@ from django.utils import timezone
 import redis
 from django.db.models import Exists, OuterRef
 from django.core.cache import cache
+from django.utils.datastructures import MultiValueDictKeyError
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters, status
 from rest_framework.generics import get_object_or_404
@@ -14,7 +15,8 @@ from taggit.serializers import TaggitSerializer
 from user_app.models import User
 from web_app.api.pagination import PostPagination
 from web_app.api.permissions import IsPostUserOrReadOnly, IsCommentUserOrReadOnly
-from web_app.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer, PostFavSerializer
+from web_app.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer, PostFavSerializer, \
+    CommentCreateSerializer
 from web_app.models import Post, Like, Comment
 from friendship.models import Friend, Follow, Block
 
@@ -27,7 +29,7 @@ class PostListView(generics.ListAPIView):
     List view for post model
     """
     serializer_class = PostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     pagination_class = PostPagination
 
     def get_queryset(self):
@@ -39,15 +41,17 @@ class PostListView(generics.ListAPIView):
             return cached_data
         else:
             if user.is_authenticated:
-                blocked = Block.objects.blocking(user=user)
-                posts = Post.objects.exclude(post_author__in=blocked)\
+                blocked = Block.objects.blocked(user=user)
+                blocking = Block.objects.blocking(user=user)
+                posts = Post.objects.exclude(post_author__in=blocked).exclude(post_author__in=blocking)\
                     .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                              is_favorite=Exists(Post.objects.filter(favorites=user))).order_by('-created')
+                              is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk'))))\
+                    .order_by('-created')
             else:
                 posts = Post.objects.all().order_by('-created')
 
-            cache.set(cache_key, posts, 1)
-            return posts
+        cache.set(cache_key, posts, 1)
+        return posts
 
 
 class PostCreateView(generics.CreateAPIView):
@@ -77,7 +81,7 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         if user.is_authenticated:
             post = Post.objects.annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
-                                         is_favorite=Exists(Post.objects.filter(favorites=user)))
+                                         is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk'))))
         else:
             post = Post.objects.filter(pk=self.kwargs.get('pk'))
         return post
@@ -92,7 +96,7 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         return response
 
     def perform_update(self, serializer):
-        post = Post.objects.filter(slug=self.kwargs.get('slug'))
+        post = Post.objects.filter(pk=self.kwargs.get('pk'))
         try:
             post.image.delete()
         except FileNotFoundError:
@@ -105,12 +109,12 @@ class PostSearchView(generics.ListAPIView):
     Search list of post model
     """
     serializer_class = PostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     pagination_class = PostPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['post_author__username', 'title', 'content']
-    search_fields = ['^title']
-    ordering_fields = ['title', 'created', 'like']
+    filterset_fields = ['post_author__username', 'content']
+    search_fields = ['^content']
+    ordering_fields = ['created']
 
     def get_queryset(self, *args, **kwargs):
         my_tags = []
@@ -132,16 +136,16 @@ class PostFavAddView(APIView):
     permission_classes = [IsAuthenticated]
     bad_request_message = 'An error has occurred'
 
-    def post(self, request):
-        post = get_object_or_404(Post, pk=request.data.get('pk'))
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         user = self.request.user
         if user not in post.favorites.all():
             post.favorites.add(user)
             return Response({'detail': 'User added to post'}, status=status.HTTP_200_OK)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
-        post = get_object_or_404(Post, pk=request.data.get('pk'))
+    def delete(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         user = self.request.user
         if user in post.favorites.all():
             post.favorites.remove(user)
@@ -156,8 +160,8 @@ class PostLikeAddView(APIView):
     permission_classes = [IsAuthenticated]
     bad_request_message = 'An error has occurred'
 
-    def post(self, request):
-        post = get_object_or_404(Post, pk=request.data.get('pk'))
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         user = self.request.user
         like = Like.objects.get(post=post)
         if not like.users.filter(username=user):
@@ -165,8 +169,8 @@ class PostLikeAddView(APIView):
             return Response({'detail': 'User added like'}, status=status.HTTP_200_OK)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
-        post = get_object_or_404(Post, pk=request.data.get('pk'))
+    def delete(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         user = self.request.user
         like = Like.objects.get(post=post)
         if like.users.filter(username=user):
@@ -189,7 +193,10 @@ class PostFavListView(generics.ListAPIView):
         user = self.request.user
         if user.username != username:
             return Post.objects.none()
-        return Post.objects.filter(favorites=user)
+        posts = Post.objects.filter(favorites=user).\
+            annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                     is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk')))).order_by('-created')
+        return posts
 
     def list(self, request, *args, **kwargs):
         username = self.kwargs.get('username')
@@ -197,6 +204,40 @@ class PostFavListView(generics.ListAPIView):
         if user.username != username:
             return Response({'detail': 'Permissions denied'}, status=status.HTTP_400_BAD_REQUEST)
         return super(PostFavListView, self).list(request, *args, **kwargs)
+
+
+class PostMediaListView(generics.ListAPIView):
+    """
+    List of request user posts with media files
+    """
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = PostPagination
+
+    def get_queryset(self, *args, **kwargs):
+        username = self.kwargs.get('username')
+        user = self.request.user
+        posts = Post.objects.filter(post_author__username=username).exclude(image="")\
+            .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                      is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk')))).order_by('-created')
+        return posts
+
+
+class UserPostListView(generics.ListAPIView):
+    """
+    List of request user posts
+    """
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = PostPagination
+
+    def get_queryset(self, *args, **kwargs):
+        username = self.kwargs.get('username')
+        user = self.request.user
+        posts = Post.objects.filter(post_author__username=username)\
+            .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                      is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk')))).order_by('-created')
+        return posts
 
 
 class CommentListView(generics.ListAPIView):
@@ -210,11 +251,31 @@ class CommentListView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['comment_author__username', 'post__id']
 
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     print(user)
+    #     if user.is_authenticated:
+    #         comments = Comment.objects.exclude(comment_author__in=blocked)
+    #     else:
+    #         comments = Comment.objects.all()
+    #     return comments
+
+
+class UserCommentListView(generics.ListAPIView):
+    """
+    List view for Comment model for given user
+    """
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = PostPagination
+
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            blocked = Block.objects.blocking(user=user)
-            comments = Comment.objects.exclude(post_author__in=blocked)
+            comments = Comment.objects.filter(comment_author=user)\
+                .annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                          is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk')))).order_by('-created')
         else:
             comments = Comment.objects.all()
         return comments
@@ -226,7 +287,7 @@ class CommentCreateView(generics.CreateAPIView):
 
     - id
     """
-    serializer_class = CommentSerializer
+    serializer_class = CommentCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -254,8 +315,10 @@ class PostCommentListView(generics.ListAPIView):
         pk = self.kwargs.get('pk')
         user = self.request.user
         if user.is_authenticated:
-            blocked = Block.objects.blocking(user=user)
-            comments = Comment.objects.exclude(comment_author__in=blocked).filter(post=pk)
+            blocked = Block.objects.blocked(user=user)
+            blocking = Block.objects.blocking(user=user)
+            comments = Comment.objects.exclude(comment_author__in=blocked).exclude(comment_author__in=blocking)\
+                .filter(post=pk)
         else:
             comments = Comment.objects.filter(post=pk)
         return comments
@@ -270,10 +333,28 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsCommentUserOrReadOnly]
 
     def perform_destroy(self, instance):
-        post = Post.objects.get(pk=instance.post.pk)
+        if instance.image:
+            instance.image.delete()
+        post = Post.objects.get(pk=instance.post.id)
         post.number_of_comments = post.number_of_comments - 1
-        post.save()
         instance.delete()
+
+    def update(self, request, *args, **kwargs):
+        comment = Comment.objects.get(pk=self.kwargs.get('pk'))
+        image = None
+        try:
+            image = request.FILES['image']
+        except MultiValueDictKeyError:
+            pass
+        if image:
+            try:
+                comment.image.delete()
+            except FileNotFoundError:
+                pass
+            comment.image = image
+        comment.save()
+        response = super(CommentDetailView, self).update(request)
+        return response
 
 
 class PopularTagsView(APIView):
@@ -282,8 +363,12 @@ class PopularTagsView(APIView):
     """
 
     def get(self, request, *args, **kwargs):
-        tags_count = request.query_params.get('tags_count')
-        time_in_hours = request.query_params.get('time_in_hours')
+        try:
+            tags_count = int(request.query_params.get('tags_count'))
+            time_in_hours = int(request.query_params.get('time_in_hours'))
+        except ValueError as e:
+            return Response({"message": "Invalid input. Please provide valid integers for "
+                                        "'tags_count' and 'time_in_hours'."}, status=status.HTTP_400_BAD_REQUEST)
         if not time_in_hours:
             time_in_hours = 1
         time_delta = timezone.now() - timezone.timedelta(days=time_in_hours)

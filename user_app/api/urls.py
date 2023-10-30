@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (RegisterView, VerifyEmail, RequestPasswordResetView, PasswordTokenCheckView, SetNewPasswordView,
                     UserProfileDetailView, FriendViewSet, UserListView, CustomTokenObtainPairView,
-                    CustomTokenRefreshView, ActionView, CheckUsernameView, CheckEmailView)
+                    CustomTokenRefreshView, ActionView, CheckUsernameView, CheckEmailView, CheckPasswordView)
 # from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import routers
 import pprint
@@ -22,6 +22,7 @@ urlpatterns = [
     path('actions/', ActionView.as_view(), name='user-actions-list'),
     path('username-check/', CheckUsernameView.as_view(), name='user-username-check'),
     path('email-check/', CheckEmailView.as_view(), name='user-email-check'),
+    path('password-check/', CheckPasswordView.as_view(), name='user-password-check'),
 ]
 
 urlpatterns += router.urls

@@ -129,6 +129,25 @@ CACHES = {
     }
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -194,7 +213,7 @@ REST_FRAMEWORK = {
         'email-verify': '10/hour',
         'request-password-reset': '3/hour',
         'password-reset': '5/hour',
-        'password-reset-complete': '5/hour',
+        'password-reset-complete': '500/hour',
         'token_obtain_pair': '5/minute',
         'token_refresh': '20/hour',
         'user-profile-detail-user': '500/hour',

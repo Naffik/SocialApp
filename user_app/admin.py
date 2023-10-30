@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from user_app.models import User, OnlineUser, Action
+from user_app.models import User, Action
 
 fields = list(UserAdmin.fieldsets)
 fields[0] = ('Login info', {'fields': ('email', 'password',)})
-fields[1] = ('Personal info', {'fields': ('first_name', 'last_name', 'username', 'display_name', 'bio', 'avatar')})
+fields[1] = ('Personal info', {'fields': ('first_name', 'last_name', 'username', 'display_name', 'bio', 'avatar',
+                                          'date_of_birth')})
 UserAdmin.fieldsets = tuple(fields)
 
 
@@ -16,4 +17,3 @@ class ActionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(OnlineUser)
