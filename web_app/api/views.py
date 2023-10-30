@@ -112,9 +112,9 @@ class PostSearchView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = PostPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['post_author__username', 'title', 'content']
-    search_fields = ['^title']
-    ordering_fields = ['title', 'created', 'like']
+    filterset_fields = ['post_author__username', 'content']
+    search_fields = ['^content']
+    ordering_fields = ['created']
 
     def get_queryset(self, *args, **kwargs):
         my_tags = []
