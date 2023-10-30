@@ -16,7 +16,7 @@ from user_app.api.serializers import (RegistrationSerializer, RequestPasswordRes
                                       UserProfileSerializer, BasicUserProfileSerializer, FollowSerializer,
                                       UserSerializer, BlockSerializer, FriendSerializer,
                                       CustomTokenObtainPairSerializer, ActionSerializer, BlockUserSerializer,
-                                      FriendUserProfileSerializer)
+                                      FriendUserProfileSerializer, SetNewPasswordSerializer2)
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 import jwt
@@ -208,10 +208,11 @@ class SetNewPasswordView(generics.GenericAPIView):
     - uidb64
     """
     throttle_scope = 'password-reset-complete'
-    serializer_class = SetNewPasswordSerializer
+    serializer_class = SetNewPasswordSerializer2
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data, context={'id': self.request.user.id})
         serializer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
 
