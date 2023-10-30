@@ -42,3 +42,74 @@
     background-color: #ddd;
     border-radius: 5px;
 }
+
+
+.no-results {
+    padding: 20px;
+    text-align: center;
+    color: gray;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+    margin-top: 10px;
+}
+
+.loading-bar{
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    gap: 10px;
+  }
+  
+  .spinner {
+    border: 8px solid rgba(255, 255, 255, 0.3); /* Jasny kolor tła dla obręczy spinnera */
+    border-radius: 50%; /* Nadanie kształtu koła */
+    border-top: 8px solid #a10ddb; /* Ciemny kolor dla górnego segmentu spinnera */
+    width: 50px; /* Szerokość spinnera */
+    height: 50px; /* Wysokość spinnera */
+    animation: spin 1s linear infinite; /* Animacja obracania się spinnera */
+    margin: 0 auto; /* Wyśrodkowanie spinnera w poziomie (jeżeli rodzic ma wyśrodkowanie tekstu lub flex) */
+  }
+  
+  /* Animacja obrotu */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .loading-text {
+    display: inline-block;
+    font-size: 20px;
+  }
+  
+  .dot {
+    animation: blink 1.4s infinite both;
+    font-weight: normal;
+    animation-fill-mode: both;
+    opacity: 0;
+  }
+  
+  .dot:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  
+  .dot:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+  
+  .dot:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+  
+  @keyframes blink {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }

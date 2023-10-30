@@ -24,6 +24,7 @@ export class ChatComponent {
   loggedInUsername: string = '';
   searchTerm: string = '';
   hasFriends = false;
+  
 
 
 

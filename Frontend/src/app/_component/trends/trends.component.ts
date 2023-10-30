@@ -15,6 +15,8 @@ export class TrendsComponent implements OnInit, OnDestroy {
   trends: any[] = [];
   baseUrl = environment.apiUrl;
   private unsubscribe$ = new Subject<void>();
+  isLoading: boolean = true;
+
 
   constructor(
     private dataService: DataService,
@@ -40,16 +42,19 @@ export class TrendsComponent implements OnInit, OnDestroy {
     );
   }
 
-  loadTrends(){
+  loadTrends() {
+    this.isLoading = true;
     this.dataService.getData(this.baseUrl + '/api/popular-tags/?tags_count=10&time_in_hours=12').subscribe(
       (data: any) => {
-        this.trends = data.popular_tags; 
+        this.trends = data.popular_tags;
+        this.isLoading = false;
       },
       (error) => {
         console.log('Błąd podczas ładowania trendów.');
+        this.isLoading = false;
       }
     );
-  }
+  } 
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
