@@ -32,6 +32,15 @@ export class DataService {
     return this.http.get<any>(`${this.baseUrl}/account/profile/${username}/`);
   }
 
+  deleteAccount(username: string) {
+    return this.http.delete(`${this.baseUrl}/account/profile/${username}/`);
+  }
+
+  checkPassword(password: string) {
+    const url = `${this.baseUrl}/account/password-check/`;
+    return this.http.post(url, { password });
+  }
+
   dataFollow(username: string, url: string) {
     return this.http.post(url, { followee: username });
   }
@@ -63,11 +72,7 @@ export class DataService {
   getFriendRequests(): Observable<any> {
     return this.http.get(this.baseUrl + "/account/friends/requests/");
   }
-
-  // getFriendRequests2(): Observable<any> {
-  //   return this.http.get(this.baseUrl+"/account/friends/sent_requests/");
-  // }
-
+  
   acceptRequest(requestId: number) {
     return this.http.post(this.baseUrl + "/account/friends/accept_request/", { id: requestId });
   }
@@ -96,10 +101,6 @@ export class DataService {
     return this.http.get(`${this.baseUrl}/account/password-reset/${uidb64}/${token}/`);
   }
 
-  // toggleBlockUser(url: string, username: string): Observable<any> {
-  //   return this.http.post(url,{blocked: username});
-  // }
-
   blockUser(username: string): Observable<any> {
     return this.http.post(this.baseUrl + `/account/friends/add_block/`, { blocked: username });
   }
@@ -109,7 +110,6 @@ export class DataService {
   }
 
 
-  // Resetowanie hasła
   resetPassword(password: string, token: string, uidb64: string): Observable<any> {
     return this.http.patch(`${this.baseUrl}/account/password-reset-complete/`, {
       password,
@@ -118,22 +118,18 @@ export class DataService {
     });
   }
 
-  // Pobieranie profilu użytkownika
   getUserProfile(username: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/account/profile/${username}/`);
   }
 
-  // Aktualizacja profilu użytkownika
   updateUserProfile(username: string, updatedData: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/account/profile/${username}/`, updatedData);
   }
 
-  // Częściowa aktualizacja profilu użytkownika
   partialUpdateUserProfile(username: string, updatedData: any): Observable<any> {
     return this.http.patch(`${this.baseUrl}/account/profile/${username}/`, updatedData);
   }
 
-  // Usuwanie profilu użytkownika
   deleteUserProfile(username: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/account/profile/${username}/`);
   }
@@ -143,15 +139,13 @@ export class DataService {
     const url = `${this.baseUrl}/account/profile/${username}/`;
     return this.http.put(url, profileData);
   }
-  //   getPostById(postId: number): Observable<any> {
-  //     return this.http.get(`${this.baseUrl}/api/posts/${postId}`);
-  // }
 
-  // getCommentsForPost(postId: number): Observable<any> {
-  //     return this.http.get(`${this.baseUrl}/api/posts/${postId}/comments`);
-  // }
 
-  // fetchUserInfo(username: string): Observable<any> {
-  //   return this.http.get<any>(`${this.baseUrl}/account/profile/${username}`);
-  // }
+  changePassword(passwords: { currentPassword: string, newPassword: string }) {
+    const url = `${this.baseUrl}/account/password-reset-complete/`;
+    return this.http.patch(url, { 
+        old_password: passwords.currentPassword,
+        new_password: passwords.newPassword
+    }); 
+  }
 }

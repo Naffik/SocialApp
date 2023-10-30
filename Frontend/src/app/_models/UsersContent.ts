@@ -13,7 +13,6 @@ export class UsersContent {
     number_of_comments: number;
     display_name: string;
 
-    // Atrybuty specyficzne dla komentarzy
     post_id?: string;   
     hidden: boolean;
 

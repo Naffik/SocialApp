@@ -48,9 +48,6 @@ export class WebsocketService {
 
   }
 
-  // public clearMessages(): void {
-  //   this.messagesDataSubject.next({ history: [], soloMessage: null });
-  // }
 
   public disconnect(): void {
     if (this.socket$) {

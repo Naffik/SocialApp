@@ -59,7 +59,8 @@ export class UsersCombinedComponentComponent {
     });
   }
 
-  toggleFriendship(user: any) {
+  toggleFriendship(user: any, event: Event) {
+    event.stopPropagation(); 
     if (user.is_friend) {
         this.dataService.removeFriend(user.username).subscribe(response => {
             user.is_friend = false;
@@ -72,7 +73,9 @@ export class UsersCombinedComponentComponent {
     }
   }
 
-  toggleFollow(user: any) {
+  toggleFollow(user: any, event: Event) {
+    event.stopPropagation();
+
     if (user.follow) {
         this.dataService.dataFollow(user.username, this.baseUrl+'/account/friends/remove_follow/').subscribe(response => {
             user.follow = false;
@@ -84,7 +87,9 @@ export class UsersCombinedComponentComponent {
     }
   }
 
-  removeFriend(user: any) {
+  removeFriend(user: any, event: Event) {
+    event.stopPropagation();
+
     const message = `Czy na pewno chcesz usunąć tego znajomego? <strong>@${user.username}</strong>`;
 
     this.modalCommService.openModalWithAction(message, () => {

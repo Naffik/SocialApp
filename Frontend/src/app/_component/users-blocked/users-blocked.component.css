@@ -105,19 +105,35 @@
     margin-right: 5px;
 }
 
-/* Style dla przycisków */
-button {
-    background-color: #007BFF; /* Niebieski kolor tła */
-    color: white; /* Biały kolor tekstu */
-    border: none;
+button{
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s; /* Efekt przejścia dla koloru tła */
+    transition: background-color 0.3s; 
 }
 
-button:hover {
-    background-color: #0056b3; /* Ciemniejszy odcień niebieskiego na hover */
+.unblock {
+    background: #E5A6FF;
+    border: 1px #840AB6 solid;
+    color: #840AB6;
+}
+
+.unblock:hover {
+    background: #840AB6;
+    border: 1px #840AB6 solid;
+    color: #E5A6FF;
+}
+
+.block{
+    color: #C10D0D;
+    border: 1px #C10D0D solid;
+    background: #FFD1D1;
+}
+
+.block:hover{
+    color: #FFD1D1;
+    border: 1px #FFD1D1 solid;
+    background: #C10D0D;
 }
 
 

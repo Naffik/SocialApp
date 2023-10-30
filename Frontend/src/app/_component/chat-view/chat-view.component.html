@@ -12,22 +12,16 @@
 
 <div *ngIf="selectedChat" class="chat-wrapper">
   <div class="chat-header">
-    <!-- Stosujemy klasę .avatar do obrazka -->
     <img class="avatar" [src]="selectedUser.avatarUrl" alt="Chat Avatar">
-    <!-- Stosujemy klasę .user-info do kontenera zawierającego informacje o użytkowniku -->
     <div class="user-info">
-        <!-- Stosujemy klasy .username i .nick do odpowiednich elementów -->
         <span class="username">{{ selectedUser.name }} {{selectedUser.lastName}}</span>
         <span class="nick">@{{ selectedUser.username }}</span>
     </div>
-    <!-- Opcje mogą pozostać takie same -->
     <div class="options">
       <i class="fa fa-ellipsis-v"></i>
     </div>
-</div>
+  </div>
 
-  
-  <!-- Środkowa sekcja (content) -->
   <div class="chat-content">
     <div class="messages-container"
       infiniteScroll
@@ -41,8 +35,6 @@
     </div>
   </div>
   
-
-  <!-- Dolna sekcja (footer) -->
   <div class="chat-footer">
     <button (click)="loadPreviousMessages()">  
       <i class="fa fa-arrow-up"></i>
@@ -62,6 +54,6 @@
       <button class="send-button" (click)="sendMessage()">
         <i class="fa fa-paper-plane"></i>
       </button>
+    </div>
   </div>
-</div>
 </div>

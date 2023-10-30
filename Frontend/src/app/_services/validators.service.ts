@@ -83,6 +83,22 @@ passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
     return null;
   }
 
+  changePasswordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const newPassword = control.get('newPassword')?.value;
+    const confirmNewPassword = control.get('confirmNewPassword')?.value;
+  
+    if (!newPassword || !confirmNewPassword) {
+        return { mismatch: true };
+    }
+  
+    if (newPassword !== confirmNewPassword) {
+        return { mismatch: true };
+    }
+  
+    return null;
+  }
+  
+
   emailAsyncValidator(control: AbstractControl): Observable<ValidationErrors | null> {
     const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
     if (!control.value || !emailPattern.test(control.value)) {
@@ -95,7 +111,7 @@ passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
       tap(() => {
         this.emailStatusMessage = '';
         this.emailStatusChange.next(this.emailStatusMessage);
-      }),  // Wyczyszczenie wiadomości przy każdej zmianie wartości
+      }),  
       switchMap(email => this.authService.checkEmail(email)),
       map(res => {
           if (res === "Email jest już zajęty") {
@@ -109,14 +125,14 @@ passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
             this.emailStatusChange.next(this.emailStatusMessage);
             return { emailTaken: false };
           }else {
-            this.emailStatusMessage = ''; // Czyszczenie
-            return null;  // Dla każdej innej odpowiedzi, zakładamy brak błędu
+            this.emailStatusMessage = '';
+            return null;  
           }
           
       }),
       catchError(err => {
         console.error("Wystąpił błąd podczas sprawdzania e-maila:", err);
-        this.emailStatusMessage = 'Nie można sprawdzić adresu e-mail. Spróbuj ponownie później.'; // Aktualizacja
+        this.emailStatusMessage = 'Nie można sprawdzić adresu e-mail. Spróbuj ponownie później.'; 
         return of({ emailCheckFailed: true });
       })
     );
@@ -134,7 +150,7 @@ passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
       tap(() => {
         this.usernameStatusMessage = '';
         this.usernameStatusChange.next(this.usernameStatusMessage);
-      }),  // Wyczyszczenie wiadomości przy każdej zmianie wartości
+      }),  
       switchMap(username => this.authService.checkUsername(username)),
       map(res => {
           if (res === "Nazwa użytkownika jest już zajęta") {
@@ -148,13 +164,13 @@ passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
             this.usernameStatusChange.next(this.usernameStatusMessage);
             return { usernameTaken: false };
           }else {
-            this.usernameStatusMessage = ''; // Czyszczenie
-            return null;  // Dla każdej innej odpowiedzi, zakładamy brak błędu
+            this.usernameStatusMessage = '';
+            return null;  
           } 
       }),
       catchError(err => {
         console.error("Wystąpił błąd podczas sprawdzania nazwę użytkownika", err);
-        this.usernameStatusMessage = 'Nie można sprawdzić adresu nazwę użytkownika. Spróbuj ponownie później.'; // Aktualizacja
+        this.usernameStatusMessage = 'Nie można sprawdzić adresu nazwę użytkownika. Spróbuj ponownie później.'; 
         return of({ usernameCheckFailed: true });
       })
     );
@@ -168,5 +184,16 @@ passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
     }
     return null;
   }
+
+  createChangePasswordForm(): FormGroup {
+    return this.fb.group({
+      currentPassword: ['', [Validators.required]],
+      newPassword: ['', [Validators.required, this.passwordComplexityValidator]],
+      confirmNewPassword: ['', Validators.required]
+    }, {
+      validators: this.changePasswordMatchValidator
+    });
+}
+
   
 }

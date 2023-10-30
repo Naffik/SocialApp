@@ -1,13 +1,3 @@
-.usersList {
-    padding: 15px; /* Odstęp wewnątrz każdego elementu listy */
-    cursor: pointer;
-}
-
-.usersList:hover{
-    border-radius: 5px;
-    background-color: #ddd;
-}
-
 .usersList-header {
     display: flex;
     justify-content: space-between;
@@ -20,10 +10,10 @@
 }
 
 .avatar img {
-    width: 50px; /* Dostosuj do potrzeb */
-    height: 50px; /* Dostosuj do potrzeb */
-    border-radius: 50%; /* Okrągły kształt avatara */
-    margin-right: 10px; /* Odstęp między avatarem a informacjami o użytkowniku */
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+    margin-right: 10px; 
 }
 
 .user-info {
@@ -34,13 +24,15 @@
 
 .right-section {
     display: flex;
-    gap: 10px; /* Odstęp między przyciskami */
+    gap: 10px; 
 }
 
-.following-btn, .friend-btn, .not-friend-btn, .not-following-btn, .request-sent-btn{
-    padding: 5px 10px; /* Dostosuj do potrzeb */
+.following-btn, .friend-btn, 
+.not-friend-btn, .not-following-btn, 
+.request-sent-btn{
+    padding: 5px 10px; 
     border: none;
-    border-radius: 5px; /* Zaokrąglone rogi przycisków */
+    border-radius: 5px; 
     cursor: pointer;
     width: 140px;
 }
@@ -82,13 +74,13 @@
 .avatar-and-button {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Wycentrowanie elementów w pionie */
+    align-items: center; 
     width: 100%;
     margin-bottom: 20px;
 }
 
 .avatar-and-button .avatar img {
-    width: 120px; /* Możesz dostosować rozmiar avatara według własnych potrzeb */
+    width: 120px; 
     height: 120px;
     border-radius: 50%;
 }
@@ -129,8 +121,8 @@
 }
 
 .stats a:hover {
-    color: #888; /* Przykładowy kolor. Dostosuj według potrzeb. */
-    text-decoration: underline; /* Podkreślenie tekstu po najechaniu */
+    color: #888; 
+    text-decoration: underline; 
 }
 
 .display-name {
@@ -173,21 +165,21 @@
 
 .avatar-and-details {
     display: flex;
-    align-items: center; /* Wycentrowanie elementów w pionie */
-    justify-content: space-between; /* Rozłożenie elementów na całej dostępnej przestrzeni */
+    align-items: center;
+    justify-content: space-between; 
     margin-bottom: 20px;
 }
 
 .avatar-and-name {
     display: flex;
-    align-items: center; /* Wycentrowanie elementów w pionie */
+    align-items: center; 
 }
 
 .avatar-and-details .avatar img {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    margin-right: 15px; /* Odstęp po prawej stronie avatara */
+    margin-right: 15px; 
 }
 
 .full-name {
@@ -224,7 +216,7 @@
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
-    justify-content: center; /* Wyśrodkowanie poziome */
+    justify-content: center; 
 }
 
 .tab {
@@ -262,16 +254,15 @@
 }
   
 .spinner {
-    border: 8px solid rgba(255, 255, 255, 0.3); /* Jasny kolor tła dla obręczy spinnera */
-    border-radius: 50%; /* Nadanie kształtu koła */
-    border-top: 8px solid #a10ddb; /* Ciemny kolor dla górnego segmentu spinnera */
-    width: 50px; /* Szerokość spinnera */
-    height: 50px; /* Wysokość spinnera */
-    animation: spin 1s linear infinite; /* Animacja obracania się spinnera */
-    margin: 0 auto; /* Wyśrodkowanie spinnera w poziomie (jeżeli rodzic ma wyśrodkowanie tekstu lub flex) */
+    border: 8px solid rgba(255, 255, 255, 0.3); 
+    border-radius: 50%; 
+    border-top: 8px solid #a10ddb; 
+    width: 50px; 
+    height: 50px; 
+    animation: spin 1s linear infinite; 
+    margin: 0 auto; 
   }
-  
-  /* Animacja obrotu */
+
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -333,10 +324,26 @@
 }
 
 .default-avatar {
-    width: 50px; /* Dostosuj do swoich potrzeb */
+    width: 50px; 
     height: 50px;
     background-color: black;
     border-radius: 50%;
 }
 
-    
+.usersList a{
+    color: inherit;
+    text-decoration: none;
+}
+.user-usersList a:hover {
+    text-decoration: underline;
+}
+
+.usersList {
+    padding: 15px; 
+    cursor: pointer;
+}
+
+.usersList:hover{
+    border-radius: 5px;
+    background-color: #ddd;
+}

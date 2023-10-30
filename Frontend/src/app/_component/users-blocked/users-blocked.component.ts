@@ -69,53 +69,36 @@ export class UsersBlockedComponent {
 
   toggleBlock(user: any, event: Event) {
     event.stopPropagation();
+   
+    const message = user.is_blocked ? 
+    `Czy na pewno chcesz odblokować użytkownika <strong>@${user.username}</strong>?` :
+    `Czy na pewno chcesz zablokować użytkownika <strong>@${user.username}</strong>?`;
     
-    const message = user.isBlocked ? 
-        `Czy na pewno chcesz odblokować użytkownika <strong>@${user.username}</strong>?` :
-        `Czy na pewno chcesz zablokować użytkownika <strong>@${user.username}</strong>?`;
-    
+    console.log(user.is_blocked);
     this.modalCommService.openModalWithAction(message, () => {
-        this.modalCommService.confirmAction$.pipe(take(1)).subscribe(() => {
-            if (user.isBlocked) {
-                this.dataService.unBlockUser(user.username).subscribe(response => {
-                    user.isBlocked = false;
-                    this.alertify.success("Odblokowałeś użytkownika " + user.username);
-                }, error => {
-                    console.error('Error unblocking user:', error);
-                });
-            } else {
-                this.dataService.blockUser(user.username).subscribe(response => {
-                    user.isBlocked = true;
-                    this.alertify.success("Zablokowałeś użytkownika " + user.username);
-                }, error => {
-                    console.error('Error blocking user:', error);
-                });
-            }
-        });
+    this.modalCommService.confirmAction$.pipe(take(1)).subscribe(() => {
+        if (user.is_blocked) {
+            this.dataService.unBlockUser(user.username).subscribe(response => {
+                user.is_blocked = false;
+                this.alertify.success("Odblokowałeś użytkownika " + user.username);
+            }, error => {
+                console.error('Error unblocking user:', error);
+            });
+        } else {
+          this.dataService.blockUser(user.username).subscribe(response => {
+              user.is_blocked = true;
+              this.alertify.success("Zablokowałeś użytkownika " + user.username);
+          }, error => {
+              console.error('Error blocking user:', error);
+          });
+        }
+      });
     });
-}
-
-
+  }
 
   refreshPage() {
     window.location.reload();
   }
-  
-  // getFriendsList(){
-  //   if (this.isLoading) return; // Check for loading state
 
-  //   this.isLoading = true; // Set loading state to true
-
-  //   this.dataService.getData(this.baseUrl + '/account/friends/').subscribe(
-  //     data => {
-  //       this.users = data;
-  //       this.isLoading = false; // Set loading state to false
-  //     },
-  //     error => {
-  //       console.error('Wystąpił błąd podczas pobierania listy znajomych:', error);
-  //       this.isLoading = false; // Set loading state to false
-  //     }
-  //   );
-  // }
 }
 

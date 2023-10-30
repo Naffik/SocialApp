@@ -3,7 +3,7 @@
 }
 
 .form-control {
-  padding-right: 1px; /* Daje miejsce dla przycisku wewnątrz inputa */
+  padding-right: 1px;
 }
 
 .toggle-password {
@@ -24,20 +24,19 @@
   text-align: center;
   font-size: 12px;
   line-height: 1.42857;
-  border: none; /* Usuwa domyślną ramkę przycisku */
-  transition: background-color 0.3s; /* Gładkie przejście koloru tła */
+  border: none; 
+  transition: background-color 0.3s; 
 }
 
 .btn-circle:hover {
-  background-color: #b621f3; /* Kolor tła podczas najechania */
-  cursor: pointer; /* Kursor wskazujący, że przycisk jest klikalny */
+  background-color: #b621f3; 
+  cursor: pointer; 
 }
 
 .btn-circle:active {
-  background-color: #6a1a8a; /* Kolor tła podczas kliknięcia */
+  background-color: #6a1a8a; 
 }
 
-/*  */
 .right-side{
   display: flex;
   background-color: white;
@@ -47,22 +46,6 @@
 
 .hidden{
   visibility: hidden;
-  /* display: none; */
-   /* border: none; */
-  /* #FF9B94
-  #FAC1BD */
-  /* background: linear-gradient(45deg, #131086, #b621f3); */
-
-  /* background-color: white;
-  color: black;
-  padding: 1rem;
-  border-radius: 100px;
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 15px;
-  height: 55px;
-  cursor: pointer;
-  width:50%; */
 }
 
 

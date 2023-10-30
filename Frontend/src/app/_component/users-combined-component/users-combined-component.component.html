@@ -33,70 +33,69 @@
         Zaproszone konta
     </a>
   </div>
-
-  <!-- Przedzielenie -->
   <hr>
 
-  <!-- Lista zaproszeń do znajomych -->
   <div *ngIf="viewType === 'friends_requests'">
-    <div *ngFor="let user of users" class="usersList">    
-      <div class="usersList-header">    
-          <!-- Lewa strona: Avatar i informacje o użytkowniku -->
-          <div class="left-section">
-              <span class="avatar">
-                  <img [src]="baseUrl + user?.avatar_url" alt="Avatar użytkownika">
-              </span>  
-              <div class="user-info">
-                  <span class="username">{{user?.display_name}}</span>
-                  <span class="nick">@{{user?.username}}</span>
-              </div>
-          </div>
-    
-          <!-- Prawa strona -->
-          <div class="right-section">
-              Zaproszono do grona znajomych
-              <span class="request-date">{{ user.created | date:'short' }}</span>
-          </div>
-      </div>
+    <div *ngFor="let user of users" class="usersList">   
+      <a [routerLink]="['/', user.username]"> 
+        <div class="usersList-header">    
+            <div class="left-section">
+                <span class="avatar">
+                    <img [src]="baseUrl + user?.avatar_url" alt="Avatar użytkownika">
+                </span>  
+                <div class="user-info">
+                    <span class="username">{{user?.display_name}}</span>
+                    <span class="nick">@{{user?.username}}</span>
+                </div>
+            </div>
+      
+            <div class="right-section">
+                Zaproszono do grona znajomych
+                <span class="request-date">{{ user.created | date:'short' }}</span>
+            </div>
+        </div>
+      </a>
     </div>
   </div>
 
   <!-- Lista znajomych/obserwujących/obserwacji -->
   <div *ngIf="viewType !== 'friends_requests'">
     <div *ngFor="let user of users" class="usersList">    
-      <div class="usersList-header">    
-          <!-- Lewa strona: Avatar i informacje o użytkowniku -->
-          <div class="left-section">
-              <span class="avatar">
-                  <img [src]="baseUrl + user?.avatar_url" alt="Avatar użytkownika">
-              </span>  
-              <div class="user-info">
-                  <span class="username">{{user?.display_name}}</span>
-                  <span class="nick">@{{user?.username}}</span>
-              </div>
-          </div>
-  
-          <!-- Prawa strona: Przyciski -->
-          <div class="right-section" *ngIf="user.username !== loggedInUsername">
-            <button 
-              [ngClass]="{
-                  'friend-btn': user?.is_friend, 
-                  'not-friend-btn': !user?.is_friend && !user?.request_friendship_sent,
-                  'request-sent-btn': user?.request_friendship_sent
-              }"
-              (click)="user.is_friend? removeFriend(user) : toggleFriendship(user)">
-              {{ user?.is_friend ? 'Usuń znajomego' : (user?.request_friendship_sent ? 'Zaproszenie wysłane' : 'Zaproś znajomego') }}
-            </button>
-            <button 
+      <a [routerLink]="['/', user.username]"> 
+        <div class="usersList-header">    
+            <!-- Lewa strona: Avatar i informacje o użytkowniku -->
+            <div class="left-section">
+                <span class="avatar">
+                    <img [src]="baseUrl + user?.avatar_url" alt="Avatar użytkownika">
+                </span>  
+                <div class="user-info">
+                    <span class="username">{{user?.display_name}}</span>
+                    <span class="nick">@{{user?.username}}</span>
+                </div>
+            </div>
+    
+            <!-- Prawa strona: Przyciski -->
+            <div class="right-section" *ngIf="user.username !== loggedInUsername">
+              <button 
                 [ngClass]="{
-                    'following-btn': user?.follow, 
-                    'not-following-btn': !user?.follow
+                    'friend-btn': user?.is_friend, 
+                    'not-friend-btn': !user?.is_friend && !user?.request_friendship_sent,
+                    'request-sent-btn': user?.request_friendship_sent
                 }"
-                (click)="toggleFollow(user)">
-                {{ user?.follow ? 'Przestań obserwować' : 'Zaobserwuj' }}
-            </button>
+                (click)="user.is_friend? removeFriend(user, $event) : toggleFriendship(user, $event); false">
+                {{ user?.is_friend ? 'Usuń znajomego' : (user?.request_friendship_sent ? 'Zaproszenie wysłane' : 'Zaproś znajomego') }}
+              </button>
+              <button 
+                  [ngClass]="{
+                      'following-btn': user?.follow, 
+                      'not-following-btn': !user?.follow
+                  }"
+                  (click)="toggleFollow(user, $event); false">
+                  {{ user?.follow ? 'Przestań obserwować' : 'Zaobserwuj' }}
+              </button>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
   </div>
 </div>

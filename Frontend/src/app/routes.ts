@@ -1,6 +1,5 @@
 import { Routes } from "@angular/router";
 import { HomeComponent } from "./_component/home/home.component";
-import { UsersComponent } from "./_component/users/users.component";
 import { AccountComponent } from "./_component/account/account.component";
 import { NotificationsComponent } from "./_component/notifications/notifications.component";
 import { ContentComponent } from "./_component/content/content.component";
@@ -11,6 +10,7 @@ import { UserCommentListComponent } from "./_component/user-comment-list/user-co
 import { UsersCombinedComponentComponent } from "./_component/users-combined-component/users-combined-component.component";
 import { ChatViewComponent } from "./_component/chat-view/chat-view.component";
 import { SearchComponent } from "./_component/search/search.component";
+import { ChangePasswordComponent } from "./_component/change-password/change-password.component";
 
 export const appRoutes: Routes = [
     {
@@ -20,6 +20,7 @@ export const appRoutes: Routes = [
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: ContentComponent },
             { path: 'account', component: AccountComponent },
+            { path: 'account/password', component: ChangePasswordComponent },
             { path: 'notifications', component: NotificationsComponent},
             { path: 'account-info', component: AccountInfoComponent},
             { path: 'blocked', component: UsersBlockedComponent},

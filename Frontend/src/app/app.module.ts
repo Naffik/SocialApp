@@ -49,6 +49,8 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 import { ProfilePopoverComponent } from './_component/profile-popover/profile-popover.component';
 import { ChatViewComponent } from './_component/chat-view/chat-view.component';
 import { SearchComponent } from './_component/search/search.component';
+import { PasswordConfirmModalComponent } from './_component/password-confirm-modal/password-confirm-modal.component';
+import { ChangePasswordComponent } from './_component/change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -83,6 +85,8 @@ import { SearchComponent } from './_component/search/search.component';
     ProfilePopoverComponent,
     ChatViewComponent,
     SearchComponent,
+    PasswordConfirmModalComponent,
+    ChangePasswordComponent,
   ],
   imports: [    
     HttpClientModule,

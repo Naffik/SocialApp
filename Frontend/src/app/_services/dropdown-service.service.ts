@@ -30,11 +30,4 @@ export class DropdownService {
     }
   }
 
-//   getActiveContextMenuId(): number | null {
-//     return this._activeContextMenuId.value;
-// }
-
-//   setActiveContextMenuId(id: number | null) {
-//     this._activeContextMenuId.next(id);
-//   }
 }
