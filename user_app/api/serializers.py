@@ -118,14 +118,14 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
 
 class SetNewPasswordSerializer2(serializers.Serializer):
-    password = serializers.CharField(min_length=6, max_length=70, write_only=True)
+    new_password = serializers.CharField(min_length=6, max_length=70, write_only=True)
 
     class Meta:
         fields = ('password',)
 
     def validate(self, attrs):
         id = self.context.get('id')
-        password = attrs.get('password')
+        password = attrs.get('new_password')
         user = User.objects.get(id=id)
 
         user.set_password(password)

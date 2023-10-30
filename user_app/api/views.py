@@ -212,9 +212,13 @@ class SetNewPasswordView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request):
-        serializer = self.serializer_class(data=request.data, context={'id': self.request.user.id})
-        serializer.is_valid(raise_exception=True)
-        return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
+        old_password = request.data.get('old_password')
+        if check_password(old_password, request.user.password):
+            serializer = self.serializer_class(data=request.data, context={'id': request.user.id})
+            serializer.is_valid(raise_exception=True)
+            return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'success': False, 'message': 'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):

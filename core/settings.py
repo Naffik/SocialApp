@@ -213,7 +213,7 @@ REST_FRAMEWORK = {
         'email-verify': '10/hour',
         'request-password-reset': '3/hour',
         'password-reset': '5/hour',
-        'password-reset-complete': '5/hour',
+        'password-reset-complete': '500/hour',
         'token_obtain_pair': '5/minute',
         'token_refresh': '20/hour',
         'user-profile-detail-user': '500/hour',
