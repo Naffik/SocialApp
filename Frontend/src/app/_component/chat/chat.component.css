@@ -171,3 +171,15 @@
     padding: 10px;
     border-top: 1px solid #ddd;
 }
+
+.no-results {
+    padding: 20px;
+    text-align: center;
+    color: gray;
+}
+
+.no-conversations {
+    padding: 20px;
+    text-align: center;
+    color: gray;
+}

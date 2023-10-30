@@ -21,8 +21,11 @@ export class ChatComponent {
   isLoading: boolean = false;
   error = false;
   serverError = false;
-  private nextUrl: string = '';
   loggedInUsername: string = '';
+  searchTerm: string = '';
+  hasFriends = false;
+
+
 
   constructor(
     private dataService: DataService,
@@ -40,6 +43,12 @@ export class ChatComponent {
   loadFirends() {
     this.dataService.getData(`${this.baseUrl}/chat/`).subscribe(data => {
       this.chats = data.map((chatData: any) => new Chat(chatData));
+      if (this.chats.length > 0) {
+        this.hasFriends = true;
+      }
+    }, error => {
+      this.error = true;
+      console.error("Błąd podczas ładowania listy czatów:", error);
     });
   }
 
@@ -70,4 +79,13 @@ export class ChatComponent {
     return '';
   }
 
+  get filteredChats(): Chat[] {
+    return this.chats.filter(chat => {
+      const otherUser = chat.members.find(member => member.username !== this.loggedInUsername);
+      if (!otherUser) return false;
+      const fullName = `${otherUser.name} ${otherUser.lastName}`.toLowerCase();
+      const username = otherUser.username.toLowerCase();
+      return fullName.includes(this.searchTerm.toLowerCase()) || username.includes(this.searchTerm.toLowerCase());
+    });
+  }
 }

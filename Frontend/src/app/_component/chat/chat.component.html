@@ -2,11 +2,11 @@
   <p>Znajomi do rozmów</p>
   <div class="chat-search-bar">
     <img src="/assets/search.png" />
-    <input type="text" placeholder="Wyszukaj" />
+    <input type="text" placeholder="Wyszukaj" [(ngModel)]="searchTerm" />
   </div>
 </div>
 <div class="second-section">
-  <div *ngFor="let chat of chats" (click)="selectChat(chat)" [ngClass]="{'selected': selectedChat === chat}">
+  <div *ngFor="let chat of filteredChats" (click)="selectChat(chat)" [ngClass]="{'selected': selectedChat === chat}">
     <div *ngFor="let member of chat.members">
       <ng-container *ngIf="member.username !== loggedInUsername">
         <div class="message-contact">
@@ -18,6 +18,12 @@
         </div>
       </ng-container>
     </div>
+  </div>
+  <div *ngIf="hasFriends && filteredChats.length === 0" class="no-results">
+    Nie znaleziono znajomych pasujących do kryteriów wyszukiwania.
+  </div>
+  <div *ngIf="!hasFriends && !error" class="no-conversations">
+    Nie masz osób do konwersacji. Aby móc rozmawiać, dodaj znajomych.
   </div>
 </div>
 
