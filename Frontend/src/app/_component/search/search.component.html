@@ -5,35 +5,64 @@
     </button>
     <div class="search-box">
       <img src="/assets/search.png" alt="search icon" />
-      <input [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Wyszukaj posty..." />
+      <input
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Wyszukaj posty..."
+      />
     </div>
     <div class="spacer"></div>
   </div>
   <div class="search-results" *ngIf="searchResults.length > 0">
-    <div infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50" (scrolled)="loadMoreResults()">
-      <div *ngFor="let result of searchResults" class="comment" (click)="goToPostDetails(result.id, $event)"
-        [attr.data-post-id]="result.id">
+    <div
+      infiniteScroll
+      [infiniteScrollDistance]="5"
+      [infiniteScrollThrottle]="50"
+      (scrolled)="loadMoreResults()"
+    >
+      <div
+        *ngFor="let result of searchResults"
+        class="comment"
+        (click)="goToPostDetails(result.id, $event)"
+        [attr.data-post-id]="result.id"
+      >
         <div class="post-header">
           <a [routerLink]="['/', result.post_author]">
-            <img [src]="baseUrl + result?.post_author_avatar" (mouseenter)="showPopover(result.id, result.post_author)"
-              (mouseleave)="hidePopover()" alt="Avatar użytkownika piszącego post" class="avatar" />
+            <img
+              [src]="baseUrl + result?.post_author_avatar"
+              (mouseenter)="showPopover(result.id, result.post_author)"
+              (mouseleave)="hidePopover()"
+              alt="Avatar użytkownika piszącego post"
+              class="avatar"
+            />
           </a>
           <a [routerLink]="['/', result.post_author]">
-            <span class="username" (mouseenter)="showPopover(result.id, result.post_author)"
-              (mouseleave)="hidePopover()">
+            <span
+              class="username"
+              (mouseenter)="showPopover(result.id, result.post_author)"
+              (mouseleave)="hidePopover()"
+            >
               <strong>{{ result?.display_name }}</strong>
             </span>
           </a>
           <a [routerLink]="['/', result.post_author]">
-            <span class="nick" (mouseenter)="showPopover(result.id, result.post_author)" (mouseleave)="hidePopover()">
+            <span
+              class="nick"
+              (mouseenter)="showPopover(result.id, result.post_author)"
+              (mouseleave)="hidePopover()"
+            >
               @{{ result?.post_author }}
             </span>
           </a>
-          <span class="date" (mouseover)="showTooltip = true" (mouseleave)="showTooltip = false">
+          <span
+            class="date"
+            (mouseover)="showTooltip = true"
+            (mouseleave)="showTooltip = false"
+          >
             {{ result.created | timeSince }}
             <span class="tooltip" *ngIf="showTooltip">{{
               result.created | dateFormat
-              }}</span>
+            }}</span>
           </span>
           <div class="menu-icon-container" (click)="stopPropagation($event)">
             <button (click)="toggleContextMenu(result.id)">
@@ -41,65 +70,95 @@
             </button>
             <div class="context-menu" *ngIf="isContextMenuShow(result.id)">
               <div *ngIf="loggedInUsername !== result.post_author">
-                <button (click)="
+                <button
+                  (click)="
                     blockUser(result.post_author, result.id);
                     toggleContextMenu(result.id)
-                  ">
+                  "
+                >
                   Zablokuj @{{ result?.post_author }}
                 </button>
               </div>
               <div *ngIf="loggedInUsername === result.post_author">
-                <button class="delete" (click)="
+                <button
+                  class="delete"
+                  (click)="
                     deleteRecord(result.id); toggleContextMenu(result.id)
-                  ">
+                  "
+                >
                   Usuń wpis
                 </button>
               </div>
-              <button (click)="
+              <button
+                (click)="
                   toggleAction(result, 'favorite'); toggleContextMenu(result.id)
-                ">
+                "
+              >
                 {{
-                result.is_favorite
-                ? "Usuń z ulubionych"
-                : "Dodaj do ulubionych"
+                  result.is_favorite
+                    ? "Usuń z ulubionych"
+                    : "Dodaj do ulubionych"
                 }}
               </button>
-              <button (click)="sharePost(result.id); toggleContextMenu(result.id)">
+              <button
+                (click)="sharePost(result.id); toggleContextMenu(result.id)"
+              >
                 Udostępnij post
               </button>
             </div>
           </div>
-          <div class="custom-popover" 
-          *ngIf="activePopover===result.id && (!isUserDataLoading || userDataLoadError)" 
-          (mouseenter)="enterPopover()" 
-          (mouseleave)="leavePopover()">
-          <app-profile-popover 
+          <div
+            class="custom-popover"
+            *ngIf="
+              activePopover === result.id &&
+              (!isUserDataLoading || userDataLoadError)
+            "
+            (mouseenter)="enterPopover()"
+            (mouseleave)="leavePopover()"
+          >
+            <app-profile-popover
               [user]="userInfoToShow$ | async"
-              (loggedInUsername) = "loggedInUsername"
-              (follow)="addFollow($event)" 
+              (loggedInUsername)="(loggedInUsername)"
+              (follow)="addFollow($event)"
               (removeFollow)="removeFollow($event)"
               (addFriend)="addFriend($event)"
-              (removeFriend)="removeFriend($event)">
-          </app-profile-popover>
-        </div>
+              (removeFriend)="removeFriend($event)"
+            >
+            </app-profile-popover>
+          </div>
         </div>
         <div class="post-content">
-          <div class="preserve-whitespace" [innerHTML]="result?.content | linkify : result?.id"></div>
+          <div
+            class="preserve-whitespace"
+            [innerHTML]="result?.content | linkify : result?.id"
+          ></div>
           <div *ngIf="result?.image" class="post-image">
-            <img [src]="baseUrl + result?.image" alt="Image for {{ result?.post }}" style="cursor: pointer"
-              class="post-image" (click)="stopPropagation($event); openMediaModal(result.image)" />
+            <img
+              [src]="baseUrl + result?.image"
+              alt="Image for {{ result?.post }}"
+              style="cursor: pointer"
+              class="post-image"
+              (click)="stopPropagation($event); openMediaModal(result.image)"
+            />
           </div>
           <div class="tags">
             <p>Tags:</p>
             <div class="tag-container" (click)="stopPropagation($event)">
-              <span *ngFor="let tag of result?.tags" (click)="onTagClick(tag)">{{ tag }}</span>
+              <span
+                *ngFor="let tag of result?.tags"
+                (click)="onTagClick(tag)"
+                >{{ tag }}</span
+              >
             </div>
           </div>
         </div>
 
         <div class="post-actions">
-          <button class="like-btn" [class.liked]="result.is_liked"
-            (click)="toggleAction(result, 'like'); stopPropagation($event)">
+          <button
+            class="like-btn"
+            [class.liked]="result.is_liked"
+            (click)="toggleAction(result, 'like'); stopPropagation($event)"
+          >
             <i class="fa fa-thumbs-up"> </i>
             <span class="count" [class.liked]="result.is_liked">
               {{ result.number_of_likes }}
@@ -109,7 +168,10 @@
             <i class="fa fa-comment"></i>
             <span class="count">{{ result.number_of_comments }} </span>
           </button>
-          <button class="share-btn" (click)="sharePost(result.id); stopPropagation($event)">
+          <button
+            class="share-btn"
+            (click)="sharePost(result.id); stopPropagation($event)"
+          >
             <i class="fa fa-share"></i>
           </button>
         </div>
@@ -121,7 +183,8 @@
   <div class="loading-bar" *ngIf="isLoading">
     <div class="spinner"></div>
     <p class="loading-text">
-      Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+      Loading<span class="dot">.</span><span class="dot">.</span
+      ><span class="dot">.</span>
     </p>
   </div>
   <div class="trends" *ngIf="searchResults.length === 0 && !isLoading">

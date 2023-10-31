@@ -188,7 +188,6 @@ export class SearchComponent {
   }
 
   private fetchUserData(username: string): void {
-    console.log(username);
     this.isUserDataLoading = true;
     this.userDataLoadError = false;
     if (this.userCache[username]) {
@@ -365,8 +364,6 @@ export class SearchComponent {
   }
 
   removeFollow(userOrPost: any) {
-    console.log(userOrPost)
-
     const username = userOrPost.username || userOrPost.post_author;
     if (!username) {
       console.error("Nie można znaleźć nazwy użytkownika ani autora postu.");

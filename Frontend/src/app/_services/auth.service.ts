@@ -91,7 +91,6 @@ export class AuthService{
         name: decodedToken.name,
         lastName: decodedToken.last
     };
-    console.log(userData);
     localStorage.setItem('userData', JSON.stringify(userData));
     this.userDataSubject.next(userData);
 }

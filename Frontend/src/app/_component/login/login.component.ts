@@ -25,17 +25,6 @@ export class LoginComponent implements OnInit{
   }
 
 
- scrollToElement() {
-  //  const element = this.login.nativeElement;
-  //  const rect = element.getBoundingClientRect();
-  //  console.log(element);
-  //  if (element) {
-  //    element.scrollIntoView({
-  //      behavior: 'smooth' });
-  //  }
-  //  console.log(rect.top + window.scrollY);
- }
-
   login() {
     this.authService.login(this.model).subscribe({
     error: (errorResponse) => {

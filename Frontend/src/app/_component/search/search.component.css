@@ -240,6 +240,11 @@ a {
     z-index: 1;
   }
 
+  .menu-icon-container {
+    position: absolute;
+    right: 10px; 
+  }
+
   .menu-icon-container > button {
     border: none;
     background-color: inherit;
@@ -255,12 +260,6 @@ a {
   .menu-icon-container > button:hover i{
     color: #a10ddb;
   }
-  
-  .menu-icon-container {
-    position: absolute;
-    right: 10px; 
-  }
-
   
 .tags {
     margin-top: 25px;
@@ -374,7 +373,7 @@ a {
   margin-bottom: 5px;
 }
 
-.post:hover .custom-popover {
+.comment:hover .custom-popover {
   opacity: 1;
   transform: translateY(-10px);
 }
@@ -484,4 +483,6 @@ a {
       border-color: transparent transparent black transparent;
   }
 }
+
+/*  */
 

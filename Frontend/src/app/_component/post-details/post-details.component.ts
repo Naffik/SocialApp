@@ -241,8 +241,6 @@ export class PostDetailsComponent implements OnInit {
   }
 
   removeFollow(userOrPost: any) {
-    console.log(userOrPost)
-
     const username = userOrPost.username || userOrPost.post_author;
     if (!username) {
       console.error("Nie można znaleźć nazwy użytkownika ani autora postu.");
