@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthService } from '../../_services/auth.service';
 
 @Component({
@@ -8,6 +8,11 @@ import { AuthService } from '../../_services/auth.service';
 })
 export class AuthenticatorComponent {
 
+  @ViewChild('loginForm')
+  loginForm!: ElementRef;
+  @ViewChild('registerForm')
+  registerForm!: ElementRef;
+
   model:any ={};
   isVisible = false;
 
@@ -15,6 +20,14 @@ export class AuthenticatorComponent {
 
   get registerMode(): boolean {
     return this.authService.registerMode;
+  }
+
+  scrollToForm(): void {
+    if (this.authService.registerMode) {
+      this.registerForm.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      this.loginForm.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   registerToggle(): void {
