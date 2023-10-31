@@ -6,7 +6,6 @@ import { ContentComponent } from "./_component/content/content.component";
 import { PostDetailsComponent } from "./_component/post-details/post-details.component";
 import { AccountInfoComponent } from "./_component/account-info/account-info.component";
 import { UsersBlockedComponent } from "./_component/users-blocked/users-blocked.component";
-import { UserCommentListComponent } from "./_component/user-comment-list/user-comment-list.component";
 import { UsersCombinedComponentComponent } from "./_component/users-combined-component/users-combined-component.component";
 import { ChatViewComponent } from "./_component/chat-view/chat-view.component";
 import { SearchComponent } from "./_component/search/search.component";
