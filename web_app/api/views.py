@@ -113,18 +113,27 @@ class PostSearchView(generics.ListAPIView):
     pagination_class = PostPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['post_author__username', 'content']
-    search_fields = ['^content']
+    search_fields = ['^content', 'tags__name']
     ordering_fields = ['created']
 
     def get_queryset(self, *args, **kwargs):
+        user = self.request.user
         my_tags = []
         tags = self.request.data.get('tags')
+        blocked = Block.objects.blocked(user=user)
+        blocking = Block.objects.blocking(user=user)
         if tags is not None:
             for x in tags.split(','):
                 my_tags.append(x)
-            queryset = Post.objects.filter(tags__name__in=my_tags)
+            queryset = Post.objects.filter(tags__name__in=my_tags).exclude(post_author__in=blocked)\
+                .exclude(post_author__in=blocking).\
+                annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                         is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk'))))
         else:
-            queryset = Post.objects.all()
+            queryset = Post.objects.all().exclude(post_author__in=blocked)\
+                .exclude(post_author__in=blocking).\
+                annotate(is_liked=Exists(Like.objects.filter(users=user, post=OuterRef('pk'))),
+                         is_favorite=Exists(Post.objects.filter(favorites=user, id=OuterRef('pk'))))
 
         return queryset.order_by('created')
 
