@@ -1,0 +1,529 @@
+.usersList {
+    display: flex;  
+    align-items: center;
+    padding: 15px; 
+    cursor: pointer;
+}
+
+.usersList:hover{
+    border-radius: 5px;
+    background-color: #ddd;
+}
+
+.usersList-header {
+    display: flex;
+    width: 100%; 
+    justify-content: space-between; 
+}
+
+.avatar img {
+    width: 50px; 
+    height: 50px;
+    border-radius: 50%; 
+    object-fit: cover; 
+}
+
+.avatar img:hover{
+    border: #b349dd 2px solid;
+}
+
+.nick {
+    font-size: 14px; 
+    color: #777; 
+}
+
+.account-info {
+    width:600px;
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.avatar-and-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.avatar-and-button .avatar img {
+    width: 120px; 
+    height: 120px;
+    border-radius: 50%;
+}
+
+.edit-profile-btn {
+    text-decoration: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: #a10ddb;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    align-self: center; 
+}
+
+.edit-profile-btn:hover {
+    background-color: #6a1a8a;
+}
+
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    background-color: black;
+    border-radius: 50%;        
+}
+
+
+
+.default-avatar {
+    width: 50px; 
+    height: 50px;
+    background-color: black;
+    border-radius: 50%;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats {
+    color: #555;
+    display: flex;
+    gap: 15px;
+}
+
+.stats strong{
+    color: black;
+}
+
+.stats a{
+    color: black;
+    text-decoration: none;
+}
+
+.stats a:hover{
+    text-decoration: underline;
+}
+
+.display-name{
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.name{   
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.notexist .username, .blocked .username{
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+}
+
+.messages-info{
+    margin-top: 70px;
+    padding-left: 10%;
+}
+
+.message, .message-suggestion {
+    text-align: left; 
+}
+
+.message {
+    display: block;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.header {
+    position: sticky;
+    top: 60px;
+    background-color: #f7f7f7;  
+    z-index: 100;  
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .header h2 {
+    text-align: left;
+    margin: 0; 
+  }
+  
+  .header button {
+    color:black;
+    background-color: transparent; 
+    border: none;
+    padding: 15px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: none; 
+    border-radius: 50%;
+  }
+  
+  .header button:hover {
+    background-color: #a10ddb;
+  }
+  
+  .header button i.fa-arrow-left {
+    font-size: 16px;
+    margin-right: 5px;
+  }
+  
+
+.message-suggestion {
+    font-size:16px;
+    display: block;
+    color: gray;
+}
+
+.username{
+    font-size: 16px;
+    color: #555;
+}
+
+.avatar-and-details {
+    display: flex;
+    align-items: center; 
+    justify-content: space-between; 
+    margin-bottom: 20px;
+}
+
+.avatar {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.actions-container {
+    display: flex;
+    gap: 10px; 
+}
+
+.avatar-and-name {
+    display: flex;
+    align-items: center;
+}
+
+.avatar-and-details .avatar img {
+    min-width: 120px;
+    min-height: 120px;
+    border-radius: 50%;
+}
+
+.full-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.profile-description {
+    margin-top: 10px;
+}
+
+.stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.edit-profile-btn {
+    padding: 10px 15px;
+    background-color: #a10ddb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-profile-btn:hover {
+    background-color: #6a1a8a;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center; 
+}
+
+.tab {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.tab.active {
+    background-color: #a10ddb;
+    color: white;
+}
+
+.error-message{
+    width: 600px;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+.spinner {
+    border: 8px solid rgba(255, 255, 255, 0.3); 
+    border-radius: 50%; 
+    border-top: 8px solid #a10ddb; 
+    width: 50px; 
+    height: 50px; 
+    animation: spin 1s linear infinite; 
+    margin: 0 auto; 
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .loading-text {
+    display: inline-block;
+    font-size: 20px;
+  }
+  
+  .dot {
+    animation: blink 1.4s infinite both;
+    font-weight: normal;
+    animation-fill-mode: both;
+    opacity: 0;
+  }
+  
+  .dot:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  
+  .dot:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+  
+  .dot:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+  
+  @keyframes blink {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .token-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .unblock-button {
+    background-color: #ff0000;
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.unblock-button:hover {
+    background-color: #cc0000;
+}
+
+.user-details.blocked .messages-info {
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.user-details.blocked .message-suggestion {
+    margin-top: 10px;
+}
+
+.message{
+    line-height: 30px;
+}
+
+.name-and-username {
+    display: flex;
+    flex-direction: column;
+}
+
+.following-btn, .friend-btn, .not-friend-btn, .not-following-btn, .request-sent-btn{
+    padding: 5px 10px; 
+    border: none;
+    border-radius: 5px; 
+    cursor: pointer;
+    width: 140px;
+}
+
+.following-btn {
+    background-color: #4CAF50; 
+    color: white; 
+}
+
+.friend-btn {
+    background-color: #FFC107; 
+    color: black; 
+}
+
+.friend-btn:hover {
+    background-color: #eeff07;
+    color: black; 
+}
+
+.not-following-btn {
+    background-color: #e7164a; 
+    color: white; /
+}
+
+.not-friend-btn {
+    background-color: #1916cf; 
+    color: black; 
+}
+
+.request-sent-btn {
+    background-color: #f5c6cb;
+}
+
+.nav-user-icon{
+    border: 1px solid black;
+    border-radius: 50%;
+    padding: 15px 20px;
+}
+
+.nav-user-icon img{
+    width: 40px;
+    border-radius: 50%;
+  }
+  
+ 
+.user-info {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+  
+.profile-summary, .dropdown-option{
+    padding: 10px;  
+    border-bottom: 1px solid #e0e0e0;  
+}
+
+.profile-summary a, .dropdown-option a{
+    border-radius: 5px;
+}
+
+.profile-avatar {
+    width: 40px;  
+    height: 40px;  
+    margin-right: 10px;  
+    border-radius: 50%;
+}
+
+
+.dropdown-footer {
+    border-top: 1px solid #e0e0e0;  
+    text-align: center;  
+}
+
+.dropdown-footer a:hover {
+    background-color: transparent;  
+    color: inherit;  
+}
+
+.user-avatar {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    background-color: #ccc; 
+}
+
+@media screen and (max-width: 600px) {
+    .dropdown-content {
+        right: auto;
+        left: 0;
+    }
+}
+
+.context-menu button {
+    padding: 10px;
+    width: 100%;
+    background-color: white;
+    border: none;
+    border-radius: 5px;
+    text-align: left;
+    background-color: inherit;
+}
+
+.context-menu button:hover {
+    background-color: #a1a1a1;
+}
+
+.context-menu {
+    position: absolute;
+    top: 30%;
+    right: 10px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    padding: 5px;
+    min-width: 200px;
+    z-index: 100;
+}
+
+.menu-icon-container {
+    position: relative;    
+}
+
+.menu-icon-container > button {
+    border: none;
+    background-color: inherit;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 50%;
+
+}
+  
+.menu-icon-container > button:hover {
+    background-color: #a1a1a1;
+}

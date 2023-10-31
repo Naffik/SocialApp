@@ -1,0 +1,76 @@
+<div class="modal-header">
+    <h5>Dodaj wiadomość</h5>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modalRef.close()"
+    ></button>
+</div>
+<div class="modal-body">
+    <div class="textarea-container">
+        <div *ngIf="isError" class="error-message">
+            Wystąpił błąd. Spróbuj ponownie później.
+        </div>
+        <textarea 
+        [(ngModel)]="postText" 
+        (input)=" adjustTextareaHeight($event)"        
+        maxlength="300"
+        placeholder="Napisz coś...">
+        </textarea>
+    </div>
+
+    <div *ngIf="postImagePreview" class="image-preview-container">
+        <img [src]="postImagePreview" alt="Podgląd obrazka" class="post-image-preview"/>
+        <button (click)="removeImage()" class="remove-image-btn">
+          <i class="fa fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="tags-container">
+        <span *ngFor="let tag of tags" class="tag" (click)="addTagToText(tag)">
+            {{ tag }}
+            <span class="remove-tag" (click)="removeTag(tag)">✖</span>
+        </span>
+        <button 
+            type="button" 
+            class="btn btn-success" 
+            (click)="addNewTag();">
+            Dodaj nowy tag
+        </button>
+    </div>
+    <div *ngIf="showTagTooltip" class="tag-tooltip">
+        Proszę dodać przynajmniej jeden tag przed opublikowaniem.
+    </div>
+
+    <div *ngIf="isPostSending" class="loading-bar"></div>
+
+</div>
+
+<div class="modal-footer">
+    <div class="left-footer">
+      <label class="image-upload-label">
+        <i class="fa fa-upload"></i>
+        <input type="file" (change)="onImageSelected($event)" style="display:none;">
+      </label>
+    </div>
+    <div class="right-footer">
+      <div class="character-count" [ngClass]="{'over-limit': isOverLimit()}">
+          <div class="circle-progress" [style.strokeDashoffset]="circleOffset()"></div>
+          {{ remainingCharacters() }}
+      </div>
+      <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="modalRef.close()">
+              Anuluj
+      </button>
+      <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="onPublish()"
+          [disabled]="!postText">
+              Opublikuj
+      </button>
+    </div>
+</div>

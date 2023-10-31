@@ -7,9 +7,8 @@
 
 .home-page {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Dwie kolumny o równej szerokości */
-  grid-template-rows: auto; /* Domyślna wysokość wiersza */
-  grid-gap: 20px; /* Odstęp między kolumnami i wierszami */
+  grid-template-columns: 1fr 1fr; 
+  grid-template-rows: auto; 
 }
 
 
@@ -22,7 +21,6 @@
 .left-side{
   display: flex;
   background-color: #b621f3;
-  /* background-color: #4b1262; */
   color:white;
   justify-content: center;
   align-items: center;
@@ -51,34 +49,18 @@
 
 .hidden{
   visibility: hidden;
-  /* display: none; */
-   /* border: none; */
-  /* #FF9B94
-  #FAC1BD */
-  /* background: linear-gradient(45deg, #131086, #b621f3); */
-
-  /* background-color: white;
-  color: black;
-  padding: 1rem;
-  border-radius: 100px;
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 15px;
-  height: 55px;
-  cursor: pointer;
-  width:50%; */
 }
 
 @media (max-width:1350px){
   .home-page {
-    grid-template-columns: 1fr; /* Jedna kolumna o pełnej szerokości */
-    grid-template-rows: auto auto; /* Dwa wiersze o domyślnej wysokości */
+    grid-template-columns: 1fr; 
+    grid-template-rows: auto auto; 
   }
 
   .left-side{
     display: flex;
     background-color: #b621f3;
-    /* background-color: #4b1262; */
+
     color:white;
     justify-content: center;
     align-items: center;

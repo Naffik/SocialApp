@@ -1,0 +1,18 @@
+<div class="account-settings">
+    <h2>Ustawienia konta</h2>
+    <p>Zobacz informacje dotyczące Twojego konta, zmień hasło, odlbokuj zablokowanych użytkowników lub usuń swoje konto.</p>
+    <div class="settings-section">
+        <a [routerLink]="['/account-info']">
+            <i class="fa fa-user-circle"></i> Informacje dotyczące konta <i class="fa fa-chevron-right icon-right"></i>
+        </a>
+        <a [routerLink]="['/account/password']"> 
+            <i class="fa fa-lock"></i> Zmień hasło <i class="fa fa-chevron-right icon-right"></i>
+        </a>
+        <a [routerLink]="['/blocked']"> 
+            <i class="fa fa-user-times"></i> Zablokowane konta <i class="fa fa-chevron-right icon-right"></i>
+        </a>
+        <button (click)="openDeactivateModal()">
+            <i class="fa fa-ban"></i> Usuń konto
+        </button>
+    </div>
+</div>

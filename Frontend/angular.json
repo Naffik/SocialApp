@@ -25,9 +25,13 @@
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/alertifyjs/build/alertify.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -45,16 +49,22 @@
               ],
               "outputHashing": "all"
             },
-            "development": {
+            "staging": {
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ]
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "staging"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -63,7 +73,7 @@
               "browserTarget": "SocialApp.SPA:build:production"
             },
             "development": {
-              "browserTarget": "SocialApp.SPA:build:development"
+              "browserTarget": "SocialApp.SPA:build:staging"
             }
           },
           "defaultConfiguration": "development"
@@ -87,9 +97,11 @@
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+            ]
           }
         }
       }

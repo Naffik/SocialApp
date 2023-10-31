@@ -1,0 +1,20 @@
+<div class="content-right-sidebar">
+    <div class="first-section">
+        <p>Najpopularniejsze Trendy</p>
+    </div>
+    <div class="second-section">
+        <div class="loading-bar" *ngIf="isLoading">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+        </div>
+        
+        <div *ngFor="let trend of trends" (click)="onTrendClick(trend)">
+            <span>{{ trend }}</span>
+        </div>
+        
+        <div *ngIf="trends.length === 0 && !isLoading" class="no-results">
+            <p>Nic nowego się nie dzieje.</p>
+            <p>Obecnie brak trendów.</p>
+        </div>
+    </div>
+</div>

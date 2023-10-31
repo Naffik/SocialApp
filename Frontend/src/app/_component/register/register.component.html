@@ -1,31 +1,134 @@
 <div class="right-side-content">
   <div class="form">
-    <form class="login-form" #loginForm="ngForm" (ngSubmit)="register()">
-      <p>Zaloguj się, aby używac platformy</p>
-      <div class="login-form-content">
-        <div class="form-item">
-          <label for="email">Podaj Email</label>
-          <input #email type="text" id="email" [(ngModel)]="model.email" name="email" required>
-        </div>
-        <div class="form-item">
-          <div class="input-container">
-            <label for="password">Podaj Hasło</label>
-            <input #password type="password" id="password" [attr.type]="showPassword ? 'text' : 'password'" [(ngModel)]="model.password" name="password" required>
-            <button *ngIf="model.password && model.password.length > 0" class="toggle-password btn-circle" type="button" (click)="showPassword = !showPassword">
-              <i class="fa fa-eye"></i>
-          </button>
-        </div>
-      </div>
-        <div class="form-item">
-          <div class="checkbox">
-            <input type="checkbox" id="rememberMeCheckbox" checked>
-            <label #rememberMe for="rememberMeCheckobox" class="checkboxLabel">Zapamiętaj mnie</label>
+    <form class="login-form" [formGroup]="registerForm" (ngSubmit)="register()">
+      <p>Zarejestruj się, aby używac platformy</p>
+
+      <div class="login-form-content" formGroupName="accountDetails" *ngIf="currentPage === 1">
+          <div class="form-item">
+            <label for="email">Podaj Email</label>
+            <input type="text" id="email" formControlName="email">
+
+            <div *ngIf="registerForm.get('accountDetails.email')?.touched && !registerForm.get('accountDetails.email')?.value" class="error-message">
+              Pole email jest wymagane.
+            </div>
+            <div *ngIf="emailMessage">
+              <span [ngClass]="{
+                'success-message':emailMessage === 'Email jest dostępny',
+                'error-message':emailMessage === 'Email jest już zajęty'
+              }">
+                {{ emailMessage }}
+              </span>
+            </div>
+            <div *ngIf="registerForm.get('accountDetails.email')?.hasError('invalidEmail')">
+              <span class="error-message">Podany adres e-mail jest nieprawidłowy.</span>
+            </div>
+            <div *ngIf="registerForm.get('accountDetails.email')?.hasError('emailCheckFailed')">
+              <span class="error-message">Nie można sprawdzić adresu e-mail. Spróbuj ponownie później.</span>
+            </div>
           </div>
-        </div>
-        <button class="formButton" type="button" [disabled]="!loginForm.valid" type="submit">
-          Zaloguj
+          <div class="form-item">
+            <div class="input-container">
+                <label for="password">Podaj Hasło</label>
+                <input #password type="password" (input)="onPasswordChange()" id="password" [attr.type]="showPassword ? 'text' : 'password'" formControlName="password">
+                <button *ngIf="password.value && password.value.length > 0" class="toggle-password btn-circle" type="button" (click)="showPassword = !showPassword">
+                    <i class="fa fa-eye"></i>
+                </button>
+            </div>
+
+            <div *ngIf="registerForm.get('accountDetails.password')?.touched && !registerForm.get('accountDetails.password')?.value" class="error-message">
+              Pole hasło jest wymagane.
+            </div>
+            <div *ngIf="registerForm.get('accountDetails.password')?.hasError('passwordErrors')">
+                <span class="centered-text">{{ registerForm.get('accountDetails.password')?.getError('passwordErrors') }}</span>
+            </div>
+            <div *ngIf="passwordIsValid" class="success-message">
+                <span class="centered-text">Hasło spełnia warunki walidacji.</span>
+            </div>
+          </div>
+          <div class="form-item">
+            <div class="input-container">
+                <label for="password2">Powtórz Hasło</label>
+                <input #password2 type="password" id="password2" [attr.type]="showPassword2 ? 'text' : 'password'" formControlName="password2">
+                <button *ngIf="password2.value && password2.value.length > 0" class="toggle-password btn-circle" type="button" (click)="showPassword2 = !showPassword2">
+                    <i class="fa fa-eye"></i>
+                </button>
+            </div>
+
+            <div *ngIf="registerForm.get('accountDetails.password2')?.touched && !registerForm.get('accountDetails.password2')?.value" class="error-message">
+              Pole powtórz hasło jest wymagane.
+            </div>
+            <div *ngIf="registerForm.get('accountDetails.password2')!.dirty && registerForm.get('accountDetails.password2')!.value">
+              <div *ngIf="registerForm.get('accountDetails')!.hasError('mismatch')">
+                  <span class="error-message">Podane hasła nie są identyczne ! </span>
+              </div>
+              <div *ngIf="!registerForm.get('accountDetails')!.hasError('mismatch')">
+                  <span class="success-message">Hasła są poprawne.</span>
+              </div>
+            </div>
+          </div>
+        <button 
+          class="formButton" 
+          type="button"
+          [disabled]="registerForm.get('accountDetails')!.invalid || isNextButtonDisabled"
+          *ngIf="currentPage === 1" 
+          (click)="goToPage(2)"> 
+            Dalej 
         </button>
-        <button class="formButton" type="remind">Nie pamiętasz hasła?</button>
+      </div> 
+
+      <div class="login-form-content" formGroupName="personalDetails" *ngIf="currentPage === 2">
+          <div class="form-item">
+            <label for="username">Podaj Username</label>
+            <input type="text" id="username" formControlName="username">
+
+            <div *ngIf="registerForm.get('personalDetails.username')?.touched && !registerForm.get('personalDetails.username')?.value" class="error-message">
+              Pole username jest wymagane.
+            </div>
+            <div *ngIf="usernameMessage">
+              <span [ngClass]="{
+                'success-message':usernameMessage === 'Nazwa użytkownika jest dostępna',
+                'error-message':usernameMessage === 'Nazwa użytkownika jest już zajęta'
+              }">
+                {{ usernameMessage }}
+              </span>
+            </div>
+            <div *ngIf="registerForm.get('personalDetails.username')?.hasError('invalidUsername')">
+              <span class="error-message">Podana nazwa użytkownika nie jest prawidłowa. Użyj od 5 do 15 znaków bez znaków specjalnych.</span>
+            </div>
+            <div *ngIf="registerForm.get('personalDetails.username')?.hasError('usernameCheckFailed')">
+              <span class="error-message">Nie można sprawdzić adresu nazwy użytkownika. Spróbuj ponownie później.</span>
+            </div>
+          </div>
+          <div class="form-item">
+            <label for="first_name">Podaj Imię</label>
+            <input type="text" id="first_name" formControlName="first_name" required>
+
+            <div *ngIf="registerForm.get('personalDetails.first_name')?.touched && !registerForm.get('personalDetails.first_name')?.value" class="error-message">
+              Pole imię jest wymagane.
+            </div>
+          </div>
+          <div class="form-item">
+            <label for="last_name">Podaj Nazwisko</label>
+            <input type="text" id="last_name" formControlName="last_name" required>
+
+            <div *ngIf="registerForm.get('personalDetails.last_name')?.touched && !registerForm.get('personalDetails.last_name')?.value" class="error-message">
+              Pole nazwisko jest wymagane.
+            </div>         
+          </div>
+          <div class="form-item">
+            <label for="date_of_birth">Podaj Date urodzin</label>
+            <input type="date" id="date_of_birth" formControlName="date_of_birth" required>
+            <div *ngIf="registerForm.get('personalDetails.date_of_birth')?.touched && !registerForm.get('personalDetails.date_of_birth')?.value" class="error-message">
+              Pole data urodzenia jest wymagane.
+            </div>
+
+          </div>
+          <button 
+            class="formButton" 
+            [disabled]="isPersonalDetailsIncomplete()"
+            type="submit"> 
+              Zarejestruj
+          </button>
       </div>
     </form>
   </div>

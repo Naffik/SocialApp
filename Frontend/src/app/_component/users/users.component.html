@@ -1,0 +1,97 @@
+<div *ngIf="isLoading" class="loading">
+  <div class="spinner"></div>
+  <p class="loading-text">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+</div>
+
+<div *ngIf="!isLoading">
+  <div class="error-message" *ngIf="serverError || tokenError">
+    <p>Brak dostępu do serwera. Spróbuj ponownie później.</p>
+    <button (click)="refreshPage()">Odśwież</button>
+  </div>
+  <div class="account-info"  *ngIf="!serverError && !tokenError">
+    <div class="header">
+      <button (click)="goBack()">
+          <i class="fa fa-arrow-left"></i>
+      </button>
+      <h2>{{profileData?.username}}</h2>
+    </div>
+    <div class="avatar-and-details">
+      <span *ngIf="userExists" class="avatar" (click)="openAvatarModal()">
+        <img [src]="baseUrl + profileData?.avatar_url" alt="Avatar użytkownika" />
+      </span>
+      <span *ngIf="!userExists" class="avatar-placeholder"></span>
+      <div class="actions-container">
+        <div class="menu-icon-container">
+          <button >
+            <i class="fa fa-ellipsis-v"></i>
+          </button>
+          <div class="context-menu" *ngIf="showContextMenu">
+            <button>
+              'Usuń z ulubionych' : 'Dodaj do ulubionych'
+            </button>
+            <button>
+              'Cofnij udostępnienie' : 'Udostępnij post'
+            </button>
+          </div>
+        </div>
+        <button *ngIf="userExists && loggedInUsername === username && !userBlocked && !userHasBlockedYou"
+          class="edit-profile-btn" (click)="openEditModal()">Edytuj profil</button>
+           <button  *ngIf="userExists && !userBlocked && !userHasBlockedYou && loggedInUsername !== username"
+           [ngClass]="{
+               'following-btn': profileData?.follow, 
+               'not-following-btn': !profileData?.follow
+           }"
+           (click)="toggleFollow(profileData)">
+               {{ profileData?.follow ? 'Obserwujesz' : 'Zaobserwuj' }}
+            </button>
+       <button *ngIf="userExists && !userBlocked && !userHasBlockedYou && loggedInUsername !== username" 
+           [ngClass]="{
+               'friend-btn': profileData?.is_friend, 
+               'not-friend-btn': !profileData?.is_friend && !profileData?.request_friendship_sent,
+               'request-sent-btn': profileData?.request_friendship_sent
+             }" 
+           (click)="profileData?.is_friend? removeFriend(profileData) : toggleFriendship(profileData)">
+               {{ profileData?.is_friend ? 'Usuń znajomego' : (profileData?.request_friendship_sent ? 'Zaproszenie wysłane' : 'Dodaj do znajomych') }}
+       </button>
+       <button *ngIf="userBlocked" (click)="unBlockUser()" class="unblock-button">Odblokuj</button>
+      </div>
+      
+    </div>
+    <div class="name-and-username">
+      <div class="name" *ngIf="userExists && profileData?.is_friend || loggedInUsername===username">
+        {{ profileData?.first_name }} {{ profileData?.last_name }}
+      </div>
+      <div class="display-name">{{ userHasBlockedYou || !userExists ? username : profileData?.display_name }}</div>
+      <div class="username">@{{ userHasBlockedYou || !userExists ? username : profileData?.username }}</div>
+    </div>
+    <div class="profile-description" *ngIf="userExists && !userBlocked && !userHasBlockedYou">{{ profileData?.bio }}</div>
+  
+    <div class="user-details">
+      <div class="messages-info" *ngIf="!userExists || userBlocked || userHasBlockedYou">
+        <span class="message">
+          <strong *ngIf="!userExists">Podane konto @{{ username }} nie istnieje</strong>
+          <strong *ngIf="userBlocked">Podane konto jest zablokowane</strong>
+          <strong *ngIf="userHasBlockedYou">Zostałeś zablokowany przez użytkownika @{{ username }}</strong>
+        </span>
+        <span class="message-suggestion">
+          <ng-container *ngIf="!userExists">Wyszukaj coś innego.</ng-container>
+          <ng-container *ngIf="userBlocked">Odblokuj, aby przeglądać lub wyszukaj coś innego.</ng-container>
+          <ng-container *ngIf="userHasBlockedYou">Nie możesz obserwować użytkownika @{{ username }} ani przeglądać wpisów użytkownika @{{ username }}.</ng-container>
+        </span>
+      </div>
+    </div>
+    <app-media-modal></app-media-modal>
+
+    <div class="stats" *ngIf="userExists && !userBlocked && !userHasBlockedYou">
+      <span class="friends">
+        <a [routerLink]="['/', profileData?.username, 'friends']" > Znajomi: <strong>{{ profileData?.friends_count }}</strong></a>
+      </span>
+      <span class="followers">
+        <a [routerLink]="['/', profileData?.username, 'following']"> Obserwacje: <strong>{{ profileData?.follows_count }}</strong></a>
+      </span>
+      <span class="following">
+        <a [routerLink]="['/', profileData?.username, 'followers']"> Obserwujący: <strong>{{ profileData?.followers_count }}</strong></a>
+      </span>
+    </div>
+  </div>
+</div>

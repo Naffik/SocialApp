@@ -1,0 +1,241 @@
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  background-color: white;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+  border: 1px solid black;
+}
+
+.options {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;  
+}
+
+.options i {
+  font-size: 1.5em;  
+  cursor: pointer;   
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.username {
+  font-size: 1.2em;
+  color: #333;
+  font-weight: bold;
+}
+
+.nick {
+  font-size: 0.9em;
+  color: #777;
+}
+
+.options {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;  
+}
+
+.options i {
+  font-size: 1.5em;  
+  cursor: pointer;   
+}
+
+.chat-wrapper {
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  height: calc(100vh - 151px);
+  overflow: hidden;
+}
+
+.chat-content {
+  flex-grow: 1;
+  overflow-y: scroll;
+  padding: 10px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-footer {
+  position: relative; 
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+}
+
+.messages-container {
+  overflow-y: auto;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 10px;
+}
+
+.message {
+  box-sizing: border-box;
+  display: flex; 
+  padding: 5px 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  background-color: #d9d9d9;
+  margin-bottom: 5px;
+  word-break: break-all;
+  width: fit-content; 
+}
+
+.you {
+  background-color: #a10ddb;
+  color: white;
+  margin-left: auto; 
+}
+
+
+.input-container {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #ccc;
+  padding: 10px;
+  background-color: white;
+}
+
+textarea {
+  width: 100%;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+textarea:focus {
+  border-color: purple;
+  outline: none;
+}
+
+button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.img-button:hover, .send-button:hover {
+  color: purple;
+}
+
+.textarea-wrapper {
+  flex-grow: 1;
+}
+
+.img-button, .send-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.button-position {
+  margin-right: 10px;
+}
+
+
+.left-sidenav {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px; 
+  overflow-y: auto;
+  z-index: 999;
+}
+
+.content{
+  width:600px;
+}
+
+.nav{ 
+  margin-bottom: 25px;
+}
+
+.header {
+  position: sticky;
+  top: 60px;
+  background-color: #f7f7f7;  
+  z-index: 100;  
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.header h2 {
+  text-align: left;
+  margin: 0; 
+}
+
+.header button {
+  color:black;
+  background-color: transparent; 
+  border: none;
+  padding: 15px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: none; 
+  border-radius: 50%;
+}
+
+.header button:hover {
+  background-color: #a10ddb;
+}
+
+.header button i.fa-arrow-left {
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+}
+
+.nav-icon {
+  margin-right: 10px; 
+}
+
+.nav-label {
+  padding: 15px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 1228px) {
+  .left-sidenav {
+    display: block;
+  }
+}

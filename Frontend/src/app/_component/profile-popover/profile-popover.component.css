@@ -1,0 +1,69 @@
+.custom-popover span {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .post:hover .custom-popover {
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+  
+  .headerPopover {
+    min-width: 250px;
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+    justify-content: space-between;
+  }
+
+  .headerPopover .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%; 
+  }
+
+  .headerPopover > .inactive {
+    width: auto;
+    background: #E5A6FF;
+    border-radius: 50px;
+    border: 1px #840AB6 solid;
+    color: #840AB6;
+    cursor: pointer;
+    height: 33%;
+  }
+
+  
+.headerPopover > .active {
+    width: auto;
+    background: #FFD1D1;
+    border-radius: 50px;
+    border: 1px #C10D0D solid;
+    color: #C10D0D;
+    cursor: pointer;
+    height: 33%;
+  }
+  
+  .headerPopover   > .inactive:hover {
+    background-color: #840AB6;
+    border-color: #E5A6FF;
+    color:#E5A6FF;
+  }
+  
+  .headerPopover   > .active:hover {
+    background-color: #C10D0D;
+    color:#FFD1D1;
+    border-color: #FFD1D1;
+  }
+  
+  .custom-popover .popover-nick {
+    color:#7e7e7e;
+  }
+
+  a{
+    color:inherit;
+    text-decoration-line: none;
+  }
+  
+.popover-username:hover, .stats:hover {
+  text-decoration: underline;
+}

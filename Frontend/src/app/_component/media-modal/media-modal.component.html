@@ -1,0 +1,18 @@
+<div class="fullscreen-modal" *ngIf="imageUrl" (click)="closeMediaModal()">
+    <div class="spinner" *ngIf="isLoading"></div>
+    <img [src]="baseUrl + imageUrl" 
+        alt="Zdjęcie" 
+        (load)="onImageLoad()" 
+        (error)="onImageError()" 
+        *ngIf="imageUrl && !imageLoadError">
+
+    <div *ngIf="imageLoadError && !isLoading" class="error-section">
+        <p>Błąd podczas ładowania obrazka.</p>
+        <button (click)="retryImageLoad($event)">Spróbuj ponownie</button>
+    </div>
+        
+
+    <button class="close-btn" (click)="closeMediaModal()">
+        <i class="fa fa-times"></i>
+    </button>
+</div>

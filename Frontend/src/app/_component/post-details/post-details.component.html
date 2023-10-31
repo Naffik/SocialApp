@@ -1,0 +1,258 @@
+<div *ngIf="isDataLoading">
+  <div class="spinner"></div>
+  <p class="loading-text">
+    Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+  </p>
+</div>
+
+<div class="header">
+  <button (click)="goBack()">
+      <i class="fa fa-arrow-left"></i>
+  </button>
+  <h2>Wpis</h2>
+</div>
+
+<div class="post" *ngIf="!isDataLoading">
+  <div class="post-header">      
+    <a [routerLink]="['/', post.post_author]">
+      <img [src]="baseUrl + post.post_author_avatar" 
+      (mouseenter)="showPopover(post.id, post.post_author)" 
+      (mouseleave)="hidePopover()"          
+      alt="Avatar użytkownika" 
+        class="avatar">
+    </a>
+      
+    <a [routerLink]="['/', post.post_author]">
+      <span class="username"
+        (mouseenter)="showPopover(post.id, post.post_author)"
+        (mouseleave)="hidePopover()">
+          <strong>{{post.display_name}}</strong>
+      </span>
+    </a>
+
+    <a [routerLink]="['/', post.post_author]">
+      <span class="nick"
+        (mouseenter)="showPopover(post.id, post.post_author)" 
+        (mouseleave)="hidePopover()">
+          @{{post.post_author}}
+      </span>
+    </a>
+
+    <span class="date">
+      {{ post?.created | dateFormat }}
+      <span class="tooltip">
+        {{ post?.created | dateFormat }}
+      </span>
+    </span>
+
+     <div class="menu-icon-container" (click)="stopPropagation($event)">
+      <button (click)="toggleContextMenu(post.id)">
+        <i class="fa fa-ellipsis-v"></i>
+      </button>
+      <div class="context-menu" *ngIf="isContextMenuShow(post.id)">
+        <div *ngIf="loggedInUsername!==post.post_author">
+          <button (click)="blockUser(post.post_author, post.id); toggleContextMenu(post.id)">Zablokuj @{{post?.post_author}}</button>
+        </div>
+        <div *ngIf="loggedInUsername===post.post_author">
+          <button class="delete" (click)="deleteRecord('post', post.id); toggleContextMenu(post.id)">
+            Usuń wpis
+        </button>
+        </div>
+        <button (click)="toggleAction(post,'favorite'); toggleContextMenu(post.id)">
+            {{ post.is_favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych' }}
+        </button>
+        <button (click)="sharePost(post.id); toggleContextMenu(post.id)">
+            Udostępnij post
+        </button>
+      </div>
+    </div>
+
+    <div class="custom-popover" 
+        *ngIf="activePopover===post.id && (!isUserDataLoading || userDataLoadError)" 
+        (mouseenter)="enterPopover()" 
+        (mouseleave)="leavePopover()">
+        <app-profile-popover 
+            [user]="userInfoToShow$ | async"
+            (loggedInUsername) = "loggedInUsername"
+            (follow)="addFollow($event)" 
+            (removeFollow)="removeFollow($event)"
+            (addFriend)="addFriend($event)"
+            (removeFriend)="removeFriend($event)">
+        </app-profile-popover>
+      </div>
+  </div>
+  <div class="post-content">
+    <div class="preserve-whitespace" [innerHTML]="post?.content | linkify : post?.id">
+    </div>
+    <div *ngIf="post?.image" class="post-image">
+      <img 
+        [src]="baseUrl + post?.image" 
+        alt="Image for {{ post?.title }}" 
+        style="cursor: pointer" 
+        (click)="stopPropagation($event); openMediaModal(post.image);"/>
+    </div>
+    <div class="tags">
+      <p>Tags:</p>
+      <div class="tag-container">
+        <span *ngFor="let tag of post?.tags" (click)="onTagClick(tag)">{{ tag }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="post-actions">
+    <button class="like-btn" [class.liked]="post.is_liked" (click)="toggleAction(post,'like'); stopPropagation($event)">
+      <i class="fa fa-thumbs-up"> </i>
+      <span class="count" [class.liked]="post.is_liked"> 
+        {{post.number_of_likes}}
+      </span>
+    </button>
+
+    <button class="comment-btn">
+      <i class="fa fa-comment"></i>
+      <span class="count">{{post.number_of_comments}} </span>
+    </button>
+
+    <button class="share-btn" (click)="sharePost(post.id); stopPropagation($event)">
+      <i class="fa fa-share"></i> 
+    </button>
+  </div>
+  <app-media-modal></app-media-modal>
+
+  <hr />
+  <div *ngIf="isPostError" class="error-message">
+    Wystąpił błąd. Spróbuj ponownie później.
+  </div>
+  <div class="textarea-container">
+    <div class="textarea-header">
+      <img class="comment-avatar" [src]="baseUrl + currentUserData.avatar" alt="account picture" />
+      <div class = "textarea-content">
+      <textarea [(ngModel)]="postText" (input)="adjustTextareaHeight($event); updateCharacterCount()"
+        (focus)="expandTextarea()" maxlength="300" placeholder="Napisz coś...">
+      </textarea>
+        <div *ngIf="postImagePreview" class="image-preview-container">
+          <img [src]="postImagePreview" alt="Podgląd obrazka" class="post-image-preview"/>
+          <button (click)="removeImage()" class="remove-image-btn">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button class="publish-btn" [disabled]="isButtonDisabled" (click)="onPublish()">
+      Opublikuj
+    </button>
+    <div class="character-count" *ngIf="textareaExpanded">
+      {{ characterCount }}/{{ maxCharacterCount }}
+      <label class="image-upload-label">
+        <i class="fa fa-upload"></i>
+        <input type="file" (change)="onImageSelected($event)" style="display:none;">
+      </label>
+    </div>
+  </div>
+  <div *ngIf="isPostSending" class="loading-bar"></div>
+
+  <hr />
+  <div infiniteScroll [infiniteScrollDistance]="10" [infiniteScrollThrottle]="50" (scrolled)="loadMoreComments()">
+    <div *ngFor="let comment of comments" class="comment" @fadeIn>
+      <div class="post-header">
+        <a [routerLink]="['/', comment.comment_author]">
+          <img [src]="baseUrl + comment?.comment_author_avatar"
+               (mouseenter)="showPopover(comment.id, comment.comment_author)" 
+               (mouseleave)="hidePopover()"
+               alt="Avatar użytkownika piszącego post" 
+               class="avatar">
+        </a>
+    
+        <a [routerLink]="['/', comment.comment_author]">
+          <span class="username"
+                (mouseenter)="showPopover(comment.id, comment.comment_author)"
+                (mouseleave)="hidePopover()">
+            <strong>{{ comment?.display_name }}</strong>
+          </span>
+        </a>
+    
+        <a [routerLink]="['/', comment.comment_author]">
+          <span class="nick"
+                (mouseenter)="showPopover(comment.id, comment.comment_author)" 
+                (mouseleave)="hidePopover()">
+            @{{ comment?.comment_author }}
+          </span>
+
+        </a>
+        <span class="date">
+          {{ comment?.created | timeSince }}
+          <span class="tooltip">
+            {{ comment?.created | dateFormat }}
+          </span>
+        </span>
+        <div class="menu-icon-container" (click)="stopPropagation($event)">
+          <button (click)="toggleContextMenu(comment.id)">
+            <i class="fa fa-ellipsis-v"></i>
+          </button>
+          <div class="context-menu" *ngIf="isContextMenuShow(comment.id)">
+            <div *ngIf="loggedInUsername!==comment.comment_author">
+              <button (click)="blockUser(comment.post_author, comment.id); toggleContextMenu(comment.id)">Zablokuj @{{comment?.comment_author}}</button>
+            </div>
+            <div *ngIf="loggedInUsername===comment.comment_author">
+              <button class="delete" (click)="deleteRecord('comment', comment.id); toggleContextMenu(comment.id)">
+                Usuń wpis
+            </button>
+            </div>
+            <button (click)="toggleAction(comment,'favorite'); toggleContextMenu(comment.id)">
+                {{ comment.is_favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych' }}
+            </button>
+            <button (click)="sharePost(comment.id); toggleContextMenu(comment.id)">
+                Udostępnij post
+            </button>
+          </div>
+        </div>
+
+        <div class="custom-popover" 
+          *ngIf="activePopover===comment.id && (!isUserDataLoading || userDataLoadError)" 
+          (mouseenter)="enterPopover()" 
+          (mouseleave)="leavePopover()">
+            <app-profile-popover 
+                [user]="userInfoToShow$ | async"
+                (follow)="addFollow($event)" 
+                (loggedInUsername) = "loggedInUsername"
+                (removeFollow)="removeFollow($event)"
+                (addFriend)="addFriend($event)"
+                (removeFriend)="removeFriend($event)">
+            </app-profile-popover>
+      </div>
+
+      </div>
+      <div class="post-content">
+        <div class="preserve-whitespace" [innerHTML]="comment?.content | linkify : post?.id">
+        </div>
+        <div *ngIf="comment?.image" class="post-image">
+          <img [src]="baseUrl + post?.image" alt="Image for {{ comment?.post }}" style="cursor: pointer" />
+        </div>
+        <div class="tags">
+          <p>Tags:</p>
+          <div class="tag-container">
+            <span *ngFor="let tag of post?.tags">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="post-actions">
+        <button class="like-btn" [class.liked]="post.is_liked" (click)="toggleAction(post,'like'); stopPropagation($event)">
+          <i class="fa fa-thumbs-up"> </i>
+          <span class="count" [class.liked]="post.is_liked"> 
+            {{post.number_of_likes}}
+          </span>
+        </button>
+
+        <button class="share-btn" (click)="sharePost(post.id); stopPropagation($event)">
+          <i class="fa fa-share"></i> 
+        </button>
+      </div>
+      <hr />
+    </div>
+    <div *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p class="loading-text">
+        Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+      </p>
+    </div>
+  </div>
+  </div>

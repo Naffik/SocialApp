@@ -1,0 +1,52 @@
+<div *ngIf="!isLoading && !serverError" class="account-info">
+  <div class="header">
+    <button (click)="goBack()">
+      <i class="fa fa-arrow-left"></i>
+    </button>
+    <h2>Zablokowane konta</h2>
+  </div>
+  <div class="info-section">
+    <div *ngIf="hasBlockedAccounts">
+      <div *ngFor="let user of users">
+        <a [routerLink]="['/', user.username]" class="user-link">
+          <div class="usersList">
+            <div class="left-section">
+              <span class="avatar">
+                <img
+                  [src]="baseUrl + user.avatar_url"
+                  alt="Avatar użytkownika"
+                />
+              </span>
+              <div class="user-info">
+                <span class="displayname">{{ user.display_name }}</span>
+                <span class="username">@{{ user.username }}</span>
+              </div>
+            </div>
+            <div class="right-section">
+              <button
+                (click)="toggleBlock(user, $event); $event.stopPropagation(); false"
+                [ngClass]="{
+                  block: user.is_blocked,
+                  unblock: !user.is_blocked
+                }"
+              >
+                {{ user.is_blocked ? "Odblokuj" : "Zablokuj" }}
+              </button>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="info-item no-hover" *ngIf="!hasBlockedAccounts">
+      <p>
+        <i class="fa fa-exclamation-circle"></i> Brak zablokowanych
+        użytkowników.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="serverError" class="error-section">
+  <p>Coś poszło nie tak, spróbuj ponownie.</p>
+  <button (click)="refreshPage()">Odśwież stronę</button>
+</div>
