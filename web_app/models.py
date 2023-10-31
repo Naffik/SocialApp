@@ -35,6 +35,7 @@ class Like(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     comment_author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment_author")
+    image = models.ImageField(upload_to='images/comments/', null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     content = models.TextField(max_length=2048)
@@ -44,4 +45,4 @@ class Comment(models.Model):
         return str(self.comment_author)
 
     class Meta:
-        ordering = ['created']
+        ordering = ['-created']
