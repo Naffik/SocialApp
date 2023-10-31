@@ -33,13 +33,13 @@
         </div>      
 
         <div class="nav-right">
-            <div class="search-box" *ngIf="window.innerWidth > 1396">
+            <div class="search-box" *ngIf="isLargeScreen">
                 <img src="/assets/search.png">
                 <input type="text" placeholder="Wyszukaj" [(ngModel)]="searchQuery" (keyup.enter)="redirectToSearch()">
             </div>
-             <button class="search-button" *ngIf="window.innerWidth <= 1396" (click)="redirectToSearch()">
-            <img src="/assets/search-solid.png">
-    </button>
+            <button class="search-button" *ngIf="!isLargeScreen" [routerLink]="['/search']">
+                <img src="/assets/search-solid.png">
+            </button>
             <div class="nav-user-icon" (click)="toggleDropdown($event)">
                 <div class="user-info" *ngIf="currentUserData$">
                     <img [src]="baseUrl + currentUserData?.avatar" alt="account picture" class="avatarButton">

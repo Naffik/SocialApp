@@ -21,8 +21,7 @@ export class HomeComponent {
   private subscriptions: Subscription[] = [];
   public currentUserData$: Observable<any>;
   public currentUserData: any;
-  
-
+  public isLargeScreen: boolean = window.innerWidth > 1396;
 
 
   constructor(
@@ -91,13 +90,13 @@ export class HomeComponent {
     this.showSideMenu = !this.showSideMenu;
   }
 
+
   redirectToSearch(): void {
     if (this.searchQuery.trim()) {
       this.router.navigate(['/search'], { queryParams: { query: this.searchQuery } });
       this.searchQuery = ''; 
-    }
-  }
-
+    } 
+}
 
   openCreatePostModal() {
     this.modalRef = this.modalService.open(CreatePostModalComponent, {
@@ -126,4 +125,10 @@ export class HomeComponent {
     clickOutside(event: Event) {
       this.dropdownService.closeDropdown();
     }
+
+    @HostListener('window:resize', ['$event'])
+      onResize(event: any) {
+        this.isLargeScreen = event.target.innerWidth > 1396;
+    }
+
 }

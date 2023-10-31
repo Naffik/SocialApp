@@ -215,6 +215,7 @@ nav{
   padding: 10px;
   border-radius: 50%;
   transition: background-color 0.3s;
+  z-index: 2000; 
 }
 
 .search-button:hover {
