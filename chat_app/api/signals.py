@@ -3,7 +3,10 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
+from friendship.models import Friend
+
 from chat_app.models import ChatRoom, ChatMessage
+from user_app.models import Action
 
 
 @receiver(post_save, sender=ChatMessage)
@@ -65,3 +68,41 @@ def auto_delete_image_on_change(sender, instance, **kwargs):
     if not old_image == new_image:
         if os.path.isfile(old_image.path):
             os.remove(old_image.path)
+
+
+@receiver(post_save, sender=Action)
+def channel_notification_signal(sender, instance,  created, **kwargs):
+    """
+    Send notification when action was taken.
+    """
+    users = [instance.user.username, instance.target.username]
+    notification_content = 'You have been notified'
+    try:
+        channel_layer = get_channel_layer()
+        for username in users:
+            async_to_sync(channel_layer.group_send)(
+                f'notification_{username}',
+                {
+                    'type': 'send_notification',
+                    'notification_content': notification_content
+                }
+        )
+    except Exception as e:
+        raise Exception(f"Something went wrong in channel_list signal {e}")
+
+
+@receiver(post_save, sender=Friend)
+def create_chat_room_signal(sender, instance,  created, **kwargs):
+    """
+    Create chat room when user accept request.
+    """
+    if created:
+        user_1 = instance.to_user
+        user_2 = instance.from_user
+        sorted_usernames = sorted([user_1.username, user_2.username])
+        chat_name = "_and_".join(sorted_usernames)
+        chat_room, created = ChatRoom.objects.get_or_create(name=chat_name)
+
+        if created:
+            chat_room.member.add(user_1)
+            chat_room.member.add(user_2)

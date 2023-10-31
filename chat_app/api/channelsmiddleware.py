@@ -18,7 +18,6 @@ def get_user(validated_token):
     try:
         user = get_user_model().objects.get(id=validated_token["user_id"])
         # return get_user_model().objects.get(id=toke_id)
-        print(f"{user}")
         return user
 
     except User.DoesNotExist:
@@ -31,10 +30,11 @@ class JwtAuthMiddleware(BaseMiddleware):
 
     async def __call__(self, scope, receive, send):
         close_old_connections()
-
-        headers = dict(scope['headers'])
-        if b'authorization' in headers:
-            token_name, token_key = headers[b'authorization'].decode().split()
+        # headers = dict(scope['headers'])
+        params = dict(parse_qs(scope["query_string"]))
+        if b'authorization' in params:
+            # token_name, token_key = headers[b'authorization'].decode().split()
+            token_key = params[b'authorization'][0].decode()
             try:
                 UntypedToken(token_key)
             except (InvalidToken, TokenError) as e:
