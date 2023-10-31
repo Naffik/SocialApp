@@ -1,7 +1,7 @@
 .usersList {
-    display: flex; /* Używamy flexboxa do układania elementów w poziomie */
-    align-items: center; /* Wyśrodkowanie elementów w pionie */
-    padding: 15px; /* Odstęp wewnątrz każdego elementu listy */
+    display: flex;  
+    align-items: center;
+    padding: 15px; 
     cursor: pointer;
 }
 
@@ -11,16 +11,16 @@
 }
 
 .usersList-header {
-    display: flex; /* Używamy flexboxa do układania elementów w poziomie */
-    width: 100%; /* Pełna szerokość */
-    justify-content: space-between; /* Rozłożenie elementów na całej dostępnej przestrzeni */
+    display: flex;
+    width: 100%; 
+    justify-content: space-between; 
 }
 
 .avatar img {
-    width: 50px; /* Szerokość avatara */
-    height: 50px; /* Wysokość avatara */
-    border-radius: 50%; /* Okrągły kształt avatara */
-    object-fit: cover; /* Dopasowanie obrazu do kontenera */
+    width: 50px; 
+    height: 50px;
+    border-radius: 50%; 
+    object-fit: cover; 
 }
 
 .avatar img:hover{
@@ -28,8 +28,8 @@
 }
 
 .nick {
-    font-size: 14px; /* Rozmiar czcionki dla nicku */
-    color: #777; /* Jasniejszy kolor tekstu dla nicku */
+    font-size: 14px; 
+    color: #777; 
 }
 
 .account-info {
@@ -40,20 +40,20 @@
 
 .flex-container {
     display: flex;
-    justify-content: space-between; /* Rozmieść elementy na krańcach kontenera */
-    align-items: center; /* Wyrównaj elementy w pionie */
+    justify-content: space-between;
+    align-items: center; 
 }
 
 .avatar-and-button {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Wycentrowanie elementów w pionie */
+    align-items: center; 
     width: 100%;
     margin-bottom: 20px;
 }
 
 .avatar-and-button .avatar img {
-    width: 120px; /* Możesz dostosować rozmiar avatara według własnych potrzeb */
+    width: 120px; 
     height: 120px;
     border-radius: 50%;
 }
@@ -84,7 +84,7 @@
 
 
 .default-avatar {
-    width: 50px; /* Dostosuj do swoich potrzeb */
+    width: 50px; 
     height: 50px;
     background-color: black;
     border-radius: 50%;
@@ -152,8 +152,8 @@
 .header {
     position: sticky;
     top: 60px;
-    background-color: #f7f7f7;  /* Przykładowe tło, dostosuj według własnych potrzeb */
-    z-index: 100;  /* Upewnij się, że nagłówek jest zawsze na wierzchu */
+    background-color: #f7f7f7;  
+    z-index: 100;  
     display: flex;
     align-items: center;
     gap: 10px;
@@ -202,14 +202,13 @@
 
 .avatar-and-details {
     display: flex;
-    align-items: center; /* Wycentrowanie elementów w pionie */
-    justify-content: space-between; /* Rozłożenie elementów na całej dostępnej przestrzeni */
+    align-items: center; 
+    justify-content: space-between; 
     margin-bottom: 20px;
 }
 
 .avatar {
     display: flex;
-    /* text-align: center; */
     align-content: center;
     align-items: center;
     justify-content: center;
@@ -218,12 +217,12 @@
 
 .actions-container {
     display: flex;
-    gap: 10px; /* Odstęp między przyciskami */
+    gap: 10px; 
 }
 
 .avatar-and-name {
     display: flex;
-    align-items: center; /* Wycentrowanie elementów w pionie */
+    align-items: center;
 }
 
 .avatar-and-details .avatar img {
@@ -266,7 +265,7 @@
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
-    justify-content: center; /* Wyśrodkowanie poziome */
+    justify-content: center; 
 }
 
 .tab {
@@ -293,16 +292,15 @@
 }
   
 .spinner {
-    border: 8px solid rgba(255, 255, 255, 0.3); /* Jasny kolor tła dla obręczy spinnera */
-    border-radius: 50%; /* Nadanie kształtu koła */
-    border-top: 8px solid #a10ddb; /* Ciemny kolor dla górnego segmentu spinnera */
-    width: 50px; /* Szerokość spinnera */
-    height: 50px; /* Wysokość spinnera */
-    animation: spin 1s linear infinite; /* Animacja obracania się spinnera */
-    margin: 0 auto; /* Wyśrodkowanie spinnera w poziomie (jeżeli rodzic ma wyśrodkowanie tekstu lub flex) */
+    border: 8px solid rgba(255, 255, 255, 0.3); 
+    border-radius: 50%; 
+    border-top: 8px solid #a10ddb; 
+    width: 50px; 
+    height: 50px; 
+    animation: spin 1s linear infinite; 
+    margin: 0 auto; 
   }
   
-  /* Animacja obrotu */
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -390,36 +388,36 @@
 }
 
 .following-btn, .friend-btn, .not-friend-btn, .not-following-btn, .request-sent-btn{
-    padding: 5px 10px; /* Dostosuj do potrzeb */
+    padding: 5px 10px; 
     border: none;
-    border-radius: 5px; /* Zaokrąglone rogi przycisków */
+    border-radius: 5px; 
     cursor: pointer;
     width: 140px;
 }
 
 .following-btn {
-    background-color: #4CAF50; /* Kolor tła dla przycisku "Obserwujesz" */
-    color: white; /* Kolor tekstu dla przycisku "Obserwujesz" */
+    background-color: #4CAF50; 
+    color: white; 
 }
 
 .friend-btn {
-    background-color: #FFC107; /* Kolor tła dla przycisku "Znajomy" */
-    color: black; /* Kolor tekstu dla przycisku "Znajomy" */
+    background-color: #FFC107; 
+    color: black; 
 }
 
 .friend-btn:hover {
-    background-color: #eeff07; /* Kolor tła dla przycisku "Znajomy" */
-    color: black; /* Kolor tekstu dla przycisku "Znajomy" */
+    background-color: #eeff07;
+    color: black; 
 }
 
 .not-following-btn {
-    background-color: #e7164a; /* Kolor tła dla przycisku "Obserwujesz" */
-    color: white; /* Kolor tekstu dla przycisku "Obserwujesz" */
+    background-color: #e7164a; 
+    color: white; /
 }
 
 .not-friend-btn {
-    background-color: #1916cf; /* Kolor tła dla przycisku "Znajomy" */
-    color: black; /* Kolor tekstu dla przycisku "Znajomy" */
+    background-color: #1916cf; 
+    color: black; 
 }
 
 .request-sent-btn {
@@ -462,8 +460,8 @@
 
 
 .dropdown-footer {
-    border-top: 1px solid #e0e0e0;  /* Dodaje subtelny separator */
-    text-align: center;  /* Wyśrodkowuje obrazek/link wewnątrz */
+    border-top: 1px solid #e0e0e0;  
+    text-align: center;  
 }
 
 .dropdown-footer a:hover {
@@ -476,7 +474,7 @@
     width: 40px;
     height: 40px;
     margin-right: 10px;
-    background-color: #ccc; /* Kolor zastępczy dla avatara */
+    background-color: #ccc; 
 }
 
 @media screen and (max-width: 600px) {

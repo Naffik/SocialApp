@@ -11,7 +11,7 @@
 }
 
 .post-header {
-  position: relative; /* Upewnij się, że ten styl jest dodany */
+  position: relative; 
 
   display: flex;
   align-items: center;
@@ -75,7 +75,7 @@
   align-items: center;
 }
 
-/* Domyślne style dla przycisków */
+
 .like-btn, .comment-btn, .share-btn {
   background-color: inherit;
   border: none;
@@ -85,26 +85,25 @@
 }
 
 
-/* Domyślny kolor ikony */
+
 .like-btn i, .comment-btn i, .share-btn i {
   color: #504f4f;
   padding: 10px 10px;
   border-radius: 50%;
 }
 
-/* Domyślny kolor licznika */
+
 .like-btn .count, .comment-btn .count, .share-btn .count {
-  color: #504f4f; /* lub inny kolor, jeśli chcesz, żeby różnił się od koloru ikony */
+  color: #504f4f; 
 }
 
 .like-btn:hover i, .like-btn:hover .count, 
 .comment-btn:hover i, .comment-btn:hover .count,
 .share-btn:hover i {
-  color: #a10ddb; /* lub inny kolor, jaki chcesz */
+  color: #a10ddb; 
 }
 
 
-/* Zmiana tła ikony podczas najechania na przycisk */
 .comment-btn:hover i, .share-btn:hover i{
   background-color: rgba(170, 16, 221, 0.1);
 }
@@ -113,18 +112,15 @@
   background-color: rgba(249, 24, 128, 0.1);
 }
 
-/* Kontener, który utrzymuje przycisk i ikonę razem */
 .btn-container {
   display: inline-flex;
   align-items: center;
 }
 
-/* Usunięcie domyślnego focus dla przycisku */
 .like-btn:focus, .comment-btn:focus, .share-btn:focus {
   outline: none;
 }
 
-/* Kolor ikony "polubienia", gdy post jest polubiony */
 .like-btn.liked i, .like-btn .count.liked {
   color: rgba(161, 13, 219);
 }
@@ -132,14 +128,11 @@
 
 .post-content img{
   max-width:380px;
-  /* max-width:400px; */
+
   object-fit:cover;
   border-radius:25px;
 }
-/* .post-image{
-  display: flex;
-  justify-content: center;
-} */
+
 
 .preserve-whitespace {
   white-space: pre-line;
@@ -182,7 +175,7 @@
 }
 
 
-@media (hover: hover) and (max-height: 650px) {  /* 650px to przykładowa wartość */
+@media (hover: hover) and (max-height: 650px) {  
   .date:hover .tooltip {
       bottom: unset;
       top: 125%;
@@ -204,16 +197,16 @@
 }
 
 .spinner {
-  border: 8px solid rgba(255, 255, 255, 0.3); /* Jasny kolor tła dla obręczy spinnera */
-  border-radius: 50%; /* Nadanie kształtu koła */
-  border-top: 8px solid #a10ddb; /* Ciemny kolor dla górnego segmentu spinnera */
-  width: 50px; /* Szerokość spinnera */
-  height: 50px; /* Wysokość spinnera */
-  animation: spin 1s linear infinite; /* Animacja obracania się spinnera */
-  margin: 0 auto; /* Wyśrodkowanie spinnera w poziomie (jeżeli rodzic ma wyśrodkowanie tekstu lub flex) */
+  border: 8px solid rgba(255, 255, 255, 0.3); 
+  border-radius: 50%; 
+  border-top: 8px solid #a10ddb; 
+  width: 50px; 
+  height: 50px;
+  animation: spin 1s linear infinite; 
+  margin: 0 auto;
 }
 
-/* Animacja obrotu */
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -261,18 +254,17 @@
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  /* Ustawienia pozycji mogą wymagać dostosowania */
 }
 
 .tags {
   margin-top: 25px;
   display: flex;
-  flex-direction: column; /* Dla głównego kontenera */
+  flex-direction: column;
 }
 
 .tag-container {
   display: flex;
-  flex-direction: row; /* Dla kontenera ze znacznikami */
+  flex-direction: row;
   gap: 5px;
   flex-wrap: wrap;
 }
@@ -294,7 +286,7 @@
   background-color: #f7f7f7;
   top: 65px;
   z-index: 1000;
-  min-width: 200px; /* adjust as needed */
+  min-width: 200px; 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
   opacity: 0;
@@ -467,16 +459,16 @@
 }
 
 .image-upload-label i {
-  color: rgba(170, 16, 221, 0.7);  /* Ustawiłem kolor ikony, aby pasował do tła */
+  color: rgba(170, 16, 221, 0.7);  
   font-size: 20px;
 }
 
 .image-upload-label:hover {
-  background-color: rgba(170, 16, 221, 0.2);  /* Jasniejszy kolor podczas najechania */
+  background-color: rgba(170, 16, 221, 0.2);  
 }
 
 .image-upload-label:hover i {
-  color: rgba(170, 16, 221, 0.9);  /* Ciemniejszy kolor ikony podczas najechania */
+  color: rgba(170, 16, 221, 0.9);  
 }
 
 .btn-primary:hover {

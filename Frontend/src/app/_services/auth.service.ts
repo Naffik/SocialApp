@@ -107,6 +107,7 @@ export class AuthService{
 
   logout(){
     window.localStorage.clear();
+    this.router.navigate(['/home']);
     this.alertify.message("Wylogowano pomyslnie.");
   }
   

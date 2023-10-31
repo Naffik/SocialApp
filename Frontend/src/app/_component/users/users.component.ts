@@ -105,10 +105,10 @@ export class UsersComponent {
   private handle403Error(error: any) {
     if (error.error && error.error.message === "You have blocked this user") {
       this.userBlocked = true;
-      this.profileData = error.error;  // Aktualizujemy dane profilowe z błędem
+      this.profileData = error.error;  
     } else if (error.error && error.error.message === "You have been blocked by this user") {
       this.userHasBlockedYou = true;
-      this.profileData = error.error;  // Aktualizujemy dane profilowe z błędem
+      this.profileData = error.error;  
     }
   }
 
@@ -153,13 +153,11 @@ export class UsersComponent {
     if (user.is_friend) {
       console.log
       this.dataService.removeFriend(user.username).subscribe(response => {
-        // po pomyślnym usunięciu znajomego
         user.is_friend = false;
-        user.request_friendship_sent = false;  // resetuj, gdy użytkownik nie jest już znajomym
+        user.request_friendship_sent = false; 
       });
     } else if (!user.request_friendship_sent) {
       this.dataService.addFriend(user.username).subscribe(response => {
-        // po pomyślnym wysłaniu zaproszenia
         user.request_friendship_sent = true;
       });
     }
@@ -188,26 +186,10 @@ export class UsersComponent {
   goBack(): void {
     this.location.back();
   }
+  
   closeImageModal() {
-    // this.router.navigate(['post', postId]);
     this.modalCommService.closeMediaModal();
   }
 }
-// getFriendsList(){
-//   if (this.isLoading) return; // Check for loading state
-
-//   this.isLoading = true; // Set loading state to true
-
-//   this.dataService.getData(this.baseUrl + '/account/friends/').subscribe(
-//     data => {
-//       this.users = data;
-//       this.isLoading = false; // Set loading state to false
-//     },
-//     error => {
-//       console.error('Wystąpił błąd podczas pobierania listy znajomych:', error);
-//       this.isLoading = false; // Set loading state to false
-//     }
-//   );
-// }
 
 

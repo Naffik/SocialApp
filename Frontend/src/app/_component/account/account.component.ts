@@ -35,6 +35,7 @@ export class AccountComponent {
       }
     });
   }
+  
   openDeleteConfirmationModal() {
     this.modalCommService.openModalWithAction(
       'Czy na pewno chcesz usunąć konto?', 
@@ -43,7 +44,6 @@ export class AccountComponent {
         this.dataService.deleteAccount(username).subscribe(
             () => {
               this.authService.logout();
-              this.router.navigate(['/home']);
             },
             error => {
               console.error('Wystąpił błąd podczas usuwania konta:', error);

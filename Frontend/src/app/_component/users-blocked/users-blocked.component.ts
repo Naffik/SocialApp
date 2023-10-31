@@ -33,7 +33,7 @@ export class UsersBlockedComponent {
   ){}
 
   ngOnInit(){
-    this.nextUrl = `${this.baseUrl}/account/friends/blocking/`; // Zaktualizuj nextUrl tutaj
+    this.nextUrl = `${this.baseUrl}/account/friends/blocking/`; 
     this.loadMoreBlockedAccounts();
   }
 

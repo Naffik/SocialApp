@@ -47,12 +47,12 @@
 
 .settings-section a i, 
 .settings-section button i {
-    margin-right: 10px; /* For left icons */
+    margin-right: 10px; 
 }
 
 .settings-section a i:last-child, 
 .settings-section button i:last-child {
-    margin-left: 10px; /* For right icons */
+    margin-left: 10px; 
 }
 
 .icon-right {

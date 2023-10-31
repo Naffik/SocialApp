@@ -118,7 +118,7 @@ export class HomeComponent {
     if (window.scrollY === 0) {
       this.postService.triggerRefresh();
     } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Przewiń do góry strony
+        window.scrollTo({ top: 0, behavior: 'smooth' }); 
     }
 }
 

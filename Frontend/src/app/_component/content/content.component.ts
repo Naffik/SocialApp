@@ -143,11 +143,7 @@ export class ContentComponent implements OnInit {
 
   private handlePostsError(error: any) {
       this.isLoading = false;
-      if (error && error.error && error.error.code === "token_not_valid") {
-          this.tokenError = true;
-      } else {
-          console.error("Nieobsługiwany błąd:", error);
-      }
+      console.error("Nieobsługiwany błąd:", error);
   }
 
   isActivePost(post: any): boolean {
@@ -159,9 +155,9 @@ export class ContentComponent implements OnInit {
       clearTimeout(this.hideTimeoutId);
     }
     if (this.activePopover !== postId) {
-      this.activePopover = null; // Ukryj obecny popover
+      this.activePopover = null; 
       setTimeout(() => {
-        this.activePopover = postId; // Pokaż nowy popover po krótkim opóźnieniu
+        this.activePopover = postId; 
         this.fetchUserData(username);
       }, 300);
     } else {
@@ -210,7 +206,7 @@ export class ContentComponent implements OnInit {
       }, error => {
         console.error("Błąd podczas wczytywania danych użytkownika:", error);
         this.isUserDataLoading = false;
-        this.userDataLoadError = true;  // Ustaw stan błędu na true w przypadku błędu
+        this.userDataLoadError = true; 
       });
     }
   }
@@ -219,8 +215,8 @@ export class ContentComponent implements OnInit {
   addFollow(user: any) {
     this.dataService.dataFollow(user.username, this.baseUrl + "/account/friends/add_follow/").subscribe(() => {
         user.follow = true;
-        this.refreshUserData(user.username);  // Ponownie wczytaj dane użytkownika
-        this.cdRef.detectChanges();  // Wymuś aktualizację widoku
+        this.refreshUserData(user.username);  
+        this.cdRef.detectChanges();  
     }, error => {
         console.error("Błąd podczas dodawania obserwacji:", error);
     });
@@ -253,8 +249,6 @@ export class ContentComponent implements OnInit {
       console.error("Błąd podczas dodawania obserwacji:", error);
     });
   }
-
-
 
   goToPostDetails(postId: number, event?: MouseEvent) {
     if (event) {
@@ -296,7 +290,9 @@ export class ContentComponent implements OnInit {
     document.body.removeChild(a);
   }
 
-
+  onTagClick(trend: string): void {
+    this.router.navigate(['/search'], { queryParams: { query: trend } });
+  }
 
   openMediaModal(imageUrl: string) {
     this.modalCommService.openMediaModal(imageUrl);
@@ -372,8 +368,6 @@ export class ContentComponent implements OnInit {
             break;
     }
   }
-
-
 
   sharePost(postId: number) {
     const postUrl = `${window.location.origin}/post/${postId}`;
@@ -485,25 +479,4 @@ export class ContentComponent implements OnInit {
       event.preventDefault(); 
     }
   }
-
-  //////
-  renewToken(){
-    const refreshToken = localStorage.getItem('refresh');
-    if (refreshToken) {
-      this.authService.renewToken(refreshToken).subscribe(response => {
-        // Zaktualizuj tokeny w localStorage lub gdziekolwiek je przechowujesz
-        localStorage.setItem('access', response.access);
-        localStorage.setItem('refresh', response.refresh);
-        this.tokenError = false;
-        this.loadMorePosts();
-        console.log(response.access, response.refresh)
-      }, error => {
-        console.error("Wystąpił błąd podczas odnawiania tokenu:", error);
-      });
-    } 
-    else {
-      console.error("Nie znaleziono tokenu odświeżania w localStorage.");
-    }
-  }
-
 }

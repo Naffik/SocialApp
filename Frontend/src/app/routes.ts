@@ -30,10 +30,7 @@ export const appRoutes: Routes = [
             { path: ':username/following', component: UsersCombinedComponentComponent},
             { path: ':username/friends', component: UsersCombinedComponentComponent},
             { path: ':username/friends_requests', component: UsersCombinedComponentComponent},
-            { path: ':username', component: UserCommentListComponent },
-            { path: ':username/comments', component: UserCommentListComponent },
-            { path: ':username/media', component: UserCommentListComponent },
-            { path: ':username/likes', component: UsersCombinedComponentComponent },
+            { path: ':username', redirectTo: ':username/friends'},
             { path: 'post/:postId', component: PostDetailsComponent},
         ]
     },

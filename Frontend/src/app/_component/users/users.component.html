@@ -4,14 +4,10 @@
 </div>
 
 <div *ngIf="!isLoading">
-
-  <!-- Wyświetl błędy -->
   <div class="error-message" *ngIf="serverError || tokenError">
     <p>Brak dostępu do serwera. Spróbuj ponownie później.</p>
     <button (click)="refreshPage()">Odśwież</button>
   </div>
-
-  <!-- Sekcja informacji o koncie -->
   <div class="account-info"  *ngIf="!serverError && !tokenError">
     <div class="header">
       <button (click)="goBack()">
@@ -20,27 +16,16 @@
       <h2>{{profileData?.username}}</h2>
     </div>
     <div class="avatar-and-details">
-
-      <!-- Awatar -->
       <span *ngIf="userExists" class="avatar" (click)="openAvatarModal()">
         <img [src]="baseUrl + profileData?.avatar_url" alt="Avatar użytkownika" />
       </span>
       <span *ngIf="!userExists" class="avatar-placeholder"></span>
-
-      <!-- Imię, nazwisko i nazwa użytkownika -->
-      
-
-      <!-- Przyciski -->
       <div class="actions-container">
-        <!-- Przycisk "..." z FontAwesome -->
         <div class="menu-icon-container">
           <button >
             <i class="fa fa-ellipsis-v"></i>
           </button>
-          <!-- Menu kontekstowe -->
           <div class="context-menu" *ngIf="showContextMenu">
-            <button > XD </button>
-            <button > XD </button>
             <button>
               'Usuń z ulubionych' : 'Dodaj do ulubionych'
             </button>
@@ -49,14 +34,8 @@
             </button>
           </div>
         </div>
-        
-
-        <!-- Przycisk "Edytuj profil" -->
         <button *ngIf="userExists && loggedInUsername === username && !userBlocked && !userHasBlockedYou"
           class="edit-profile-btn" (click)="openEditModal()">Edytuj profil</button>
-
-        <!-- Przyciski "Obserwuj", "Dodaj do znajomych", itp. -->
-           <!-- Przycisk "Zaobserwuj" / "Obserwujesz" -->
            <button  *ngIf="userExists && !userBlocked && !userHasBlockedYou && loggedInUsername !== username"
            [ngClass]="{
                'following-btn': profileData?.follow, 
@@ -65,9 +44,6 @@
            (click)="toggleFollow(profileData)">
                {{ profileData?.follow ? 'Obserwujesz' : 'Zaobserwuj' }}
             </button>
-   
-
-       <!-- Przycisk "Dodaj do znajomych" / "Znajomi" -->
        <button *ngIf="userExists && !userBlocked && !userHasBlockedYou && loggedInUsername !== username" 
            [ngClass]="{
                'friend-btn': profileData?.is_friend, 
@@ -77,15 +53,10 @@
            (click)="profileData?.is_friend? removeFriend(profileData) : toggleFriendship(profileData)">
                {{ profileData?.is_friend ? 'Usuń znajomego' : (profileData?.request_friendship_sent ? 'Zaproszenie wysłane' : 'Dodaj do znajomych') }}
        </button>
-
-
-       <!-- Przycisk "Odblokuj" -->
        <button *ngIf="userBlocked" (click)="unBlockUser()" class="unblock-button">Odblokuj</button>
       </div>
       
     </div>
-
-    <!-- Opis profilu, statystyki, itp. -->
     <div class="name-and-username">
       <div class="name" *ngIf="userExists && profileData?.is_friend || loggedInUsername===username">
         {{ profileData?.first_name }} {{ profileData?.last_name }}

@@ -72,7 +72,6 @@ a {
 
 .post-content img{
   max-width:380px;
-  /* max-width:400px; */
   object-fit:cover;
   border-radius:25px;
 }
@@ -83,7 +82,6 @@ a {
   align-items: center;
 }
 
-/* Domyślne style dla przycisków */
 .like-btn, .comment-btn, .share-btn {
   background-color: inherit;
   border: none;
@@ -95,8 +93,8 @@ a {
 .header {
   position: sticky;
   top: 60px;
-  background-color: #f7f7f7;  /* Przykładowe tło, dostosuj według własnych potrzeb */
-  z-index: 100;  /* Upewnij się, że nagłówek jest zawsze na wierzchu */
+  background-color: #f7f7f7;  
+  z-index: 100;  
   display: flex;
   align-items: center;
   gap: 10px;
@@ -132,26 +130,23 @@ a {
   margin-right: 5px;
 }
 
-/* Domyślny kolor ikony */
+
 .like-btn i, .comment-btn i, .share-btn i {
   color: #504f4f;
   padding: 10px 10px;
   border-radius: 50%;
 }
 
-/* Domyślny kolor licznika */
 .like-btn .count, .comment-btn .count, .share-btn .count {
-  color: #504f4f; /* lub inny kolor, jeśli chcesz, żeby różnił się od koloru ikony */
+  color: #504f4f; 
 }
 
 .like-btn:hover i, .like-btn:hover .count, 
 .comment-btn:hover i, .comment-btn:hover .count,
 .share-btn:hover i {
-  color: #a10ddb; /* lub inny kolor, jaki chcesz */
+  color: #a10ddb; 
 }
 
-
-/* Zmiana tła ikony podczas najechania na przycisk */
 .comment-btn:hover i, .share-btn:hover i{
   background-color: rgba(170, 16, 221, 0.1);
 }
@@ -160,22 +155,19 @@ a {
   background-color: rgba(249, 24, 128, 0.1);
 }
 
-/* Kontener, który utrzymuje przycisk i ikonę razem */
+
 .btn-container {
   display: inline-flex;
   align-items: center;
 }
 
-/* Usunięcie domyślnego focus dla przycisku */
 .like-btn:focus, .comment-btn:focus, .share-btn:focus {
   outline: none;
 }
 
-/* Kolor ikony "polubienia", gdy post jest polubiony */
 .like-btn.liked i, .like-btn .count.liked {
   color: rgba(161, 13, 219);
 }
-
 
 .preserve-whitespace {
   white-space: pre-line;

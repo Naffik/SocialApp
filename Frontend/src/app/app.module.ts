@@ -32,18 +32,12 @@ import { RouterModule } from '@angular/router';
 import { appRoutes } from './routes';
 import { LinkifyPipe } from './_pipe/linkify.pipe';
 import { PostDetailsComponent } from './_component/post-details/post-details.component';
-import { UserPostsComponent } from './_component/user-posts/user-posts.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { TrendsComponent } from './_component/trends/trends.component';
 import { MediaModalComponent } from './_component/media-modal/media-modal.component';
 import { EditProfileModalComponent } from './_component/edit-profile-modal/edit-profile-modal.component';
 import { AccountInfoComponent } from './_component/account-info/account-info.component';
 import { UsersBlockedComponent } from './_component/users-blocked/users-blocked.component';
-import { UserMediaListComponent } from './_component/user-media-list/user-media-list.component';
-import { UserPostListComponent } from './_component/user-post-list/user-post-list.component';
-import { UserCommentListComponent } from './_component/user-comment-list/user-comment-list.component';
-import { UserLikeListComponent } from './_component/user-like-list/user-like-list.component';
-import { UserFavoriteListComponent } from './_component/user-favorite-list/user-favorite-list.component';
 import { UsersCombinedComponentComponent } from './_component/users-combined-component/users-combined-component.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { ProfilePopoverComponent } from './_component/profile-popover/profile-popover.component';
@@ -70,17 +64,11 @@ import { ChangePasswordComponent } from './_component/change-password/change-pas
     AccountComponent,
     LinkifyPipe,
     PostDetailsComponent,
-    UserPostsComponent,
     TrendsComponent,
     MediaModalComponent,
     EditProfileModalComponent,
     AccountInfoComponent,
     UsersBlockedComponent,
-    UserMediaListComponent,
-    UserPostListComponent,
-    UserCommentListComponent,
-    UserLikeListComponent,
-    UserFavoriteListComponent,
     UsersCombinedComponentComponent,
     ProfilePopoverComponent,
     ChatViewComponent,

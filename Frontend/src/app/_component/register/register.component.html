@@ -2,12 +2,12 @@
   <div class="form">
     <form class="login-form" [formGroup]="registerForm" (ngSubmit)="register()">
       <p>Zarejestruj się, aby używac platformy</p>
-      <!-- Form Group: accountDetails -->
+
       <div class="login-form-content" formGroupName="accountDetails" *ngIf="currentPage === 1">
           <div class="form-item">
             <label for="email">Podaj Email</label>
             <input type="text" id="email" formControlName="email">
-            <!-- Assuming emailAsyncValidator is part of your component logic -->
+
             <div *ngIf="registerForm.get('accountDetails.email')?.touched && !registerForm.get('accountDetails.email')?.value" class="error-message">
               Pole email jest wymagane.
             </div>
@@ -34,7 +34,7 @@
                     <i class="fa fa-eye"></i>
                 </button>
             </div>
-            <!-- Assuming passwordCheckMessage is part of your component logic -->
+
             <div *ngIf="registerForm.get('accountDetails.password')?.touched && !registerForm.get('accountDetails.password')?.value" class="error-message">
               Pole hasło jest wymagane.
             </div>
@@ -53,7 +53,7 @@
                     <i class="fa fa-eye"></i>
                 </button>
             </div>
-            <!-- Assuming passwordsMatchValidator is part of your component logic -->
+
             <div *ngIf="registerForm.get('accountDetails.password2')?.touched && !registerForm.get('accountDetails.password2')?.value" class="error-message">
               Pole powtórz hasło jest wymagane.
             </div>
@@ -75,13 +75,12 @@
             Dalej 
         </button>
       </div> 
-      <!-- End of Form Group: accountDetails -->
-      <!-- Form Group: personalDetails -->
+
       <div class="login-form-content" formGroupName="personalDetails" *ngIf="currentPage === 2">
           <div class="form-item">
             <label for="username">Podaj Username</label>
             <input type="text" id="username" formControlName="username">
-            <!-- Assuming usernameStatusMessage and getUsernameMessageClass() are part of your component logic -->
+
             <div *ngIf="registerForm.get('personalDetails.username')?.touched && !registerForm.get('personalDetails.username')?.value" class="error-message">
               Pole username jest wymagane.
             </div>
@@ -103,7 +102,7 @@
           <div class="form-item">
             <label for="first_name">Podaj Imię</label>
             <input type="text" id="first_name" formControlName="first_name" required>
-            <!--  -->
+
             <div *ngIf="registerForm.get('personalDetails.first_name')?.touched && !registerForm.get('personalDetails.first_name')?.value" class="error-message">
               Pole imię jest wymagane.
             </div>
@@ -111,7 +110,7 @@
           <div class="form-item">
             <label for="last_name">Podaj Nazwisko</label>
             <input type="text" id="last_name" formControlName="last_name" required>
-            <!--  -->
+
             <div *ngIf="registerForm.get('personalDetails.last_name')?.touched && !registerForm.get('personalDetails.last_name')?.value" class="error-message">
               Pole nazwisko jest wymagane.
             </div>         

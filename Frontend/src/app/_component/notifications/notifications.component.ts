@@ -43,9 +43,6 @@ export class NotificationsComponent {
     this.isLoading = false; 
   }, error => {
     console.log(error, error.code)
-    // if (error && error.error && error.error.code === "token_not_valid") {
-    //   this.tokenError = true;
-    // }
     console.error("Wystąpił błąd podczas ładowania postów:", error);
     this.isLoading = false;
   });

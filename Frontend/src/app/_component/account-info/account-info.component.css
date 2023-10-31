@@ -6,8 +6,8 @@
 .header {
     position: sticky;
     top: 60px;
-    background-color: #f7f7f7;  /* Przykładowe tło, dostosuj według własnych potrzeb */
-    z-index: 100;  /* Upewnij się, że nagłówek jest zawsze na wierzchu */
+    background-color: #f7f7f7;  
+    z-index: 100;  
     display: flex;
     align-items: center;
     gap: 10px;
@@ -29,13 +29,13 @@
 }
 
 .info-item {
-    margin-bottom: 30px; /* Większa przerwa pomiędzy kolejnymi info-items */
+    margin-bottom: 30px; 
 }
 
 .info-item label {
     font-weight: bold;
     display: block;
-    margin-bottom: 5px; /* Mniejsza przerwa pomiędzy <label> i <p> */
+    margin-bottom: 5px; 
 }
 
 .info-item p {
@@ -83,7 +83,7 @@
 
 .header {
     display: flex;
-    align-items: center; /* Wyrównuje elementy do środka w pionie */
+    align-items: center; 
     gap: 10px;
 }
 

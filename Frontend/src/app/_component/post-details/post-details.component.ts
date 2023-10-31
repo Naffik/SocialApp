@@ -159,6 +159,9 @@ export class PostDetailsComponent implements OnInit {
     });
   }
   
+  onTagClick(trend: string): void {
+    this.router.navigate(['/search'], { queryParams: { query: trend } });
+  }
 
   goBack(): void {
     this.location.back();

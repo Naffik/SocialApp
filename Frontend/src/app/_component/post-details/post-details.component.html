@@ -41,17 +41,14 @@
     <span class="date">
       {{ post?.created | dateFormat }}
       <span class="tooltip">
-        <!-- *ngIf="showTooltip"> -->
         {{ post?.created | dateFormat }}
       </span>
     </span>
 
-     <!-- Wewnątrz div z klasą "post-header", dodajemy w prawym górnym rogu: -->
      <div class="menu-icon-container" (click)="stopPropagation($event)">
       <button (click)="toggleContextMenu(post.id)">
         <i class="fa fa-ellipsis-v"></i>
       </button>
-      <!-- Menu kontekstowe -->
       <div class="context-menu" *ngIf="isContextMenuShow(post.id)">
         <div *ngIf="loggedInUsername!==post.post_author">
           <button (click)="blockUser(post.post_author, post.id); toggleContextMenu(post.id)">Zablokuj @{{post?.post_author}}</button>
@@ -61,11 +58,9 @@
             Usuń wpis
         </button>
         </div>
-        <!-- Opcja dodaj do ulubionych -->
         <button (click)="toggleAction(post,'favorite'); toggleContextMenu(post.id)">
             {{ post.is_favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych' }}
         </button>
-        <!-- Opcja udostępnij post -->
         <button (click)="sharePost(post.id); toggleContextMenu(post.id)">
             Udostępnij post
         </button>
@@ -78,7 +73,7 @@
         (mouseleave)="leavePopover()">
         <app-profile-popover 
             [user]="userInfoToShow$ | async"
-            (loggedInUsername) = "loggedInUsername";
+            (loggedInUsername) = "loggedInUsername"
             (follow)="addFollow($event)" 
             (removeFollow)="removeFollow($event)"
             (addFriend)="addFriend($event)"
@@ -88,7 +83,6 @@
   </div>
   <div class="post-content">
     <div class="preserve-whitespace" [innerHTML]="post?.content | linkify : post?.id">
-      <!-- reszta treści postu -->
     </div>
     <div *ngIf="post?.image" class="post-image">
       <img 
@@ -100,12 +94,11 @@
     <div class="tags">
       <p>Tags:</p>
       <div class="tag-container">
-        <span *ngFor="let tag of post?.tags">{{ tag }}</span>
+        <span *ngFor="let tag of post?.tags" (click)="onTagClick(tag)">{{ tag }}</span>
       </div>
     </div>
   </div>
   <div class="post-actions">
-    <!-- Ikonka polubienia -->
     <button class="like-btn" [class.liked]="post.is_liked" (click)="toggleAction(post,'like'); stopPropagation($event)">
       <i class="fa fa-thumbs-up"> </i>
       <span class="count" [class.liked]="post.is_liked"> 
@@ -113,13 +106,11 @@
       </span>
     </button>
 
-    <!-- Ikonka komentarza -->
     <button class="comment-btn">
       <i class="fa fa-comment"></i>
       <span class="count">{{post.number_of_comments}} </span>
     </button>
 
-    <!-- Ikonka udostępnienia -->
     <button class="share-btn" (click)="sharePost(post.id); stopPropagation($event)">
       <i class="fa fa-share"></i> 
     </button>
@@ -127,7 +118,6 @@
   <app-media-modal></app-media-modal>
 
   <hr />
-  <!--  -->
   <div *ngIf="isPostError" class="error-message">
     Wystąpił błąd. Spróbuj ponownie później.
   </div>
@@ -160,12 +150,9 @@
   <div *ngIf="isPostSending" class="loading-bar"></div>
 
   <hr />
-
-  <!--  -->
   <div infiniteScroll [infiniteScrollDistance]="10" [infiniteScrollThrottle]="50" (scrolled)="loadMoreComments()">
     <div *ngFor="let comment of comments" class="comment" @fadeIn>
       <div class="post-header">
-        <!-- Avatar with mouse enter and leave events -->
         <a [routerLink]="['/', comment.comment_author]">
           <img [src]="baseUrl + comment?.comment_author_avatar"
                (mouseenter)="showPopover(comment.id, comment.comment_author)" 
@@ -174,7 +161,6 @@
                class="avatar">
         </a>
     
-        <!-- Display name with mouse enter and leave events -->
         <a [routerLink]="['/', comment.comment_author]">
           <span class="username"
                 (mouseenter)="showPopover(comment.id, comment.comment_author)"
@@ -183,7 +169,6 @@
           </span>
         </a>
     
-        <!-- Nickname (username) with mouse enter and leave events -->
         <a [routerLink]="['/', comment.comment_author]">
           <span class="nick"
                 (mouseenter)="showPopover(comment.id, comment.comment_author)" 
@@ -195,7 +180,6 @@
         <span class="date">
           {{ comment?.created | timeSince }}
           <span class="tooltip">
-            <!-- *ngIf="showTooltip"> -->
             {{ comment?.created | dateFormat }}
           </span>
         </span>
@@ -203,7 +187,6 @@
           <button (click)="toggleContextMenu(comment.id)">
             <i class="fa fa-ellipsis-v"></i>
           </button>
-          <!-- Menu kontekstowe -->
           <div class="context-menu" *ngIf="isContextMenuShow(comment.id)">
             <div *ngIf="loggedInUsername!==comment.comment_author">
               <button (click)="blockUser(comment.post_author, comment.id); toggleContextMenu(comment.id)">Zablokuj @{{comment?.comment_author}}</button>
@@ -213,11 +196,9 @@
                 Usuń wpis
             </button>
             </div>
-            <!-- Opcja dodaj do ulubionych -->
             <button (click)="toggleAction(comment,'favorite'); toggleContextMenu(comment.id)">
                 {{ comment.is_favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych' }}
             </button>
-            <!-- Opcja udostępnij post -->
             <button (click)="sharePost(comment.id); toggleContextMenu(comment.id)">
                 Udostępnij post
             </button>
@@ -231,6 +212,7 @@
             <app-profile-popover 
                 [user]="userInfoToShow$ | async"
                 (follow)="addFollow($event)" 
+                (loggedInUsername) = "loggedInUsername"
                 (removeFollow)="removeFollow($event)"
                 (addFriend)="addFriend($event)"
                 (removeFriend)="removeFriend($event)">
@@ -240,7 +222,6 @@
       </div>
       <div class="post-content">
         <div class="preserve-whitespace" [innerHTML]="comment?.content | linkify : post?.id">
-          <!-- reszta treści postu -->
         </div>
         <div *ngIf="comment?.image" class="post-image">
           <img [src]="baseUrl + post?.image" alt="Image for {{ comment?.post }}" style="cursor: pointer" />
@@ -254,21 +235,13 @@
       </div>
       
       <div class="post-actions">
-        <!-- Ikonka polubienia -->
         <button class="like-btn" [class.liked]="post.is_liked" (click)="toggleAction(post,'like'); stopPropagation($event)">
           <i class="fa fa-thumbs-up"> </i>
           <span class="count" [class.liked]="post.is_liked"> 
             {{post.number_of_likes}}
           </span>
         </button>
-    
-        <!-- Ikonka komentarza
-        <button class="comment-btn">
-          <i class="fa fa-comment"></i>
-          <span class="count">{{post.number_of_comments}} </span>
-        </button>
-     -->
-        <!-- Ikonka udostępnienia -->
+
         <button class="share-btn" (click)="sharePost(post.id); stopPropagation($event)">
           <i class="fa fa-share"></i> 
         </button>

@@ -10,7 +10,7 @@ import { Location } from '@angular/common';
   styleUrls: ['./change-password.component.css']
 })
 export class ChangePasswordComponent implements OnInit {
-  form: FormGroup;  // Usunąłem znak "!"
+  form: FormGroup; 
   successMessage: string = '';
   errorMessage: string = '';
   showCurrentPassword = false;
@@ -22,7 +22,7 @@ export class ChangePasswordComponent implements OnInit {
     private dataService: DataService,
     private location: Location
   ) {
-    this.form = this.validatorsService.createChangePasswordForm(); // Przeniosłem inicjalizację tutaj, aby zapewnić, że formularz jest zawsze zainicjowany.
+    this.form = this.validatorsService.createChangePasswordForm(); 
   }
 
   ngOnInit(): void {}

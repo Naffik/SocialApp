@@ -25,12 +25,12 @@
     border: none;
     border-radius: 50%;
     cursor: pointer;
-    transition: background-color 0.3s, opacity 0.3s;  /* Dodane przejście dla opacity */
-    opacity: 0.8; /* Ustawienie przezroczystości na 50% */
+    transition: background-color 0.3s, opacity 0.3s;  
+    opacity: 0.8; 
 }
 
 .camera-icon:hover {
-    background-color: #b53bed; /* Kolor hover dla przycisku */
+    background-color: #b53bed; 
 }
 
 .custom-input {
@@ -92,25 +92,25 @@
 }
 
 input.form-control {
-    color: gray; /* domyślny kolor inputów */
+    color: gray; 
 }
   
 input.form-control:focus {
-    color: black; /* kolor inputów po aktywacji (fokusie) */
+    color: black;
 }
   
 .input-label.error {
-    color: red; /* kolor labelki, gdy pole nie jest poprawne */
+    color: red; 
 }
 
 .btn {
-    margin-right: 10px; /* Dodanie odstępu między przyciskami */
+    margin-right: 10px;
 }
 
 .btn-secondary {
     background-color: red;
     border-color: red;
-    transition: background-color 0.3s, border-color 0.3s; /* Dodanie animacji dla efektu hover */
+    transition: background-color 0.3s, border-color 0.3s; 
 }
 
 .btn-secondary:hover {
@@ -121,7 +121,7 @@ input.form-control:focus {
 .btn-primary {
     background-color: #a10ddb;
     border-color: #a10ddb;
-    transition: background-color 0.3s, border-color 0.3s; /* Dodanie animacji dla efektu hover */
+    transition: background-color 0.3s, border-color 0.3s; 
 }
 
 .btn-primary:hover {
@@ -133,11 +133,11 @@ input.form-control:focus {
     background-color: transparent;
     border: none;
     color: #a10ddb;
-    font-size: 1.5rem; /* Zwiększenie rozmiaru czcionki dla większej ikony */
-    transition: color 0.3s; /* Dodanie animacji dla efektu hover */
+    font-size: 1.5rem; 
+    transition: color 0.3s; 
 }
 
 .back-button:hover {
-    color: #b53bed; /* Kolor hover dla przycisku strzałki wstecz */
+    color: #b53bed; 
 }
 

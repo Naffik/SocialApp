@@ -54,7 +54,6 @@ export class ModalCommunicationService {
   }
 
   openMediaModal(imageUrl: string) {
-    console.log(imageUrl)
     this._mediaModal.next({ imageUrl});
   } 
 

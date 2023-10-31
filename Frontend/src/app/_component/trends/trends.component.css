@@ -9,7 +9,6 @@
     width: 100%;
 }
 
-
 .content-right-sidebar .first-section, .trends .second-section {
     padding: 15px;
     border-bottom: 1px solid #C7C8C9;
@@ -63,16 +62,15 @@
   }
   
   .spinner {
-    border: 8px solid rgba(255, 255, 255, 0.3); /* Jasny kolor tła dla obręczy spinnera */
-    border-radius: 50%; /* Nadanie kształtu koła */
-    border-top: 8px solid #a10ddb; /* Ciemny kolor dla górnego segmentu spinnera */
-    width: 50px; /* Szerokość spinnera */
-    height: 50px; /* Wysokość spinnera */
-    animation: spin 1s linear infinite; /* Animacja obracania się spinnera */
-    margin: 0 auto; /* Wyśrodkowanie spinnera w poziomie (jeżeli rodzic ma wyśrodkowanie tekstu lub flex) */
+    border: 8px solid rgba(255, 255, 255, 0.3); 
+    border-radius: 50%; 
+    border-top: 8px solid #a10ddb; 
+    width: 50px; 
+    height: 50px; 
+    animation: spin 1s linear infinite; 
+    margin: 0 auto; 
   }
   
-  /* Animacja obrotu */
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

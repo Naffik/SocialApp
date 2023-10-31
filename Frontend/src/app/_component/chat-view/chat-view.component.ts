@@ -93,7 +93,6 @@ export class ChatViewComponent {
   sendMessage() {
     if (this.newMessage.trim()) {
       const newMsg = { id: Date.now(), sender: this.loggedInUsername, text: this.newMessage.trim() };
-      // this.selectedUser.messages.unshift(newMsg);
       const textMessage = {
         action: "message",
         message: this.newMessage.trim()
@@ -114,8 +113,6 @@ export class ChatViewComponent {
 
   addImage() {
   }
-
-
 
   handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {

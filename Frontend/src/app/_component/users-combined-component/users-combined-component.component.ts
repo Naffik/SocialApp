@@ -117,7 +117,7 @@ export class UsersCombinedComponentComponent {
         if(this.username === this.loggedInUsername) {
           this.nextUrl = `${this.baseUrl}/account/friends/sent_requests/?page=1&size=10`; 
         } else {
-          this.router.navigate(['/friends']); // Przekierowanie użytkowników, którzy nie są właścicielami profilu
+          this.router.navigate(['/friends']); 
         }
         break;
     }
@@ -125,6 +125,6 @@ export class UsersCombinedComponentComponent {
   }
 
   onTabClick(type: 'friends' | 'following' | 'followers' | 'friends_requests') {
-    this.router.navigate([this.username, type]); // Zmieniamy URL bez przeładowania całego komponentu
+    this.router.navigate([this.username, type]); 
   }
 }

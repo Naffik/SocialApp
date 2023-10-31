@@ -24,7 +24,7 @@
             </div>
             <div class="right-section">
               <button
-                (click)="toggleBlock(user, $event)"
+                (click)="toggleBlock(user, $event); $event.stopPropagation(); false"
                 [ngClass]="{
                   block: user.is_blocked,
                   unblock: !user.is_blocked

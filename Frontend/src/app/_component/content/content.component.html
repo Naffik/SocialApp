@@ -38,7 +38,6 @@
         <button (click)="toggleContextMenu(post.id)">
           <i class="fa fa-ellipsis-v"></i>
         </button>
-        <!-- Menu kontekstowe -->
         <div class="context-menu" *ngIf="isContextMenuShow(post.id)">
           <div *ngIf="loggedInUsername!==post.post_author">
             <button (click)="blockUser(post.post_author, post.id); toggleContextMenu(post.id)">Zablokuj @{{post?.post_author}}</button>
@@ -48,11 +47,9 @@
               Usuń wpis
           </button>
           </div>
-          <!-- Opcja dodaj do ulubionych -->
           <button (click)="toggleAction(post,'favorite'); toggleContextMenu(post.id)">
               {{ post.is_favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych' }}
           </button>
-          <!-- Opcja udostępnij post -->
           <button (click)="sharePost(post.id); toggleContextMenu(post.id)">
               Udostępnij post
           </button>
@@ -113,38 +110,30 @@
     
     <div class="post-content">
       <div class="preserve-whitespace" [innerHTML]="post.content | linkify:post.id">
-        <!-- reszta treści postu -->
       </div>
-      <img 
+      <img [src]="baseUrl + post.image" 
         *ngIf="post.image"
-        [src]="baseUrl + post.image" 
-   
         style="cursor: pointer;"
         class="post-image" 
         (click)="stopPropagation($event); openMediaModal(post.image);">
       <div class="tags">
         <p>Tags:</p>
         <div class="tag-container" (click)="stopPropagation($event)">
-            <span *ngFor="let tag of post.tags">{{ tag }}</span>
+            <span *ngFor="let tag of post.tags"  (click)="onTagClick(tag)">{{ tag }}</span>
         </div>
       </div>
     </div>
     <div class="post-actions">
-      <!-- Ikonka polubienia -->
       <button class="like-btn" [class.liked]="post.is_liked" (click)="toggleAction(post,'like'); stopPropagation($event)">
         <i class="fa fa-thumbs-up"> </i>
         <span class="count" [class.liked]="post.is_liked"> 
           {{post.number_of_likes}}
         </span>
       </button>
-
-      <!-- Ikonka komentarza -->
       <button class="comment-btn">
         <i class="fa fa-comment"></i>
         <span class="count">{{post.number_of_comments}} </span>
       </button>
-
-      <!-- Ikonka udostępnienia -->
       <button class="share-btn" (click)="sharePost(post.id); stopPropagation($event)">
         <i class="fa fa-share"></i> 
       </button>
@@ -154,10 +143,6 @@
   <div class="loading-bar" *ngIf="isLoading">
     <div class="spinner"></div>
     <p class="loading-text">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
-  </div>
-  <div *ngIf="tokenError" class="token-error">
-    <p>Wystąpił problem z Twoim tokenem. Czy chcesz go odnowić?</p>
-    <button (click)="renewToken()">Odnów token</button>
   </div>
 </div>
 

@@ -6,7 +6,6 @@
   <div class="form">
     <form [formGroup]="profileForm">
       <div class="editProfile-form-content">
-        <!-- Sekcja kadrowania zdjęcia -->
         <div *ngIf="isCropping">
           <image-cropper 
             [imageChangedEvent]="imageChangedEvent" 
@@ -33,7 +32,6 @@
         </div>
 
         <div class="form-input" *ngIf="!isCropping">
-          <!-- Pole first_name -->
           <div class="form-group">
             <label [class.error]="!profileForm.controls['first_name'].valid && profileForm.controls['first_name'].dirty"
                    class="input-label" for="first_name">Imię</label>
@@ -44,7 +42,6 @@
                  class="error-message">Nieprawidłowe imię</div>
           </div>
           
-          <!-- Pole last_name -->
           <div class="form-group">
             <label [class.error]="!profileForm.controls['last_name'].valid && profileForm.controls['last_name'].dirty"
                    class="input-label" for="last_name">Nazwisko</label>
@@ -55,7 +52,6 @@
                  class="error-message">Nieprawidłowe nazwisko</div>
           </div>
           
-          <!-- Pole display_name -->
           <div class="form-group">
             <label [class.error]="!profileForm.controls['display_name'].valid && profileForm.controls['display_name'].dirty"
                    class="input-label" for="display_name">Nazwa wyświetlana</label>
@@ -66,7 +62,6 @@
                  class="error-message">Nieprawidłowa nazwa wyświetlana</div>
           </div>
           
-          <!-- Pole bio -->
           <div class="form-group">
             <label [class.error]="!profileForm.controls['bio'].valid && profileForm.controls['bio'].dirty"
                    class="input-label" for="bio">Opis profilu</label>

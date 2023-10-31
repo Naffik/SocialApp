@@ -1,7 +1,6 @@
 <app-users></app-users>
 <div *ngIf="!isLoading && !serverError">
   <hr>
-  <!-- Sekcja z suwakami -->
   <div class="tabs">
     <a 
       [routerLink]="['/', username, 'friends']" 
@@ -58,12 +57,10 @@
     </div>
   </div>
 
-  <!-- Lista znajomych/obserwujących/obserwacji -->
   <div *ngIf="viewType !== 'friends_requests'">
     <div *ngFor="let user of users" class="usersList">    
       <a [routerLink]="['/', user.username]"> 
         <div class="usersList-header">    
-            <!-- Lewa strona: Avatar i informacje o użytkowniku -->
             <div class="left-section">
                 <span class="avatar">
                     <img [src]="baseUrl + user?.avatar_url" alt="Avatar użytkownika">
@@ -73,8 +70,7 @@
                     <span class="nick">@{{user?.username}}</span>
                 </div>
             </div>
-    
-            <!-- Prawa strona: Przyciski -->
+  
             <div class="right-section" *ngIf="user.username !== loggedInUsername">
               <button 
                 [ngClass]="{

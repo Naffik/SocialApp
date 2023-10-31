@@ -34,8 +34,8 @@ nav{
 
 .nav-mid ul li a {
   display: flex;
-  align-items: center; /* wypośrodkowanie pionowe */
-  justify-content: center; /* wypośrodkowanie poziome */
+  align-items: center; 
+  justify-content: center; 
   height: 100%;
   width: 100%;
 }
@@ -46,7 +46,6 @@ nav{
 }
 
 .nav-mid ul li img{
-  /* filter: grayscale(1);  */
   transition: filter 0.3s; 
   margin: 0 15px;
   width: 32px;
@@ -178,8 +177,8 @@ nav{
 
 
 .dropdown-footer {
-  border-top: 1px solid #e0e0e0;  /* Dodaje subtelny separator */
-  text-align: center;  /* Wyśrodkowuje obrazek/link wewnątrz */
+  border-top: 1px solid #e0e0e0;  
+  text-align: center;  
 }
 
 .dropdown-footer a:hover {
@@ -192,15 +191,9 @@ nav{
   width: 40px;
   height: 40px;
   margin-right: 10px;
-  background-color: #ccc; /* Kolor zastępczy dla avatara */
+  background-color: #ccc; 
 }
 
-@media screen and (max-width: 600px) {
-  .dropdown-content {
-      right: auto;
-      left: 0;
-  }
-}
 
 .logo{
   width:160px;
@@ -264,7 +257,6 @@ nav{
   height: calc(100vh - 60px);
 }
 
-/* To jest do wywalenia */
 .main-content {
   flex-basis: 50%;
   display: flex; 
@@ -315,147 +307,30 @@ footer a{
   cursor: pointer;
 }
 
-.side-menu {
-  position: fixed;
-  top: 0;
-  left: -300px; /* początkowo ukryte poza ekranem */
-  height: 100%;
-  width: 300px;
-  background-color: #333;
-  transition: left 0.5s;
-  z-index: 2000; /* aby upewnić się, że jest na wierzchu */
-}
-
-.side-menu .menu-item {
-  padding: 15px;
-  border-bottom: 1px solid #444;
-  color: #fff;
-  cursor: pointer;
-}
-
-.side-menu .menu-item:hover {
-  background-color: #555;
-}
-
-/* Kiedy menu ma być widoczne */
-.show-side-menu .side-menu {
-  left: 0;
-}
-
-
-
-@media (max-width: 877px) {
-  .dropdown-content {
-    display: block;
-    position: absolute;
-    top: 100%;
-    /* right: 19px; */
-    left: -205px;
-    width: 100%;
-  }
-
-  
-  /* Ukryj napis "Media społecznościowe z czatem tekstowym" */
+@media (max-width: 330px){
   .nav-left h1 {
       display: none;
   }
 
-  /* Dostosuj układ przycisków */
-  .nav-mid {
-      flex-grow: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+  .search-box {
+      width: 50%;
   }
 
-  .nav-mid ul {
-      justify-content: space-between;
+  .nav-mid ul li:not(.button-menu) {
+      display: none;
   }
 
-.nav-mid ul {
-    display: none; /* ukryj tradycyjne menu */
-  }
-
-  /* Pokaż przycisk do otwierania bocznego menu (na razie używamy ikony hamburgera, ale możesz użyć czegokolwiek innego) */
-  .nav-mid:before {
-    content: '\2630';
-    font-size: 24px;
-    cursor: pointer;
-    display: block;
-  }
-  .nav-right {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-  }
-
-  /* Przesuń przycisk wyszukiwania obok avatara */
-  .nav-right .search-button {
-      margin-right: 15px;
+  .chat, .right-sidebar {
+      display: none;
   }
 }
+
 
 .search-button img{
   width: 32px;
   max-height: 80%;
 }
 
-@media (max-width: 768px) {
-  /* Ukryj napis "Media społecznościowe z czatem tekstowym" */
-  .nav-left h1 {
-      display: none;
-  }
-
-  /* Zmniejsz szerokość pola wyszukiwania */
-  .search-box {
-      width: 50%;
-  }
-
-  /* Ukryj niektóre elementy w pasku nawigacji */
-  .nav-mid ul li:not(.button-menu) {
-      display: none;
-  }
-
-  /* Ukryj chat i trendy */
-  .chat, .right-sidebar {
-      display: none;
-  }
-
-  /* Dodaj przycisk rozwijanego menu w pasku nawigacji */
-  .nav-mid {
-      position: relative;
-  }
-
-  .nav-mid:before {
-      content: '\2630'; /* Ikona hamburgera */
-      font-size: 24px;
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-  }
-
-  /* Ukryj zawartość rozwijanego menu */
-  .dropdown-content {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-  }
-
-  /* Pokaż rozwijane menu po kliknięciu na ikonę hamburgera */
-  .nav-mid:hover .dropdown-content {
-      display: block;
-  }
-}
-
-/* ... (wszystkie Twoje style) ... */
-
-@media (max-width: 1024px) {
-
-}
 
 @media (max-width: 1396px) {
 
@@ -463,7 +338,6 @@ footer a{
     display: flex;
     justify-content: flex-start;
     background-color: #efefef;
-    /* max-width: 1536px; */
     margin: 0 auto;
     position: relative;
   }
@@ -472,7 +346,6 @@ footer a{
     display: none;
 }
 
-/* Pokazujemy przycisk wyszukiwania */
   .search-button {
       display: inline-block;
   }
@@ -481,40 +354,21 @@ footer a{
     display: none;
 }
 
-/* Dostosuj szerokość chat i main-content */
 .chat {
     flex-basis: 25%;
-    margin-right: 2%; /* Dodaj odstępy między chat a main-content */
+    margin-right: 2%;
 }
 
 .main-content {
     flex-basis: 63%;
 }
 
-/* Zmniejsz szerokość content */
 .content {
     width: 650px;
 }
 
-  /* Ukryj napis "Media społecznościowe z czatem tekstowym" */
   .nav-left h1 {
       display: none;
-  }
-
-
-
-  /* Pokaż rozwijane menu po kliknięciu na ikonę hamburgera */
-  .nav-mid:hover .dropdown-content {
-      display: block;
-  }
-
-  /* Dodaj ikony nawigacji do menu dodatkowego */
-  .dropdown-content {
-      display: block;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
   }
 }
 @media (max-width: 1024px) {

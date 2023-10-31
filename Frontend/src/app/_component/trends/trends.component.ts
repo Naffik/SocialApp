@@ -41,6 +41,7 @@ export class TrendsComponent implements OnInit, OnDestroy {
       switchMap(() => this.dataService.getData(this.baseUrl + '/api/popular-tags/?tags_count=10&time_in_hours=12'))
     );
   }
+  
 
   loadTrends() {
     this.isLoading = true;

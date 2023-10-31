@@ -18,12 +18,12 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  padding: 0 10px;  /* Jeśli chcesz trochę przestrzeni po obu stronach ikony */
+  padding: 0 10px;  
 }
 
 .options i {
-  font-size: 1.5em;  /* Możesz dostosować rozmiar ikony według potrzeb */
-  cursor: pointer;   /* Jeśli ikona ma być klikalna */
+  font-size: 1.5em;  
+  cursor: pointer;   
 }
 
 .user-info {
@@ -47,12 +47,12 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  padding: 0 10px;  /* Jeśli chcesz trochę przestrzeni po obu stronach ikony */
+  padding: 0 10px;  
 }
 
 .options i {
-  font-size: 1.5em;  /* Możesz dostosować rozmiar ikony według potrzeb */
-  cursor: pointer;   /* Jeśli ikona ma być klikalna */
+  font-size: 1.5em;  
+  cursor: pointer;   
 }
 
 .chat-wrapper {
@@ -167,7 +167,7 @@ button {
   top: 0;
   left: 0;
   height: 100vh;
-  width: 250px; /* Możesz dostosować tę wartość */
+  width: 250px; 
   overflow-y: auto;
   z-index: 999;
 }
@@ -183,8 +183,8 @@ button {
 .header {
   position: sticky;
   top: 60px;
-  background-color: #f7f7f7;  /* Przykładowe tło, dostosuj według własnych potrzeb */
-  z-index: 100;  /* Upewnij się, że nagłówek jest zawsze na wierzchu */
+  background-color: #f7f7f7;  
+  z-index: 100;  
   display: flex;
   align-items: center;
   gap: 10px;
@@ -225,7 +225,7 @@ button {
 }
 
 .nav-icon {
-  margin-right: 10px; /* Odległość między ikoną a tekstem */
+  margin-right: 10px; 
 }
 
 .nav-label {
